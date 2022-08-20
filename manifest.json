@@ -1,0 +1,25 @@
+{
+    "name": "baicizhan-helper",
+    "description": "Baicizhan browser extension",
+    "version": "1.0",
+    "manifest_version": 3,
+    "backgreound": {
+        "service_worker": "background.js"
+    },
+    "permissions": ["storage"],
+    "action": {
+        "default_icon": {
+            "16": "./assets/images/baicizhan-helper.png",
+            "32": "./assets/images/baicizhan-helper.png",
+            "48": "./assets/images/baicizhan-helper.png",
+            "128": "./assets/images/baicizhan-helper.png"
+        }
+    },
+    "icons": {
+        "16": "./assets/images/baicizhan-helper.png",
+        "32": "./assets/images/baicizhan-helper.png",
+        "48": "./assets/images/baicizhan-helper.png",
+        "128": "./assets/images/baicizhan-helper.png"
+    },
+    "options_page": "./assets/options.html"
+  }

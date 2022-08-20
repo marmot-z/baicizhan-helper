@@ -1,0 +1,15 @@
+{
+  "name": "baicizhan-helper",
+  "version": "1.0.0",
+  "description": "Baicizhan browser extension",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "baicizhan",
+    "extension"
+  ],
+  "author": "zhangxunwei",
+  "license": "GPL-3.0"
+}
