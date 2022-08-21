@@ -1,4 +1,6 @@
-;(function() {
+;(function(window) {
+    'use strict';
+
     function Component(options) {
         this.$el = options.$el;        
         this.preprocessEls = options.preprocessEls;
@@ -84,26 +86,52 @@
             url: baicizhanHelper.PROXY_HOST + '/login/sendSmsVerifyCode/' + phoneNum
         })
         .then(() => {
-            // TODO 弹窗提示发送验证码成功
+            $.growl({
+                title: '登录',
+                message: '验证码发送成功',
+                size: 'medium',
+                style: 'notice' 
+             });
         })
         .catch(err => {
-            // TODO 弹窗提示发送验证码失败
+            $.growl({
+                title: '登录',
+                message: '验证码发送失败',
+                size: 'medium',
+                style: 'error'
+            });
+
+            console.error('验证码发送失败', err);
         });
     }
 
     function login(phoneNum, verifyCode) {
         // TODO 获取用户信息以展示
-        baicizhanHelper.Utils.ajaxPost({
+        return baicizhanHelper.Utils.ajaxPost({
             url: baicizhanHelper.PROXY_HOST + '/login/' + phoneNum + '/' + verifyCode
         })
         .then(result => {
             storageAccessToken(result.access_token);
 
+            $.growl({
+                title: '登录',
+                message: '登录成功',
+                size: 'medium',
+                style: 'notice'
+            });
+
             // 登录成功，跳转到配置页面
             baicizhanHelper.toggle2SettingView();
         })
         .catch(err => {
-            // TODO 弹窗提示登录失败
+            $.growl({
+                title: '登录',
+                message: '登录失败',
+                size: 'medium',
+                style: 'error'
+            });
+            
+            console.error('手机验证码登录失败', err);
         });
     }
 
@@ -181,10 +209,13 @@
             triggerBy: 'click',
             preprocessEls: [phoneNumInputComponent, verifyCodeInputCompontent],
             onSuccess: function($el) {
-                login(phoneNumInputComponent.$el.val(), verifyCodeInputCompontent.$el.val());
+                $el.prop('disabled', true);
+
+                login(phoneNumInputComponent.$el.val(), verifyCodeInputCompontent.$el.val())
+                    .then(() => $el.prop('disabled', false));
             }
         });        
     }
 
     $('body').one('toggleLoginView', initialElementEvent);
-}) ();
+}) (this);

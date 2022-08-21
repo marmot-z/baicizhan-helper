@@ -3,8 +3,9 @@
         <meta charset="UTF-8">
         <title>baicizhan-helper setting</title>
         <link rel="icon" href="./images/baicizhan-helper.png">
-        <link rel="stylesheet" href="./libs/bootstrap-3.4.1-dist/css/bootstrap.css" />
-        <link rel="stylesheet" href="./options.css">
+        <link rel="stylesheet" type="text/css" href="./libs/bootstrap-3.4.1-dist/css/bootstrap.min.css" />
+        <link rel="stylesheet" type="text/css" href="./libs/growl/jquery.growl.css" />
+        <link rel="stylesheet" type="text/css" href="options.css">
     </head>
     <body>
         <div id="loginView" class="container h-100 hidden">
@@ -56,11 +57,12 @@
                 </div>
 
                 <div id="bookSettingView" class="col-md-offset-2 col-md-6">  
-                    <div class="alert alert-info">
-                        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">
+                    <div class="alert alert-warning alert-dismissable">
+                        <button type="button" class="close" data-dismiss="alert"
+                                aria-hidden="true">
                             &times;
                         </button>
-                        <a href="#" class="alert-link">选择一个单词本用于添加单词</a>
+                        <a href="#" class="alert-link">你尚未选择单词本用于添加单词</a>
                     </div>
                 </div>
 
@@ -79,9 +81,10 @@
         </div>
     </body>
 
-    <script type="text/javascript" src="./libs/jquery-3.6.0/jquery-3.6.0.js"></script>
-    <script type="text/javascript" src="../src/options.js"></script>
-    <script type="text/javascript" src="../src/utils.js"></script>
-    <script type="text/javascript" src="../src/login.js"></script>
-    <script type="text/javascript" src="../src/setting.js"></script>
+    <script type="text/javascript" src="./libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+    <script type="text/javascript" src="./libs/growl/jquery.growl.js"></script>
+    <script type="text/javascript" src="options.js"></script>
+    <script type="text/javascript" src="utils.js"></script>
+    <script type="text/javascript" src="login.js"></script>
+    <script type="text/javascript" src="setting.js"></script>
 </html>

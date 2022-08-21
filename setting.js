@@ -43,11 +43,18 @@
 
     function getUserBooks() {
         baicizhanHelper.Utils.ajaxGet({url: baicizhanHelper.PROXY_HOST + '/books'})
-            .then(books => {
+            .then(books => {                
                 new BookList(books).render();
             })
             .catch(err => {
-                // TODO 页面进行错误提示
+                $.growl({
+                    title: '信息获取',
+                    message: '用户单词本列表获取失败',
+                    size: 'medium',
+                    style: 'error'
+                });
+    
+                console.error('用户单词本列表获取失败', err);
             });
     }
 
@@ -73,7 +80,6 @@
     }
 
     BookList.prototype.render = function() {
-        // 渲染单词本项
         var itemsHtml = this.books.user_books.map(this.renderItem).join('');
         var listHtml = BOOK_LIST_HTML_TEMPLATE.replaceAll('${bookItemsHtml}', itemsHtml);
 
@@ -114,6 +120,7 @@
             var bookId = item.attr('book-id');
 
             if (bookId == baicizhanHelper.selectedBookId) {
+                $('.alert.alert-warning').hide();
                 item.prop('checked', true);
             }
         }
@@ -154,6 +161,10 @@
             onNegative: function($el) {
                 $el.addClass('hidden');
             }
+        });
+
+        $('.alert.alert-warning > button').click(function() {
+            $(this).parent().hide();
         });
 
         getUserBooks();

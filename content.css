@@ -1,0 +1,75 @@
+@font-face {
+    font-family: "Glyphicons Halflings";
+    src: url("./libs/bootstrap-3.4.1-dist/fonts/glyphicons-halflings-regular.eot");
+    src: url("./libs/bootstrap-3.4.1-dist/fonts/glyphicons-halflings-regular.eot?#iefix") format("embedded-opentype"), url("./libs/bootstrap-3.4.1-dist/fonts/glyphicons-halflings-regular.woff2") format("woff2"), url("./libs/bootstrap-3.4.1-dist/fonts/glyphicons-halflings-regular.woff") format("woff"), url("./libs/bootstrap-3.4.1-dist/fonts/glyphicons-halflings-regular.ttf") format("truetype"), url("./libs/bootstrap-3.4.1-dist/fonts/glyphicons-halflings-regular.svg#glyphicons_halflingsregular") format("svg");
+}
+.glyphicon {
+    position: relative;
+    top: 1px;
+    display: inline-block;
+    font-family: "Glyphicons Halflings";
+    font-style: normal;
+    font-weight: 400;
+    line-height: 1;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+.glyphicon-volume-up:before {
+    content: "\e038";
+}
+.glyphicon-star:before {
+    content: "\e006";
+}
+.glyphicon-star-empty:before {
+    content: "\e007";
+}
+
+#auxiliaryDiv {
+    position: absolute;
+}
+
+.webui-popover-inner .plus {
+    font-family: arial;
+    margin: 8px 10px 0 0;
+    float: right;
+    font-size: 16px;
+    font-weight: bold;
+    line-height: 16px;
+    color: #000000;
+    text-shadow: 0 1px 0 #fff;
+    opacity: 0.2;
+    filter: alpha(opacity=20);
+    text-decoration: none;
+}
+.webui-popover-inner .plus .active {
+    color: bisque;
+}
+.webui-popover-inner .plus:hover,
+.webui-popover-inner .plus:focus {
+    opacity: 0.5;
+    filter: alpha(opacity=50);
+}
+.webui-popover-inner .plus:after {
+    width: 0.8em;
+    height: 0.8em;
+    padding: 4px;
+    position: relative;
+}
+
+.accent {
+    opacity: 0.6;
+    cursor: pointer;
+}
+
+.accent:hover {
+    opacity: 1.0;
+    font-size: large;
+}
+
+.add-word {
+    cursor: pointer;
+}
+
+.add-word:hover {
+    font-size: large;
+}

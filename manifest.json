@@ -1,25 +1,61 @@
 {
     "name": "baicizhan-helper",
     "description": "Baicizhan browser extension",
+    "author": "zhangxunwei",
     "version": "1.0",
     "manifest_version": 3,
-    "backgreound": {
+    "options_page": "options.html",
+    "background": {
         "service_worker": "background.js"
     },
-    "permissions": ["storage"],
+    "permissions": [
+        "storage"
+    ],
     "action": {
         "default_icon": {
-            "16": "./assets/images/baicizhan-helper.png",
-            "32": "./assets/images/baicizhan-helper.png",
-            "48": "./assets/images/baicizhan-helper.png",
-            "128": "./assets/images/baicizhan-helper.png"
+            "16": "./images/baicizhan-helper.png",
+            "32": "./images/baicizhan-helper.png",
+            "48": "./images/baicizhan-helper.png",
+            "128": "./images/baicizhan-helper.png"
         }
     },
     "icons": {
-        "16": "./assets/images/baicizhan-helper.png",
-        "32": "./assets/images/baicizhan-helper.png",
-        "48": "./assets/images/baicizhan-helper.png",
-        "128": "./assets/images/baicizhan-helper.png"
+        "16": "./images/baicizhan-helper.png",
+        "32": "./images/baicizhan-helper.png",
+        "48": "./images/baicizhan-helper.png",
+        "128": "./images/baicizhan-helper.png"
     },
-    "options_page": "./assets/options.html"
+    "content_scripts": [
+        {
+            "css": [
+                "libs/webui-popover/jquery.webui-popover.css", 
+                "icon-tips.css",
+                "content.css"                
+            ],
+            "js": [
+                "libs/jquery-3.6.0/jquery-3.6.0.js", 
+                "libs/webui-popover/jquery.webui-popover.js",                 
+                "icon-tips.js",
+                "content.js"
+            ],
+            "matches": ["<all_urls>"],
+            "run_at": "document_end"
+        }
+    ],
+    "web_accessible_resources": [
+        {
+            "resources": [
+                "options.html",
+                "libs/bootstrap-3.4.1-dist/css/bootstrap.css",
+                "libs/growl/jquery.growl.css",
+                "options.css",
+                "libs/jquery-3.6.0/jquery-3.6.0.js",
+                "libs/growl/jquery.growl.js",
+                "options.js",
+                "login.js",
+                "setting.js"
+            ],
+            "matches": ["<all_urls>"]
+        }
+    ]
   }

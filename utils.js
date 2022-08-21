@@ -16,20 +16,40 @@
                     }
 
                     if (result.code == 401) {
-                        // 弹窗提示未登录
-                        // 触发 unauthorized 事件，跳转登录页面
-                        // reject 返回错误信息
+                        return handleUnauthorized(result, reject);
                     }
 
-                    // 弹窗提示服务异常
-                    // reject 返回错误信息
+                    return handleServerError(result, reject);
                 },
-                fail: function() {
-                    // 弹窗提示服务异常
-                    // reject 返回错误信息
+                fail: function(err) {
+                    return handleServerError(err, reject);
                 }
             });
         });
+    }
+
+    function handleUnauthorized(result, reject) {
+        $.growl({
+            title: '登录',
+            message: '尚未登录或登录失效',
+            size: 'medium',
+            style: 'error'
+        });
+
+        baicizhanHelper.toggle2LoginView();
+
+        return reject(result);
+    }
+
+    function handleServerError(result, reject) {
+        $.growl({
+            title: '查询',
+            message: '服务异常',
+            size: 'medium',
+            style: 'error'
+        });
+
+        return reject(result);
     }
 
     function ajaxPost(options) {
@@ -48,17 +68,13 @@
                     }
 
                     if (result.code == 401) {
-                        // 弹窗提示未登录
-                        // 触发 unauthorized 事件，跳转登录页面
-                        // reject 返回错误信息
+                        return handleUnauthorized(result, reject);
                     }
 
-                    // 弹窗提示服务异常
-                    // reject 返回错误信息
+                    return handleServerError(result, reject);
                 },
-                fail: function() {
-                    // 弹窗提示服务异常
-                    // reject 返回错误信息
+                fail: function(err) {
+                    return handleServerError(err, reject);
                 }
             });
         });

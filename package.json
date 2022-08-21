@@ -11,5 +11,9 @@
     "extension"
   ],
   "author": "zhangxunwei",
-  "license": "GPL-3.0"
+  "license": "GPL-3.0",
+  "devDependencies": {
+    "@pnotify/core": "^5.2.0",
+    "pnotify": "^5.2.0"
+  }
 }
