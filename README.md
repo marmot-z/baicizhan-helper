@@ -7,7 +7,7 @@
 ### 安装
 
 - chrome 网上应用商店安装  
-  打开 chrome 网上应用店，搜索 baicizhan-helper 找到此插件，点击 `添加到至chrome` 按钮完成安装
+  ~~打开 chrome 网上应用店，搜索 baicizhan-helper 找到此插件，点击 `添加到至chrome` 按钮完成安装~~（我暂时没有谷歌开发者账号，所以无法上传该插件到商店中）
 - github/gitee 仓库下载安装  
   如果你无法访问 chrome 网上应用店，可以访问项目 [github](https://github.com/marmot-z/baicizhan-helper)/[gitee](https://gitee.com/marmot-z/baicizhan-helper) 地址，在右侧 Releases 中选择最新版本的安装包进行安装，具体可以参考[此篇文章](https://www.cnblogs.com/weihuang6620/p/8301920.html)
 - 开发者模式安装  
@@ -20,18 +20,20 @@
 
 ### 使用
 
-相关使用和更详细的介绍请观看此视频
+相关使用和更详细的介绍请观看此视频(TODO)
 
 ### 后续规划
 
 - [ ] 优化页面，改善使用体验
 
 - 完善功能
+  
   - [ ] 卡片样式设置
   - [ ] 代理设置
   - [ ] 更多功能
 
 - [ ] 兼容低版本 chrome  
+
 - [ ] 移植到其他主流浏览器，如 firefox, edge 等
 
 ### 贡献
@@ -50,9 +52,5 @@
 > 如果说我看得比别人更远些，那是因为我站在巨人的肩膀上。 -- 艾萨克·牛顿
 
 本项目基于 [jquery](https://github.com/jquery/jquery)、[Bootstrap](https://github.com/twbs/bootstrap)、[webui-popover](https://github.com/sandywalker/webui-popover)、[growl](https://github.com/stanlemon/jGrowl) 工具开发，感谢这些项目和开发者让世界变得更美好
-
-
-
-
 
 最后，如果这个项目帮助到您，请给开发者点亮右上角的 :star: 吧
