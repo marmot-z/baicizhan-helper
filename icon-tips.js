@@ -43,11 +43,11 @@
         };
 
         IconTips.prototype.calcutePosition = function() {
-            var elRect = this.$el[0].getBoundingClientRect();
-            var elTop = elRect.top + document.body.scrollTop;
-            var elLeft = elRect.left + document.body.scrollLeft;
-            var elHeight = elRect.height;
-            var elWidth = elRect.width;
+            var position = this.$el.position();
+            var elTop = position.top;
+            var elLeft = position.left;
+            var elHeight = this.$el.height();
+            var elWidth = this.$el.width();
             var pageHeight = document.body.clientHeight + document.body.scrollTop;
             var margin = 3;
             var iconHeight = 25;

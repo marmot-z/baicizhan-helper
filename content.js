@@ -44,7 +44,7 @@
             }
 
             // 只翻译英文
-            if (!/^[a-zA-Z\\-\s]+$/.test(selectedContent)) {
+            if (!/^[a-zA-Z\\-\s']+$/.test(selectedContent)) {
                 return;
             }
 
@@ -62,8 +62,10 @@
         updateAuxiliaryElementPosition();
 
         if (!iconTips) {
+            var imgFullPath = 'chrome-extension://' + chrome.runtime.id + '/images/baicizhan-helper.png';
+
             $auxiliaryEl.iconTips({
-                imgSrc: './images/baicizhan-helper.png',
+                imgSrc: imgFullPath,
                 onClick: function($el) {
                     $auxiliaryEl.iconTips('hide');
 
@@ -94,20 +96,21 @@
             var data = response.data.dict_wiki.dict;
 
             // 显示辅助元素以保证弹窗定位准确
-            $auxiliaryEl.css('display', 'block')
-                        .webuiPopover({
-                            title: data.word_basic_info.word,
-                            content: generateContentHtml(data),
-                            trigger: 'click',
-                            template: POPOVER_TEMPLATE,
-                            onHide: function($el) {
-                                clearPopover($el);
-                            },
-                            onShow: function($el) {
-                                initialPopoverElementEvent($el, data);
-                            }
-                        });
+            $auxiliaryEl.css('display', 'block');
+            $auxiliaryEl.webuiPopover({
+                title: data.word_basic_info.word,
+                content: generateContentHtml(data),
+                trigger: 'click',
+                template: POPOVER_TEMPLATE,
+                onHide: function($el) {
+                    clearPopover($el);
+                },
+                onShow: function($el) {
+                    initialPopoverElementEvent($el, data);
+                }
+            });
     
+            // 触发 popover 显示
             setTimeout(function() {
                 $auxiliaryEl.trigger('click');
             }, 100);
@@ -122,8 +125,8 @@
         var rect = range.getBoundingClientRect();
 
         $auxiliaryEl.css('display', 'block')
-                    .css('top', rect.top + document.body.scrollTop)
-                    .css('left', rect.left + document.body.scrollLeft)
+                    .css('top', rect.top + window.scrollY)
+                    .css('left', rect.left + window.scrollX)
                     .css('height', rect.height)
                     .css('width', rect.width);
     }
@@ -141,9 +144,9 @@
         var accentHtml;
 
         if (ukAccent == usaAccent) {
-            accentHtml = '<p>' + ukAccent + '<span class="glyphicon glyphicon-volume-up accent"></span></p>';
+            accentHtml = '<p class="word">' + ukAccent + '<span class="glyphicon glyphicon-volume-up accent"></span></p>';
         } else {
-            accentHtml = '<p>' + ukAccent + '<span class="glyphicon glyphicon-volume-up accent"></span>' +
+            accentHtml = '<p class="word">' + ukAccent + '<span class="glyphicon glyphicon-volume-up accent"></span>' +
                 '&nbsp;' + usaAccent + '<span class="glyphicon glyphicon-volume-up accent"></span></p>';
         }
 
@@ -161,7 +164,7 @@
         
         var meansHtml = Object.entries(group)
             .map(function(e) {
-                return '<p>' + e[0] + '&nbsp;' + e[1].join(';') + '</p>';
+                return '<p class="word">' + e[0] + '&nbsp;' + e[1].join(';') + '</p>';
             })
             .join('\n');
 
@@ -200,6 +203,8 @@
                     RESOURCE_HOST + data.word_basic_info.accent_usa_audio_uri :
                     RESOURCE_HOST + data.word_basic_info.accent_uk_audio_uri);
 
+            // TODO 修复部分网站由于 csp 而出现音频加载失败的问题
+            // 使用 ajax 或 fetch 加载音频文件
             $icon.click(function() {
                 audio.play();                
             });

@@ -3,7 +3,7 @@
 
     var baicizhanHelper = {
         // 代理服务器主机地址
-        'PROXY_HOST': 'http://localhost:8080',
+        'PROXY_HOST': 'http://43.142.135.24:8080',
     };
 
     function initial() {

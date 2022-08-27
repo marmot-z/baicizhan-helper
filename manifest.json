@@ -44,16 +44,12 @@
     ],
     "web_accessible_resources": [
         {
-            "resources": [
+            "resources": [                
+                "libs/**",
+                "*.js",
                 "options.html",
-                "libs/bootstrap-3.4.1-dist/css/bootstrap.css",
-                "libs/growl/jquery.growl.css",
-                "options.css",
-                "libs/jquery-3.6.0/jquery-3.6.0.js",
-                "libs/growl/jquery.growl.js",
-                "options.js",
-                "login.js",
-                "setting.js"
+                "*.css",
+                "images/baicizhan-helper.png"
             ],
             "matches": ["<all_urls>"]
         }

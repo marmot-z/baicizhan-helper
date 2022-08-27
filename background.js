@@ -1,7 +1,7 @@
 ;(function() {
     'use strict';
 
-    var host = 'http://localhost:8080';
+    var host = 'http://43.142.135.24:8080';
     var baicizhanHelper = {};
 
     /**

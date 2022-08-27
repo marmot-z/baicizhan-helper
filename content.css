@@ -1,7 +1,11 @@
 @font-face {
     font-family: "Glyphicons Halflings";
-    src: url("./libs/bootstrap-3.4.1-dist/fonts/glyphicons-halflings-regular.eot");
-    src: url("./libs/bootstrap-3.4.1-dist/fonts/glyphicons-halflings-regular.eot?#iefix") format("embedded-opentype"), url("./libs/bootstrap-3.4.1-dist/fonts/glyphicons-halflings-regular.woff2") format("woff2"), url("./libs/bootstrap-3.4.1-dist/fonts/glyphicons-halflings-regular.woff") format("woff"), url("./libs/bootstrap-3.4.1-dist/fonts/glyphicons-halflings-regular.ttf") format("truetype"), url("./libs/bootstrap-3.4.1-dist/fonts/glyphicons-halflings-regular.svg#glyphicons_halflingsregular") format("svg");
+    src: url("chrome-extension://__MSG_@@extension_id__/libs/bootstrap-3.4.1-dist/fonts/glyphicons-halflings-regular.eot");
+    src: url("chrome-extension://__MSG_@@extension_id__/libs/bootstrap-3.4.1-dist/fonts/glyphicons-halflings-regular.eot?#iefix") format("embedded-opentype"), 
+         url("chrome-extension://__MSG_@@extension_id__/libs/bootstrap-3.4.1-dist/fonts/glyphicons-halflings-regular.woff2") format("woff2"), 
+         url("chrome-extension://__MSG_@@extension_id__/libs/bootstrap-3.4.1-dist/fonts/glyphicons-halflings-regular.woff") format("woff"), 
+         url("chrome-extension://__MSG_@@extension_id__/libs/bootstrap-3.4.1-dist/fonts/glyphicons-halflings-regular.ttf") format("truetype"),
+         url("chrome-extension://__MSG_@@extension_id__/libs/bootstrap-3.4.1-dist/fonts/glyphicons-halflings-regular.svg#glyphicons_halflingsregular") format("svg");
 }
 .glyphicon {
     position: relative;
@@ -35,7 +39,7 @@
     font-size: 16px;
     font-weight: bold;
     line-height: 16px;
-    color: #000000;
+    color: silver;
     text-shadow: 0 1px 0 #fff;
     text-decoration: none;
 }
@@ -45,6 +49,16 @@
     height: 0.8em;
     padding: 4px;
     position: relative;
+}
+
+.webui-popover-inner .word {
+    color: black;
+    font-size: medium;
+    display: block;
+    margin-block-start: 1em;
+    margin-block-end: 1em;
+    margin-inline-start: 0px;
+    margin-inline-end: 0px;
 }
 
 .accent {
