@@ -177,11 +177,8 @@
     function initialPopoverElementEvent($el, data) {
         // 添加单词添加事件
         $el.find('.plus').click(function() {
-            var that = $(this);
+            $(this).find('span').addClass('active');
 
-            that.css('color', 'red');
-
-            // TODO 用户尚未选择单词本提示
             sendMessage({
                 action: 'addWord',
                 word: data.word_basic_info.word

@@ -37,18 +37,9 @@
     line-height: 16px;
     color: #000000;
     text-shadow: 0 1px 0 #fff;
-    opacity: 0.2;
-    filter: alpha(opacity=20);
     text-decoration: none;
 }
-.webui-popover-inner .plus .active {
-    color: bisque;
-}
-.webui-popover-inner .plus:hover,
-.webui-popover-inner .plus:focus {
-    opacity: 0.5;
-    filter: alpha(opacity=50);
-}
+
 .webui-popover-inner .plus:after {
     width: 0.8em;
     height: 0.8em;
@@ -72,4 +63,8 @@
 
 .add-word:hover {
     font-size: large;
+}
+
+.add-word.active {
+    color: #d7a01e;
 }
