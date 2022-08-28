@@ -9,7 +9,7 @@
 - chrome 网上应用商店安装  
   ~~打开 chrome 网上应用店，搜索 baicizhan-helper 找到此插件，点击 `添加到至chrome` 按钮完成安装~~（我暂时没有谷歌开发者账号，所以无法上传该插件到商店中）
 - github/gitee 仓库下载安装  
-  如果你无法访问 chrome 网上应用店，可以访问项目 [github](https://github.com/marmot-z/baicizhan-helper)/[gitee](https://gitee.com/marmot-z/baicizhan-helper) 地址，在右侧 Releases 中选择最新版本的安装包进行安装，具体可以参考[此篇文章](https://www.cnblogs.com/weihuang6620/p/8301920.html)
+  如果你无法访问 chrome 网上应用店，可以访问项目 [github](https://github.com/marmot-z/baicizhan-helper)/[gitee](https://gitee.com/mamotz/baicizhan-helper) 地址，在右侧 Releases/发行版 中选择最新版本的安装包进行安装，具体可以参考[此篇文章](https://www.cnblogs.com/weihuang6620/p/8301920.html)
 - 开发者模式安装  
   如果您是开发者，可以直接下载本项目以开发模式安装此插件，具体可以参考[此篇文章](https://blog.csdn.net/weixin_41789688/article/details/120504600)
 
@@ -38,8 +38,9 @@
 
 ### 贡献
 
-本项目由本人在业余时间维护，本人才疏学浅，水平有限，难免出现一些问题或您觉得应该改进的地方，欢迎大家批评指正。您可以在本项目上侧的 issue 处提交碰到的问题或您认为需要改进的建议，或者加入微信交流群（进群二维码如下）反馈给我  
-如果您是开发者，欢迎提交 pull request
+本项目由本人在业余时间维护，本人才疏学浅，水平有限，难免出现一些问题或您觉得应该改进的地方，欢迎大家批评指正。您可以在本项目上侧的 issue 处提交碰到的问题或您认为需要改进的建议，或者加入微信交流群（进群二维码如下）反馈给我。如果您是开发者，欢迎提交 pull request
+
+![](./images/group_qr.jpeg)
 
 ### 声明 & 许可
 
