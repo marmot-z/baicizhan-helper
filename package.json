@@ -1,19 +1,25 @@
 {
   "name": "baicizhan-helper",
-  "version": "1.0.0",
-  "description": "Baicizhan browser extension",
-  "main": "index.js",
+  "version": "0.0.0",
+  "private": true,
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs --fix --ignore-path .gitignore"
   },
-  "keywords": [
-    "baicizhan",
-    "extension"
-  ],
-  "author": "zhangxunwei",
-  "license": "GPL-3.0",
+  "dependencies": {
+    "@element-plus/icons-vue": "^2.0.10",
+    "element-plus": "^2.2.25",
+    "vue": "^3.2.45"
+  },
   "devDependencies": {
-    "@pnotify/core": "^5.2.0",
-    "pnotify": "^5.2.0"
+    "@rushstack/eslint-patch": "^1.1.4",
+    "@vitejs/plugin-vue": "^3.2.0",
+    "@vue/eslint-config-prettier": "^7.0.0",
+    "eslint": "^8.22.0",
+    "eslint-plugin-vue": "^9.3.0",
+    "prettier": "^2.7.1",
+    "vite": "^3.2.4"
   }
 }

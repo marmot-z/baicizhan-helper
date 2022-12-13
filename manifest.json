@@ -4,52 +4,47 @@
     "author": "zhangxunwei",
     "version": "1.0",
     "manifest_version": 3,
-    "options_page": "options.html",
+    "options_page": "index.html",
     "background": {
-        "service_worker": "background.js"
+        "service_worker": "assets/background.min.js"
     },
     "permissions": [
         "storage"
     ],
+    "icons": {
+        "16": "baicizhan-helper.png",
+        "32": "baicizhan-helper.png",
+        "48": "baicizhan-helper.png",
+        "128": "baicizhan-helper.png"
+    },
     "action": {
         "default_icon": {
-            "16": "./images/baicizhan-helper.png",
-            "32": "./images/baicizhan-helper.png",
-            "48": "./images/baicizhan-helper.png",
-            "128": "./images/baicizhan-helper.png"
+            "16": "./baicizhan-helper.png",
+            "32": "./baicizhan-helper.png",
+            "48": "./baicizhan-helper.png",
+            "128": "./baicizhan-helper.png"
         }
-    },
-    "icons": {
-        "16": "./images/baicizhan-helper.png",
-        "32": "./images/baicizhan-helper.png",
-        "48": "./images/baicizhan-helper.png",
-        "128": "./images/baicizhan-helper.png"
     },
     "content_scripts": [
         {
             "css": [
-                "libs/webui-popover/jquery.webui-popover.css", 
-                "icon-tips.css",
-                "content.css"                
+                "assets/jquery.webui-popover.min.css"
             ],
             "js": [
-                "libs/jquery-3.6.0/jquery-3.6.0.js", 
-                "libs/webui-popover/jquery.webui-popover.js",                 
-                "icon-tips.js",
-                "content.js"
+                "assets/jquery-3.6.0.min.js",
+                "assets/jquery.webui-popover.min.js",
+                "assets/content-script.min.js"
             ],
             "matches": ["<all_urls>"],
-            "run_at": "document_end"
+            "run_at": "document_start"
         }
     ],
     "web_accessible_resources": [
         {
-            "resources": [                
-                "libs/**",
-                "*.js",
-                "options.html",
-                "*.css",
-                "images/baicizhan-helper.png"
+            "resources": [
+                "assets/*.svg",
+                "baicizhan-helper.png",
+                "index.html"
             ],
             "matches": ["<all_urls>"]
         }

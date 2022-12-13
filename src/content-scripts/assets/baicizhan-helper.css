@@ -1,0 +1,57 @@
+/* 使用 extension_id 创建样式唯一 id */
+#baicizhanHelperSupportDiv {
+    position: absolute;
+}
+
+.translate-content {
+    min-width: 240px;
+}
+
+.accent {
+    font-size: small;
+    color: #606266;
+    margin-top: 2px;
+    white-space: nowrap;
+}
+
+.star {
+    float: right;
+    cursor: pointer;
+    font-size: large;
+}
+
+.sound-size {
+    cursor: pointer;
+}
+
+.means-table {
+    table-layout: auto;
+    border-collapse: separate;
+    border-spacing: 0 8px;
+}
+
+.means-table td:first-child {
+    text-align: left;
+    min-width: 40px;
+    padding-right: 5px;
+    color: #636363;
+    font-style: italic;
+}
+
+.means-table td {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    word-wrap: break-word;
+}
+
+.sentence {
+    padding-top: 2px;
+}
+
+.sentence > img {
+    width: 180px;
+}
+
+.sentence p {
+    margin: 3px 0;
+}
