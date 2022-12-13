@@ -10,7 +10,12 @@ export default {
             selectedBookId: -1
         }
     },
-    mounted() {
+    async mounted() {
+        let sleep = (millis) => new Promise(resolve => setTimeout(resolve, millis));
+
+        // 等待资源加载完毕
+        await sleep(300);
+
         let loadBooks = () => interfaces.getBooks()
             .then(result => this.items = result.data.user_books)
             .catch(e => ElMessage.warning('您尚未登录'));

@@ -1,4 +1,31 @@
-const proxyHost = 'http://localhost:8080';
+// 默认代理地址
+const defaultProxyHost = 'http://43.142.135.24:8080';
+let proxyHost;
+
+// 加载数据时页面已经加载完毕
+// 需等待配置加载完毕后再加载页面
+chrome.storage.local.get([
+    'baicizhanHelper.proxyHost', 
+    'baicizhanHelper.proxyPort'
+], (result) => {
+    proxyHost = !result['baicizhanHelper.proxyHost'] ?
+        defaultProxyHost :
+        `http://${result['baicizhanHelper.proxyHost']}:${result['baicizhanHelper.proxyPort']}`;
+});
+
+chrome.storage.onChanged.addListener((changes, namespace) => {
+    for (let [key, {oldValue, newValue}] of Object.entries(changes)) {
+        if (key == 'baicizhanHelper.accessToken') {                    
+            accessToken = newValue;
+        }
+
+        switch (key) {
+            case 'baicizhanHelper.proxyHost' : return proxyHost = proxyHost.replace(/http:\/\/.*?:(\d+)/, `http://${newValue}:$1`);
+            case 'baicizhanHelper.proxyPort' : return proxyHost = proxyHost.replace(/http:\/\/(.*?):\d+/, `http://$1:${newValue}`);            
+            default: return;
+        }
+    }
+});
 
 /**
  * 获取验证码
