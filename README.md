@@ -1,35 +1,41 @@
 # baicizhan-helper
 
-This template should help get you started developing with Vue 3 in Vite.
+百词斩助手是一款类似于谷歌翻译的 chrome 浏览器插件，它可以让你在电脑浏览器上使用百词斩查看英文单词释义、搜索中文查看对应的英文单词等
+![](./imgs/translate.gif)
+另外登录账号后，在浏览器上进行的一些操作可以同步到手机 APP 中，如：收藏单词、取消收藏单词等
+![](./imgs/collect-word.gif)
+![](./imgs/look-word.gif)
+(收藏后等待一些时间或重新进入 App，即可显示收藏的单词)
 
-## Recommended IDE Setup
+支持的功能：
+- [x] 英文翻译中文
+- [x] 图文模式
+- [x] 收藏单词
+- [ ] 取消收藏
+- [ ] 中文翻译英文
 
-[VSCode](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur) + [TypeScript Vue Plugin (Volar)](https://marketplace.visualstudio.com/items?itemName=Vue.vscode-typescript-vue-plugin).
+## 安装
+1. Chrome 应用商店安装  
+   - 地址栏输入 [https://chrome.google.com/webstore/category/extensions](https://chrome.google.com/webstore/category/extensions) 进入应用商店页面
+   - 搜索 「百词斩助手」找到此插件
+   - 点击「添加到Chrome」安装
+2. 离线安装
+   - 点击 [github](https://github.com/marmot-z/baicizhan-helper)/[gitee](https://gitee.com/mamotz/baicizhan-helper) 页面右侧的 [Release](https://github.com/marmot-z/baicizhan-helper/releases)/[发行版](https://gitee.com/mamotz/baicizhan-helper/releases) 下载最新版本的安装包   
+   - 安装包文件修改后缀为 .rar，解压成文件夹
+   - 地址栏输入 [chrome://extensions/](chrome://extensions/) 打开扩展程序页面，打开右上角开发者模式
+   - 点击左上角「加载已解压的扩展程序」，选择安装包解压后的文件夹，既可安装此插件
 
-## Customize configuration
+## 使用
+更多使用请参考[此文档](./usage.md)
 
-See [Vite Configuration Reference](https://vitejs.dev/config/).
+## 声明
+- 本项目仅方便大家学习英语，你可以自由使用此软件，但不能使用此软件从事任何形式的商业活动，且不能基于此软件进行二次开发
+- 本项目完全开源，无任何安全风险。但其他渠道下载的插件安装包安全风险不予保证
+- 安装、使用过程中出现一些问题可以尝试升级 chrome 浏览器版本，或者添加本人微信加入微信交流群进行反馈
+<img style="width: 200px; height: 250px" src="./imgs/wechat-qr.png">
 
-## Project Setup
+## LICENSE
+本项目基于 [Apache-2 licence](https://www.apache.org/licenses/LICENSE-2.0) 开发
 
-```sh
-npm install
-```
 
-### Compile and Hot-Reload for Development
-
-```sh
-npm run dev
-```
-
-### Compile and Minify for Production
-
-```sh
-npm run build
-```
-
-### Lint with [ESLint](https://eslint.org/)
-
-```sh
-npm run lint
-```
+最后，如果这个项目对你有所帮助，请给我点亮右上角的 :star: 吧
