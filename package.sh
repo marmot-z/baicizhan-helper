@@ -38,3 +38,5 @@ elif [ "$env" = "dev" ]; then
         .content_scripts[0].css |= ["assets/jquery.webui-popover.css"]' \
     manifest.json > dist/manifest.json
 fi
+
+zip -r baicizhan-helper.zip dist
