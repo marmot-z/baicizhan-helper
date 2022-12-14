@@ -1,10 +1,10 @@
 # baicizhan-helper
 
-百词斩助手是一款类似于谷歌翻译的 chrome 浏览器插件，它可以让你在电脑浏览器上使用百词斩查看英文单词释义、搜索中文查看对应的英文单词等
+百词斩助手是一款类似于谷歌翻译的 chrome 浏览器插件，它可以让你在电脑浏览器上使用百词斩查看英文单词释义、搜索中文查看对应的英文单词等  
 <img src="./imgs/translate.gif" style="width:400px; ">  
 另外登录账号后，在浏览器上进行的一些操作可以同步到手机 APP 中，如：收藏单词、取消收藏单词等  
 <img src="./imgs/collect-word.gif" style="width:400px;">
-<img src="./imgs/look-word.gif" style="height:300px;  ">
+<img src="./imgs/look-word.gif" style="height:300px;">  
 (收藏后等待一些时间或重新进入 App，即可显示收藏的单词)
 
 支持的功能：
