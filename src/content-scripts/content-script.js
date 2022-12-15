@@ -146,15 +146,6 @@
     };
 
     /**
-     * 隐藏弹框
-     */
-    function closeTranslatePopover() {
-        $popover.destory();
-
-        $popover = null;
-    };
-
-    /**
      * 获取本地存储值
      * 
      * @param {Array<String>} keys 键名数组

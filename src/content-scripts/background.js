@@ -104,8 +104,22 @@
     }
 
     function collectWord(word) {
-        if (typeof bookId === 'undefined') {        
-            return Promise.resolve('Not selected');
+        if (typeof bookId === 'undefined') {
+            return new Promise(resolve => {
+                chrome.storage.local.get(['baicizhanHelper.bookId'], result => {
+                    bookId = result['baicizhanHelper.bookId'];
+
+                    if (!bookId) {
+                        return resolve('Not selected');
+                    }
+
+                    sendRequest({
+                        method: 'PUT',
+                        url: `${proxyHost}/book/${bookId}/word/${word}`
+                    })
+                    .then(resolve);
+                });
+            });
         }
 
         return sendRequest({
@@ -115,10 +129,24 @@
     }
 
     function sendRequest(options) {
-        if (!accessToken) {        
-            return Promise.resolve('Unauthorized');
+        if (!accessToken) {
+            return new Promise(resolve => {
+                chrome.storage.local.get(['baicizhanHelper.accessToken'], result => {
+                    accessToken = result['baicizhanHelper.accessToken'];
+
+                    if (!accessToken) {
+                        return resolve('Unauthorized');
+                    }
+
+                    doSendRequest(options).then(resolve);
+                });
+            });
         }
 
+        return doSendRequest(options);
+    }
+
+    function doSendRequest(options) {
         return fetch(options.url, {
             method: options.method,
             mode: 'cors',

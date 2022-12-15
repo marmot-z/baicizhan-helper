@@ -100,7 +100,10 @@
                 mutil: options.multi || false,
                 template: TEMPLATE,
                 onShow: ($popover) => !this.inited && this._initEvent($popover),
-                onHide: () => this.$el.css('display', 'none')
+                onHide: () => {
+                    this.$el.css('display', 'none');
+                    audioContext && audioContext.close();
+                }
             }
         );
     }
