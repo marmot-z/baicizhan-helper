@@ -1,9 +1,20 @@
 ;(function(window, $) {
     'use strict';
 
-    // 弹窗模板
+    // 亮色弹窗模板
     const TEMPLATE = `
         <div class="webui-popover translate-content">
+            <div class="webui-arrow"></div>
+            <div class="webui-popover-inner">
+                <a href="#" class="close"></a>
+                <h3 class="webui-popover-title"></h3>
+                <div class="webui-popover-content"><i class="icon-refresh"></i> <p>&nbsp;</p></div>
+            </div>
+        </div>
+    `;
+    // 暗黑弹窗模板
+    const DARK_TEMPLATE = `
+        <div class="webui-popover-dark translate-content">
             <div class="webui-arrow"></div>
             <div class="webui-popover-inner">
                 <a href="#" class="close"></a>
@@ -41,71 +52,66 @@
      * css 样式集合，用于将 class 转换为行内样式
      * @see ../assets/baicizhan-helper.css
      */
-    const cssMap = {
-        'translate-content': `min-width: 240px;`,
-        'accent': `
-            font-size: small;
-            color: #606266;
-            margin-top: 2px;
-            white-space: nowrap;
-        `,
-        'star': `
-            float: right;
-            cursor: pointer;
-            font-size: large;
-        `,
-        'sound-size': `
-            cursor: pointer;
-        `,
-        'means-table': `
-            table-layout: auto;
-            border-collapse: separate;
-            border-spacing: 0 8px; 
-        `,
-        'data-cell-first': `
-            text-align: left;
-            min-width: 40px;
-            padding-right: 5px;
-            color: #636363;
-            font-style: italic;
-        `,
-        'data-cell': `
-            overflow: hidden;
-            text-overflow: ellipsis;
-            word-wrap: break-word;
-            color: black;
-            font-size: small;
-        `,
-        'sentence': `padding-top: 2px;`,
-        'sentence-img': `width: 180px;`,
-        'sentence-p': `
-            margin: 3px 0;
-            color: black;
-            font-size: small;
-        `
+    const lightCssMap = {
+        'translate-content': {'min-width': '240px'},
+        'title': {'margin-bottom': '0px;'},
+        'accent': {
+            'font-size': 'small',
+            'color': '#606266',
+            'margin-top': '2px',
+            'white-space': 'nowrap'
+        },
+        'star': {
+            'float': 'right',
+            'cursor': 'pointer',
+            'font-size': 'large'
+        },
+        'sound-size': {'cursor': 'pointer'},
+        'means-table': {
+            'table-layout': 'auto',
+            'border-collapse': 'separate',
+            'border-spacing': '0 8px',
+        },
+        'data-cell-first': {
+            'text-align': 'left',
+            'min-width': '40px',
+            'padding-right': '5px',
+            'color': '#636363',
+            'font-style': 'italic'
+        },
+        'data-cell': {
+            'overflow': 'hidden',
+            'text-overflow': 'ellipsis',
+            'word-wrap': 'break-word'
+        },
+        'sentence': {'padding-top': '2px'},
+        'sentence-img': {'width': '180px'},
+        'sentence-p': {'margin': '3px 0'}
     };
+    const darkCssMap = JSON.parse(JSON.stringify(lightCssMap));
+    ['title', 'accent', 'data-cell-first', 'data-cell', 'sentence-p'].forEach(key => 
+        Object.assign(darkCssMap[key], {'filter': 'invert(90%) hue-rotate(180deg)'})
+    );
 
     function MyWebuiPopover(options = {}) { 
         this.options = options;
         this.data = this.options.wordInfo;        
-        this.$el = this.options.$el;              
-        this.inited = false;  
+        this.$el = this.options.$el;            
+        this.inited = false;
 
         this.$el.css('display', 'block');        
-        this.$el.webuiPopover(
-            {
-                title: generateTtitle(this.data),
-                content: generateContent(this.data, this.options.style),
-                trigger: options.trigger || 'click',
-                mutil: options.multi || false,
-                template: TEMPLATE,
-                onShow: ($popover) => !this.inited && this._initEvent($popover),
-                onHide: () => {
-                    this.$el.css('display', 'none');
-                    audioContext && audioContext.close();
-                }
+        this.$el.webuiPopover({
+            title: generateTtitle(this.data, this.options.viewMode),
+            content: generateContent(this.data, this.options.popoverStyle, this.options.viewMode),
+            trigger: options.trigger || 'click',
+            mutil: options.multi || false,
+            template: this.options.viewMode == 'dark' ? DARK_TEMPLATE : TEMPLATE,
+            onShow: ($popover) => !this.inited && this._initEvent($popover),
+            onHide: () => {
+                this.$el.css('display', 'none');
+                audioContext && audioContext.close();
             }
-        );
+        });
     }
 
     /**
@@ -113,11 +119,11 @@
      * @param {Object} data 单词数据
      * @returns 标题 html 
      */
-    function generateTtitle(data) {
+    function generateTtitle(data, viewMode = 'light') {
         let assetPathPrefix = `chrome-extension://${chrome.runtime.id}/assets`;
         let wordInfo = data.word_basic_info;
         let titleHtml = `
-            <p style="margin-bottom: 0px;">
+            <p class="title">
                 ${wordInfo.word}
                 <span id="starIcon" class="star">
                     <img src="${assetPathPrefix}/star.svg" />
@@ -134,15 +140,19 @@
                 <span id="accentUkAudio" class="sound-size"><img src="${assetPathPrefix}/sound-size.svg"/></span>
             </p>`;
 
-        return replaceCss2style(titleHtml + accentHtml);
+        return replaceCss2style(titleHtml + accentHtml, viewMode);
     } 
 
-    function replaceCss2style(html, csses) {
-        return html.replace(/class="([\w-]*?)"/ig, (match, g1) => 
-                cssMap[g1] ? 
-                `style="${cssMap[g1].trim().replace('\n', '')}"` : 
-                match
-        );
+    function replaceCss2style(html, viewMode) {
+        let darkMode = viewMode == 'dark';
+
+        return html.replace(/class="([\w-]*?)"/ig, (match, g1) => {
+            let cssMap = darkMode ? darkCssMap : lightCssMap;
+
+            return cssMap[g1] ?
+                `style="${Object.entries(cssMap[g1]).map(([k,v]) => `${k}: ${v};`).join('')}"` :
+                match;
+        });
     }
 
     /**
@@ -151,7 +161,7 @@
      * @param {String} style 弹窗样式
      * @returns 内容 html
      */
-    function generateContent(data, style = 'simple') {
+    function generateContent(data, style = 'simple', viewMode = 'light') {
         let meansHtml, graphicHtml;
         let chineseMeans = data.chn_means.reduce((prev, curr) => {
             prev[curr.mean_type] = prev[curr.mean_type] || [];
@@ -191,11 +201,11 @@
                     </div>
                 `;
 
-                return replaceCss2style(meansHtml + graphicHtml);
+                return replaceCss2style(meansHtml + graphicHtml, viewMode);
             }            
         }
 
-        return replaceCss2style(meansHtml);
+        return replaceCss2style(meansHtml, viewMode);
     }
 
     MyWebuiPopover.prototype._initEvent = function($popover) {

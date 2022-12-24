@@ -119,37 +119,39 @@ let fragment = {
     sentence: {}
 };
 
-function createSimpleWebuiPopover(selector, data, placement = 'bottom') {
-    let $el = $(selector).webuiPopover({
-        // TODO 返回带样式的标题 html
-        title: generateTitle(data),
-        // TODO 返回一个 shadow，shadow 中有一些样式
-        content: generateSimpleContent(data),
-        trigger: 'manual',
-        multi: true,
-        template,
-        placement
-    });
+function createSimpleWebuiPopover(selector, data, options = {placement: 'bottom'}) {
+    let $el = $(selector).webuiPopover(
+        Object.assign({
+            // TODO 返回带样式的标题 html
+            title: generateTitle(data),
+            // TODO 返回一个 shadow，shadow 中有一些样式
+            content: generateSimpleContent(data),
+            trigger: 'manual',
+            multi: true,
+            template
+        }, options)
+    );
 
     $el.webuiPopover('show');
 }
 
-function createGraphicWebuiPopover(selector, data, placement = 'bottom') {
-    let $el = $(selector).webuiPopover({
-        title: generateTitle(data),
-        content: generateGraphicContent(data),
-        multi: true,
-        template,
-        trigger: 'manual',
-        placement
-    });
+function createGraphicWebuiPopover(selector, data, options = {placement: 'bottom'}) {
+    let $el = $(selector).webuiPopover(
+        Object.assign({
+            title: generateTitle(data),
+            content: generateGraphicContent(data),
+            multi: true,
+            template,
+            trigger: 'manual'
+        }, options)
+    );
 
     $el.webuiPopover('show');
 }
 
 function generateTitle(data) {
     let titleHtml = `
-        <p style="margin-bottom: 0px;">
+        <p class="title">
             ${data.word}
             <span class="star">
                 <img src="../src/content-scripts/assets/star.svg" />
@@ -166,50 +168,57 @@ function generateTitle(data) {
     return replaceCss2style(titleHtml + accentHtml);
 }
 
-const cssMap = {
-    'translate-content': `min-width: 240px;`,
-    'accent': `
-        font-size: small;
-        color: #606266;
-        margin-top: 2px;
-        white-space: nowrap;
-    `,
-    'star': `
-        float: right;
-        cursor: pointer;
-        font-size: large;
-    `,
-    'sound-size': `
-        cursor: pointer;
-    `,
-    'means-table': `
-        table-layout: auto;
-        border-collapse: separate;
-        border-spacing: 0 8px; 
-    `,
-    'data-cell-first': `
-        text-align: left;
-        min-width: 40px;
-        padding-right: 5px;
-        color: #636363;
-        font-style: italic;
-    `,
-    'data-cell': `
-        overflow: hidden;
-        text-overflow: ellipsis;
-        word-wrap: break-word;
-    `,
-    'sentence': `padding-top: 2px;`,
-    'sentence-img': `width: 180px;`,
-    'sentence-p': `margin: 3px 0;`
+const lightCssMap = {
+    'translate-content': {'min-width': '240px'},
+    'title': {'margin-bottom': '0px;'},
+    'accent': {
+        'font-size': 'small',
+        'color': '#606266',
+        'margin-top': '2px',
+        'white-space': 'nowrap'
+    },
+    'star': {
+        'float': 'right',
+        'cursor': 'pointer',
+        'font-size': 'large'
+    },
+    'sound-size': {'cursor': 'pointer'},
+    'means-table': {
+        'table-layout': 'auto',
+        'border-collapse': 'separate',
+        'border-spacing': '0 8px',
+    },
+    'data-cell-first': {
+        'text-align': 'left',
+        'min-width': '40px',
+        'padding-right': '5px',
+        'color': '#636363',
+        'font-style': 'italic'
+    },
+    'data-cell': {
+        'overflow': 'hidden',
+        'text-overflow': 'ellipsis',
+        'word-wrap': 'break-word'
+    },
+    'sentence': {'padding-top': '2px'},
+    'sentence-img': {'width': '180px'},
+    'sentence-p': {'margin': '3px 0'}
 };
+const darkCssMap = JSON.parse(JSON.stringify(lightCssMap));
+['title', 'accent', 'data-cell-first', 'data-cell', 'sentence-p'].forEach(key => 
+    Object.assign(darkCssMap[key], {'filter': 'invert(90%) hue-rotate(180deg)'})
+);
 
 function replaceCss2style(html, csses) {
-    return html.replace(/class="([\w-]*?)"/ig, (match, g1) => 
-            cssMap[g1] ? 
-            `style="${cssMap[g1].trim().replace('\n', '')}"` : 
-            match
-    );
+    let darkMode = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+
+    return html.replace(/class="([\w-]*?)"/ig, (match, g1) => {
+            let cssMap = darkMode ? darkCssMap : lightCssMap;
+
+            return cssMap[g1] ?
+                `style="${Object.entries(cssMap[g1]).map(([k,v]) => `${k}: ${v};`).join('')}"` :
+                match;
+        });
 }
 
 function generateSimpleContent(data) {
@@ -253,12 +262,15 @@ createSimpleWebuiPopover('#courage1', courage);
 createGraphicWebuiPopover('#courage2', courage);
 // 超宽，简单模式（最大宽度）
 createSimpleWebuiPopover('#be1', be);
-createGraphicWebuiPopover('#be2', be);
+createGraphicWebuiPopover('#be2', be, {
+    style: 'black',
+    placement: 'bottom'
+});
 // 超短，简单模式（最小高度）
 // 超长，简单模式
 // 音标超长，简单模式
 createSimpleWebuiPopover('#Pneumonoultramicroscopicsilicovolcanoconiosis1', Pneumonoultramicroscopicsilicovolcanoconiosis);
-createSimpleWebuiPopover('#Pneumonoultramicroscopicsilicovolcanoconiosis2', Pneumonoultramicroscopicsilicovolcanoconiosis, 'right');
+createSimpleWebuiPopover('#Pneumonoultramicroscopicsilicovolcanoconiosis2', Pneumonoultramicroscopicsilicovolcanoconiosis, {placement: 'right'});
 // 例句超长，简单模式
 createSimpleWebuiPopover('#like1', like);
 createGraphicWebuiPopover('#like2', like);

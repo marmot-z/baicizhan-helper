@@ -9,7 +9,6 @@
         "DIRECT": "2",      // 直接翻译        
         "NEVER": "3"        // 不进行翻译
     };
-
     /**
      * 弹窗样式
      */
@@ -17,9 +16,17 @@
         "SIMPLE": "simple",     // 简单样式
         "GRAPHIC": "graphic"    // 图文样式
     };
+    /**
+     * 视图模式
+     */
+    const VIEW_MODE = {
+        'LIGHT': 'light',       // 亮色
+        'DARK': 'dark'          // 暗黑
+    };
 
     let triggerMode,            // 弹窗触发模式
         popoverStyle,           // 弹窗样式
+        viewMode,               // 视图模式：亮色、暗黑
         $supportEl,             // 辅助元素
         $popover,               // 弹窗
         preSelectedWord;        // 前一个选中内容
@@ -30,10 +37,12 @@
         getStorageInfo([
             'baicizhanHelper.triggerMode',
             'baicizhanHelper.popoverStyle',
+            'baicizhanHelper.viewMode',
         ])
         .then(result => {
             triggerMode = result['baicizhanHelper.triggerMode'] || TRIGGER_MODE.SHOW_ICON;
             popoverStyle = result['baicizhanHelper.popoverStyle'] || POPOVER_STYLE.SIMPLE;
+            viewMode = result['baicizhanHelper.viewMode'] || VIEW_MODE.LIGHT;
 
             window.addEventListener('mouseup', () => {
                 let selectedWord = window.getSelection().toString().trim();
@@ -135,8 +144,9 @@
                 $popover = new MyWebuiPopover({
                     $el: $supportEl,
                     wordInfo: resp.data.dict,
-                    style: popoverStyle,
-                    collectWord
+                    popoverStyle,
+                    collectWord,
+                    viewMode
                 });
 
                 setTimeout(() => $popover.show(), 100);
