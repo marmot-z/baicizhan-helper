@@ -1,4 +1,6 @@
 <script>
+import { ElMessage } from 'element-plus'
+
 // 默认代理服务器 ip
 const defaultProxyHost = '43.142.135.24';
 // 默认代理服务器端口
@@ -39,12 +41,16 @@ export default {
             this.port = defaultProxyPort;
             this.triggerMode = defaultTriggerMode;
             this.theme = defaultTheme;
+
+            ElMessage.success('重置成功');
         },
         save() {
             chrome.storage.local.set({ 'baicizhanHelper.proxyHost': this.host });
             chrome.storage.local.set({ 'baicizhanHelper.proxyPort': this.port });
             chrome.storage.local.set({ 'baicizhanHelper.triggerMode': this.triggerMode });
             chrome.storage.local.set({ 'baicizhanHelper.theme': this.theme });
+
+            ElMessage.success('保存成功');
         }
     }
 }
