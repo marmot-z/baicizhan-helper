@@ -5,24 +5,29 @@ const defaultProxyHost = '43.142.135.24';
 const defaultProxyPort = 8080;
 // 默认弹出翻译方式
 const defaultTriggerMode = "1";
+// 默认主题
+const defaultTheme = 'light';
 
 export default {
     data() {
         return {
             triggerMode: defaultTriggerMode,
+            theme: defaultTheme,
             host: defaultProxyHost,
-            port: defaultProxyPort
+            port: defaultProxyPort,            
         }
     },
     mounted() {
         chrome.storage.local.get([
             'baicizhanHelper.proxyHost',
             'baicizhanHelper.proxyPort',
-            'baicizhanHelper.triggerMode'
+            'baicizhanHelper.triggerMode',
+            'baicizhanHelper.theme',
         ], results => {
             this.host = results['baicizhanHelper.proxyHost'] || defaultProxyHost;
             this.port = results['baicizhanHelper.proxyPort'] || defaultProxyPort;
             this.triggerMode = results['baicizhanHelper.triggerMode'] || defaultTriggerMode;
+            this.theme = results['baicizhanHelper.theme'] || defaultTheme;
 
             // to string
             this.triggerMode += '';
@@ -33,11 +38,13 @@ export default {
             this.host = defaultProxyHost;
             this.port = defaultProxyPort;
             this.triggerMode = defaultTriggerMode;
+            this.theme = defaultTheme;
         },
         save() {
             chrome.storage.local.set({ 'baicizhanHelper.proxyHost': this.host });
             chrome.storage.local.set({ 'baicizhanHelper.proxyPort': this.port });
             chrome.storage.local.set({ 'baicizhanHelper.triggerMode': this.triggerMode });
+            chrome.storage.local.set({ 'baicizhanHelper.theme': this.theme });
         }
     }
 }
@@ -46,6 +53,25 @@ export default {
 <template>
     <el-row>
         <el-col :span="14" :offset="5" class="panel">
+            <el-row class="settingItem">
+                <el-col :lg="4" :xl="3" :offset="1" class="settingName">主题风格：</el-col>
+                <el-col :lg="18" :xl="19">
+                    <el-radio-group v-model="theme" class="ml-4">
+                        <ul>
+                            <li>
+                                <el-radio label="light" size="large" @change="val => theme = val">明亮</el-radio>
+                            </li>
+                            <li>
+                                <el-radio label="dark" size="large" @change="val => theme = val">暗黑</el-radio>
+                            </li>
+                            <li>
+                                <el-radio label="auto" size="large" @change="val => theme = val">跟随系统</el-radio>
+                            </li>
+                        </ul>
+                    </el-radio-group>
+                </el-col>
+            </el-row>
+
             <el-row class="settingItem">
                 <el-col :lg="4" :xl="3" :offset="1" class="settingName">弹出翻译：</el-col>
                 <el-col :lg="18" :xl="19">

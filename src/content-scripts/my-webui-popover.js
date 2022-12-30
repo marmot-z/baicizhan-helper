@@ -101,11 +101,11 @@
 
         this.$el.css('display', 'block');        
         this.$el.webuiPopover({
-            title: generateTtitle(this.data, this.options.viewMode),
-            content: generateContent(this.data, this.options.popoverStyle, this.options.viewMode),
+            title: generateTtitle(this.data, this.options.theme),
+            content: generateContent(this.data, this.options.popoverStyle, this.options.theme),
             trigger: options.trigger || 'click',
             mutil: options.multi || false,
-            template: this.options.viewMode == 'dark' ? DARK_TEMPLATE : TEMPLATE,
+            template: this.options.theme == 'dark' ? DARK_TEMPLATE : TEMPLATE,
             onShow: ($popover) => !this.inited && this._initEvent($popover),
             onHide: () => {
                 this.$el.css('display', 'none');
@@ -119,7 +119,7 @@
      * @param {Object} data 单词数据
      * @returns 标题 html 
      */
-    function generateTtitle(data, viewMode = 'light') {
+    function generateTtitle(data, theme = 'light') {
         let assetPathPrefix = `chrome-extension://${chrome.runtime.id}/assets`;
         let wordInfo = data.word_basic_info;
         let titleHtml = `
@@ -140,14 +140,14 @@
                 <span id="accentUkAudio" class="sound-size"><img src="${assetPathPrefix}/sound-size.svg"/></span>
             </p>`;
 
-        return replaceCss2style(titleHtml + accentHtml, viewMode);
+        return replaceCss2style(titleHtml + accentHtml, theme);
     } 
 
-    function replaceCss2style(html, viewMode) {
-        let darkMode = viewMode == 'dark';
+    function replaceCss2style(html, theme) {
+        let darkTheme = theme == 'dark';
 
         return html.replace(/class="([\w-]*?)"/ig, (match, g1) => {
-            let cssMap = darkMode ? darkCssMap : lightCssMap;
+            let cssMap = darkTheme ? darkCssMap : lightCssMap;
 
             return cssMap[g1] ?
                 `style="${Object.entries(cssMap[g1]).map(([k,v]) => `${k}: ${v};`).join('')}"` :
@@ -161,7 +161,7 @@
      * @param {String} style 弹窗样式
      * @returns 内容 html
      */
-    function generateContent(data, style = 'simple', viewMode = 'light') {
+    function generateContent(data, style = 'simple', theme = 'light') {
         let meansHtml, graphicHtml;
         let chineseMeans = data.chn_means.reduce((prev, curr) => {
             prev[curr.mean_type] = prev[curr.mean_type] || [];
@@ -201,11 +201,11 @@
                     </div>
                 `;
 
-                return replaceCss2style(meansHtml + graphicHtml, viewMode);
+                return replaceCss2style(meansHtml + graphicHtml, theme);
             }            
         }
 
-        return replaceCss2style(meansHtml, viewMode);
+        return replaceCss2style(meansHtml, theme);
     }
 
     MyWebuiPopover.prototype._initEvent = function($popover) {

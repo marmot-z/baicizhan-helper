@@ -19,14 +19,15 @@
     /**
      * 视图模式
      */
-    const VIEW_MODE = {
+    const THEME = {
         'LIGHT': 'light',       // 亮色
-        'DARK': 'dark'          // 暗黑
+        'DARK': 'dark',         // 暗黑,
+        'AUTO': 'auto',         // 跟随系统
     };
 
     let triggerMode,            // 弹窗触发模式
         popoverStyle,           // 弹窗样式
-        viewMode,               // 视图模式：亮色、暗黑
+        theme,                  // 主题：亮色、暗黑
         $supportEl,             // 辅助元素
         $popover,               // 弹窗
         preSelectedWord;        // 前一个选中内容
@@ -37,12 +38,20 @@
         getStorageInfo([
             'baicizhanHelper.triggerMode',
             'baicizhanHelper.popoverStyle',
-            'baicizhanHelper.viewMode',
+            'baicizhanHelper.theme',
         ])
         .then(result => {
             triggerMode = result['baicizhanHelper.triggerMode'] || TRIGGER_MODE.SHOW_ICON;
             popoverStyle = result['baicizhanHelper.popoverStyle'] || POPOVER_STYLE.SIMPLE;
-            viewMode = result['baicizhanHelper.viewMode'] || VIEW_MODE.LIGHT;
+            theme = result['baicizhanHelper.theme'] || THEME.LIGHT;
+
+            if (theme == THEME.AUTO) {
+                if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+                    theme = THEME.DARK;
+                } else {
+                    theme = THEME.LIGHT;
+                }
+            }
 
             window.addEventListener('mouseup', () => {
                 let selectedWord = window.getSelection().toString().trim();
@@ -146,7 +155,7 @@
                     wordInfo: resp.data.dict,
                     popoverStyle,
                     collectWord,
-                    viewMode
+                    theme
                 });
 
                 setTimeout(() => $popover.show(), 100);
