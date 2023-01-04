@@ -29,13 +29,16 @@
    - 点击左上角「加载已解压的扩展程序」，选择安装包解压后的文件夹，既可安装此插件
 
 ## 使用
-更多使用请参考[此文档](./usage.md)
+更多使用请参考[此文档](./usage.md) 或观看此视频 [![百词斩翻译插件介绍视频](./imgs/video.png)](https://www.bilibili.com/video/BV1QG411P7Es/?vd_source=c9a73be2d20b05f083743335a8193e20 "百词斩翻译插件介绍视频")
 
 ## 声明
 - 本项目仅方便大家学习英语，你可以自由使用此软件，但不能使用此软件从事任何形式的商业活动，且不能基于此软件进行二次开发
 - 本项目完全开源，无任何安全风险。但其他渠道下载的插件安装包安全风险不予保证
 - 安装、使用过程中出现一些问题可以尝试升级 chrome 浏览器版本，或者添加本人微信加入微信交流群进行反馈（请备注：百词斩助手）
 <img style="width: 200px; height: 250px" src="./imgs/wechat-qr.png">
+
+## 代理服务器
+如果你想搭建自己的代理服务器请看[此项目](https://github.com/marmot-z/baicizhan-helper-proxy)
 
 ## LICENSE
 本项目基于 [Apache-2 licence](https://www.apache.org/licenses/LICENSE-2.0) 开发
