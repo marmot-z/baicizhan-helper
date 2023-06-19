@@ -2,7 +2,7 @@
     'use strict';
 
     // 默认代理服务器
-    const defaultProxyHost = 'http://43.142.135.24:8080';
+    const defaultProxyHost = 'http://110.42.229.221:8080';
 
     let proxyHost,   // 代理地址
         bookId,      // 选中的单词本

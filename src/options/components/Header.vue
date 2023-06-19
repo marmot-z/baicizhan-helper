@@ -139,7 +139,13 @@ export default {
             </div>
         </el-col>
 
-        <el-col :span="2" :offset="20">
+        <el-col :span="1" :offset="18">
+            <div class="grid-content ep-bg-purple">
+                <a href="http://110.42.229.221:8080/comments" target="_blank" title="填写问题/建议">问题反馈</a>
+            </div>
+        </el-col>
+
+        <el-col :span="2" :offset="1">
             <el-dropdown v-if="!logined" class="userInfo">
                 <span class="el-dropdown-link" >
                     <el-icon>

@@ -1,5 +1,5 @@
 // 默认代理地址
-const defaultProxyHost = 'http://43.142.135.24:8080';
+const defaultProxyHost = 'http://110.42.229.221:8080';
 let proxyHost;
 
 // 加载数据时页面已经加载完毕

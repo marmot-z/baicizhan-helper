@@ -2,7 +2,7 @@
 import { ElMessage } from 'element-plus'
 
 // 默认代理服务器 ip
-const defaultProxyHost = '43.142.135.24';
+const defaultProxyHost = '110.42.229.221';
 // 默认代理服务器端口
 const defaultProxyPort = 8080;
 // 默认弹出翻译方式
