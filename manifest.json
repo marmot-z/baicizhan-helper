@@ -4,36 +4,37 @@
     "author": "zhangxunwei",
     "version": "1.2",
     "manifest_version": 3,
-    "options_page": "index.html",
+    "options_page": "src/options/html/index.html",
     "background": {
-        "service_worker": "assets/background.min.js"
+        "service_worker": "src/script/background.js"
     },
     "permissions": [
         "storage"
     ],
     "icons": {
-        "16": "baicizhan-helper.png",
-        "32": "baicizhan-helper.png",
-        "48": "baicizhan-helper.png",
-        "128": "baicizhan-helper.png"
+        "16": "icon.png",
+        "32": "icon.png",
+        "48": "icon.png",
+        "128": "icon.png"
     },
     "action": {
         "default_icon": {
-            "16": "./baicizhan-helper.png",
-            "32": "./baicizhan-helper.png",
-            "48": "./baicizhan-helper.png",
-            "128": "./baicizhan-helper.png"
+            "16": "icon.png",
+            "32": "icon.png",
+            "48": "icon.png",
+            "128": "icon.png"
         }
     },
     "content_scripts": [
         {
             "css": [
-                "assets/jquery.webui-popover.min.css"
+                "src/assets/webui-popover-1.2.17/jquery.webui-popover.min.css",
+                "src/script/css/*.css"
             ],
             "js": [
-                "assets/jquery-3.6.0.min.js",
-                "assets/jquery.webui-popover.min.js",
-                "assets/content-script.min.js"
+                "src/assets/jquery-3.6.0/jquery-3.6.0.min.js",
+                "src/assets/webui-popover-1.2.17/jquery.webui-popover.min.js",
+                "src/script/js/*.js"
             ],
             "matches": ["<all_urls>"],
             "run_at": "document_start"
@@ -42,9 +43,8 @@
     "web_accessible_resources": [
         {
             "resources": [
-                "assets/*.svg",
-                "baicizhan-helper.png",
-                "index.html"
+                "icon.png",
+                "src/options/html/index.html"
             ],
             "matches": ["<all_urls>"]
         }
