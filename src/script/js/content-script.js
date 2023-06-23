@@ -1,226 +1,178 @@
 ;(function(window, $) {
     'use strict';
 
-    /**
-     * 翻译弹窗触发模式
-     */
-    const TRIGGER_MODE = {
-        "SHOW_ICON": "1",   // 显示图标，点击图标后翻译
-        "DIRECT": "2",      // 直接翻译        
-        "NEVER": "3"        // 不进行翻译
-    };
-    /**
-     * 弹窗样式
-     */
-    const POPOVER_STYLE = {
-        "SIMPLE": "simple",     // 简单样式
-        "GRAPHIC": "graphic"    // 图文样式
-    };
-    /**
-     * 视图模式
-     */
-    const THEME = {
-        'LIGHT': 'light',       // 亮色
-        'DARK': 'dark',         // 暗黑,
-        'AUTO': 'auto',         // 跟随系统
-    };
-
-    let triggerMode,            // 弹窗触发模式
-        popoverStyle,           // 弹窗样式
-        theme,                  // 主题：亮色、暗黑
-        $supportEl,             // 辅助元素
-        $popover,               // 弹窗
-        preSelectedWord;        // 前一个选中内容
-        
-
-    function initGlobalEventListener() {
-        // 获取弹窗触发模式
-        getStorageInfo([
-            'baicizhanHelper.triggerMode',
-            'baicizhanHelper.popoverStyle',
-            'baicizhanHelper.theme',
-        ])
-        .then(result => {
-            triggerMode = result['baicizhanHelper.triggerMode'] || TRIGGER_MODE.SHOW_ICON;
-            popoverStyle = result['baicizhanHelper.popoverStyle'] || POPOVER_STYLE.SIMPLE;
-            theme = result['baicizhanHelper.theme'] || THEME.LIGHT;
-
-            if (theme == THEME.AUTO) {
-                if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
-                    theme = THEME.DARK;
-                } else {
-                    theme = THEME.LIGHT;
-                }
-            }
-
-            window.addEventListener('mouseup', () => {
-                let selectedWord = window.getSelection().toString().trim();
-
-                // 不为空且为英文
-                if (selectedWord == '' || !/^[a-zA-Z\\-\s']+$/.test(selectedWord)) {
-                    return;
-                }
-
-                if (preSelectedWord === selectedWord) {
-                    return;
-                }
-
-                prepopup().then(isPopup => isPopup && showTranslatePopover(selectedWord));                    
-            });
-        });
-
-        $supportEl = createSupportEl();
-    }
-
-    /**
-     * 创建辅助 div 元素
-     * 
-     * @return 辅助定位使用的 div 元素
-     */
-    function createSupportEl() {
-        return $(`
-                    <div 
-                        id="_baicizhanHelperSupportDiv" 
-                        style="position: absolute;">
+    const TRIGGER_MODE = {'SHOW_ICON': 'showIcon','DIRECT': 'direct','NEVER': 'never'},
+            POPOVER_STYLE = {'SIMPLE': 'simple', 'RICH': 'rich'},
+            THEME = {'LIGHT': 'light', 'DARK': 'dark', 'AUTO': 'auto'};
+    const defaultTriggerMode = TRIGGER_MODE.SHOW_ICON, 
+            defaultPopoverStyle = POPOVER_STYLE.SIMPLE,
+            defaultTheme = THEME.LIGHT;
+    let triggerMode, popoverStyle, theme, $popover, preWord;    
+    const $toastElement = {
+        init: function() {
+            let iconSrc = `chrome-extension://${chrome.runtime.id}/icon.png`;
+            this.$el = $(`                
+                <div id="_baicizhanHelperToast" class="toast" data-delay="3000"
+                    style="position: fixed; top: 10px; right: 10px; z-index: 9999; min-width: 200px;">
+                    <div class="toast-header">
+                        <img src="${iconSrc}" class="rounded mr-2" style="height: 20px; widht: 20px;">
+                        <strong class="mr-auto">Baicizhan-helper</strong>
+                        <button type="button" class="ml-2 mb-1 close" data-dismiss="toast" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
                     </div>
-                `)
-                .appendTo(document.body);
-    }
-
-    /**
-     * 弹出弹窗前置处理
-     */
-     function prepopup() {
-        // 辅助元素显示
-        $supportEl.css('display', 'block');
-
-        // 更新辅助元素位置
-        updateSupportElPosition();        
-
-        // 根据配置进行不同的显示策略
-        return new Promise(resolve => {
-            if (triggerMode == TRIGGER_MODE.DIRECT) {
-                return resolve(true);
-            }
-    
-            if (triggerMode == TRIGGER_MODE.SHOW_ICON) {
-                // icon 显示，点击时返回 true，消失时返回 false
-                $supportEl.iconTips({
-                    imgSrc: `chrome-extension://${chrome.runtime.id}/baicizhan-helper.png`,
-                    onClick: () => {
-                        resolve(true);
-                        $supportEl.iconTips('destroy');
-                    },
-                    onHide: () => {
-                        resolve(false);
-                        $supportEl.iconTips('destroy');
-                        $supportEl.css('display', 'none');
-                    }
-                });
-
-                return;
-            }
-
-            return resolve(false);
-        });        
-    };
-
-    /**
-     * 根据选中区域更新辅助元素位置
-     */
-    function updateSupportElPosition() {
-        let rect = window.getSelection().getRangeAt(0).getBoundingClientRect();
-
-        $supportEl.css('top', rect.top + window.scrollY)
-                .css('left', rect.left + window.scrollX)
-                .css('height', rect.height)
-                .css('width', rect.width);
-    }
-
-    /**
-     * 弹出弹窗
-     */
-    function showTranslatePopover(word) {                       
-        if ($popover) {
-            $popover.destory();
+                    <div class="toast-body">
+                        Hello, world! This is a toast message.
+                    </div>
+                </div>
+            `);
+            this.$el.appendTo(document.body);
+        }, 
+        alert: function(message) {
+            this.$el.find('.toast-body').html(message);
+            this.$el.toast('show');
         }
-
-        getWordInfo(word)
-            .then(resp => {
-                // 查询不到对应的单词
-                if (!resp) return;
-
-                $popover = new MyWebuiPopover({
-                    $el: $supportEl,
-                    wordInfo: resp.data.dict,
-                    popoverStyle,
-                    collectWord,
-                    theme
-                });
-
-                setTimeout(() => $popover.show(), 100);
+    };
+    const $supportElement = {
+        init: function() {
+            this.$el = $(`<div id="_baicizhanHelperSupportDiv" style="position: absolute;"></div>`);
+            this.$el.appendTo(document.body);
+            this.$el.on('baicizhanHelper:alert', (e, message) => {
+                $toastElement.alert(message);
             });
+        },
+        display: function() {
+            this.$el.css('display', 'block');            
+        },
+        hide: function() {
+            this.$el.css('display', 'none');
+        },
+        updatePosition() {
+            let rect = window.getSelection().getRangeAt(0).getBoundingClientRect();
 
-        preSelectedWord = word;
+            this.$el.css('top',    rect.top + window.scrollY)
+                    .css('left',   rect.left + window.scrollX)
+                    .css('height', rect.height)
+                    .css('width',  rect.width);
+        },
+        createIconTips: function(onClick, onHide) {
+            let iconSrc = `chrome-extension://${chrome.runtime.id}/icon.png`;
+
+            this.$el.iconTips({
+                imgSrc: iconSrc,
+                onClick: () => {                    
+                    this.destoryIconTips();
+                    onClick();
+                },
+                onHide: () => {                    
+                    this.destoryIconTips();
+                    this.hide();
+                    onHide();
+                }
+            });
+        },
+        destoryIconTips: function() {
+            this.$el.iconTips('destroy');
+        }
     };
 
-    /**
-     * 获取本地存储值
-     * 
-     * @param {Array<String>} keys 键名数组
-     * @returns 对应键值
-     */
-    function getStorageInfo(keys = []) {
-        return sendRequest({action: 'getStorageInfo', keys});
+    function init() {
+        loadSetting();
+        $toastElement.init();
+        $supportElement.init();
+        window.addEventListener('mouseup', selectWordHandler);
     }
 
-    /**
-     * 获取单词信息
-     * 
-     * @param {String} word 单词
-     * @returns 单词信息
-     */
-    function getWordInfo(word) {
-        if (!word || word.trim() == '') {
-            return Promise.resolve(null);
+    function loadSetting() {
+        sendRequest({
+            action: 'getStorageInfo',
+            args: ['triggerMode', 'popoverStyle', 'theme']
+        })
+        .then(([_triggerMode, _popoverStyle, _theme]) => {
+            triggerMode = _triggerMode || defaultTriggerMode;
+            popoverStyle = _popoverStyle || defaultPopoverStyle;
+            theme = _theme || defaultTheme;
+
+            // 判断当前系统的主题
+            if (theme == THEME.AUTO) {
+                let isSystemDarkTheme = window.matchMedia && 
+                        window.matchMedia('(prefers-color-scheme: dark)').matches;
+
+                theme = isSystemDarkTheme ? THEME.DARK : THEME.LIGHT;
+            }
+        });
+    }
+
+    async function selectWordHandler() {
+        let selectedWord = window.getSelection().toString().trim();
+
+        // 不为空且为英文
+        if (selectedWord == '' || !/^[a-zA-Z\\-\s']+$/.test(selectedWord)) {
+            return;
         }
 
-        return sendRequest({action: 'getWordInfo', word});
+        if (preWord === selectedWord) {
+            return;
+        }
+
+        prepopup();
+
+        (await canPopup()) && popup(selectedWord);
     }
 
-    /**
-     * 收藏单词
-     * 
-     * @param {String} word 单词
-     * @returns 是否成功
-     */
-    function collectWord(word) {
-        if (!word || word.trim() == '') {
+    function prepopup() {
+        $supportElement.display();
+        $supportElement.updatePosition();
+    }
+
+    function canPopup() {
+        if (triggerMode == TRIGGER_MODE.DIRECT) {
+            return Promise.resolve(true);
+        }
+        if (triggerMode == TRIGGER_MODE.NEVER) {
             return Promise.resolve(false);
         }
 
-        return sendRequest({action: 'collectWord', word});
+        return new Promise(resolve => {
+            $supportElement.createIconTips(
+                () => resolve(true),
+                () => resolve(false)
+            )
+        });
     }
 
-    function sendRequest(data) {
+    function popup(word) {
+        // 销毁上一个 $popover
+        $popover && $popover.destory();
+
+        // TODO 很多单词为原单词的复数等形态（如：words -> 原单词应为 word），容易误显示
+        // 尝试使用 NLP 将单词转换为词根形式
+        sendRequest({action: 'getWordInfo', args: [word]}).then(response => {
+            if (!response) return;
+
+            $popover = new MyWebuiPopover({
+                $el: $supportElement.$el,
+                wordInfo: response.dict,
+                popoverStyle,
+                theme
+            });
+
+            window.setTimeout(() => $popover.show(), 100);
+        });
+    }
+
+    function sendRequest(option) {
         return new Promise((resolve, reject) => {
-                chrome.runtime.sendMessage(data, (result) => {
-                    if (typeof result === 'string') {
-                        // 未登录或未选择单词本，跳转管理页
-                        if (result == 'Unauthorized' || result == 'Not selected') {
-                            window.location = `chrome-extension://${chrome.runtime.id}/index.html`;
-                            return;
-                        }
-                        
-                        reject(new Error(result));
-                    }
-
-                    resolve(result);
-                });
-            }
-        );
+            chrome.runtime.sendMessage(option, (result) => {
+                // 以 [Error]: 开头代表请求报错
+                if (result instanceof String && result.startsWith('[Error]:')) {
+                    return reject(new Error(result.substring(8)));
+                }
+                
+                resolve(result);
+            });
+        });
     }
 
-    // 初始化
-    window.onload = initGlobalEventListener;
-}) (this, jQuery);
+    document.addEventListener('DOMContentLoaded', init);
+} (this, jQuery)); 

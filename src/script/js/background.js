@@ -1,159 +1,112 @@
-;(function() {
+;(function(actions) {
     'use strict';
 
-    // 默认代理服务器
-    const defaultProxyHost = 'http://110.42.229.221:8080';
+    function handleMessage(request, sender, sendResponse) {
+        for (let [fnName, fn] of Object.entries(actions)) {
+            if (fnName == request.action) {
+                fn.call(null, request.args)
+                    .then(r => sendResponse(r))
+                    // 由于 sendResponse 不能返回结果类型，所以约定 [Error]: 代表请求报错
+                    .catch(e => sendResponse(`[Error]:${e.message}`));
 
-    let proxyHost,   // 代理地址
-        bookId,      // 选中的单词本
-        accessToken; // 登录 token
-
-    chrome.storage.local.get([
-        'baicizhanHelper.proxyHost', 
-        'baicizhanHelper.proxyPort',
-        'baicizhanHelper.bookId',
-        'baicizhanHelper.accessToken'
-    ], (result) => {
-        proxyHost = !result['baicizhanHelper.proxyHost'] ?
-            defaultProxyHost :
-            `http://${result['baicizhanHelper.proxyHost']}:${result['baicizhanHelper.proxyPort']}`;
-        bookId = result['baicizhanHelper.bookId'];
-        accessToken = result['baicizhanHelper.accessToken'];
-
-        if (!accessToken) {
-            console.warn("baicizhanHelper.accessToken is undefined");
-        }
-
-        if (!bookId) {
-            console.warn("baicizhanHelper.bookId is undefined");
-        }
-    });
-
-    // background.js 在插件加载或刷新后执行，
-    // 所以需要监听 proxyHost、bookId、accessToken 值以更新
-    chrome.storage.onChanged.addListener((changes, namespace) => {
-        for (let [key, {oldValue, newValue}] of Object.entries(changes)) {
-            if (key == 'baicizhanHelper.accessToken') {                    
-                accessToken = newValue;
-            }
-
-            switch (key) {
-                case 'baicizhanHelper.proxyHost' : return proxyHost = proxyHost.replace(/http:\/\/.*?:(\d+)/, `http://${newValue}:$1`);
-                case 'baicizhanHelper.proxyPort' : return proxyHost = proxyHost.replace(/http:\/\/(.*?):\d+/, `http://$1:${newValue}`);
-                case 'baicizhanHelper.bookId' : return bookId = newValue;
-                case 'baicizhanHelper.accessToken' : return accessToken = newValue;
-                default: return;
+                break;
             }
         }
 
-        if (!accessToken) {
-            console.warn("baicizhanHelper.accessToken is undefined");
-        }
-
-        if (!bookId) {
-            console.warn("baicizhanHelper.bookId is undefined");
-        }
-    });
-
-    chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-        switch(request.action) {
-            case 'getWordInfo':
-                getWordInfo(request.word).then(sendResponse);
-                break;
-            case 'getStorageInfo':
-                getStorageInfo(request.keys).then(sendResponse);
-                break;
-            case 'collectWord':
-                collectWord(request.word).then(sendResponse);
-                break;
-            default:
-                sendResponse(new Error('未知的请求类型'));
-        }
-
-        // 异步返回 sendResponse
+        // async execute sendResponse
         return true;
-    });
-
-    function getWordInfo(word) {
-        return sendRequest({
-            method: 'GET',
-            url: `${proxyHost}/search/word/${word}`
-        })
-        .then(data => {
-            if (typeof data === 'string') {
-                return Promise.resolve(data);
-            }
-
-            let bestMatch = data.data[0];
-            let topicId = bestMatch?.topic_id;
-
-            return topicId ?
-                sendRequest({
-                    method: 'GET',
-                    url: `${proxyHost}/word/${topicId}`
-                }) :
-                Promise.resolve(null);
-        });
     }
 
-    function getStorageInfo(keys) {
-        return new Promise(resolve => 
-            chrome.storage.local.get(keys, results => {
-                return resolve(results);
-            }));        
-    }
+    chrome.runtime.onMessage.addListener(handleMessage);
+} (
+    (function() {
+        'use strict';
 
-    function collectWord(word) {
-        if (typeof bookId === 'undefined') {
-            return new Promise(resolve => {
-                chrome.storage.local.get(['baicizhanHelper.bookId'], result => {
-                    bookId = result['baicizhanHelper.bookId'];
+        const defaultHost = '110.42.229.221';
+        const defaultPort = 8080;
+        const namespace = 'baicizhan-helper';
 
-                    if (!bookId) {
-                        return resolve('Not selected');
-                    }
+        function getWordInfo(word) {
+            return loadRequestOptions().then(([host, port, accessToken]) => {
+                let url = `http://${host}:${port}/search/word/${word}`;
 
-                    sendRequest({
-                        method: 'PUT',
-                        url: `${proxyHost}/book/${bookId}/word/${word}`
+                return sendRequest({
+                        url, 
+                        method: 'GET',
+                        headers: {'access_token': accessToken}
                     })
-                    .then(resolve);
+                    .then(data => {
+                        let bestMatch = data[0];
+                        let topicId = bestMatch?.topic_id;
+                        url = `http://${host}:${port}/word/${topicId}`;
+
+                        if (!topicId) return Promise.resolve(null);                        
+
+                        return sendRequest({
+                            url, 
+                            method: 'GET',
+                            headers: {'access_token': accessToken}
+                        });
+                    });
+            });
+        }
+
+        function collectWord(word) {
+            return Promise.all([
+                loadRequestOptions(),
+                getWorkbookId()
+            ]).then(([[host, port, accessToken], bookId]) => {
+                const url = `http://${host}:${port}/book/${bookId}/word/${word}`;
+
+                return sendRequest({
+                    url,
+                    method: 'PUT',
+                    headers: {'access_token': accessToken}
                 });
             });
         }
 
-        return sendRequest({
-            method: 'PUT',
-            url: `${proxyHost}/book/${bookId}/word/${word}`
-        });
-    }
-
-    function sendRequest(options) {
-        if (!accessToken) {
-            return new Promise(resolve => {
-                chrome.storage.local.get(['baicizhanHelper.accessToken'], result => {
-                    accessToken = result['baicizhanHelper.accessToken'];
-
-                    if (!accessToken) {
-                        return resolve('Unauthorized');
-                    }
-
-                    doSendRequest(options).then(resolve);
-                });
+        function sendRequest(options = {}) {
+            return new Promise((resolve, reject) => {
+                return fetch(options.url, {
+                            method: options.method,
+                            mode: 'cors',
+                            headers: options.headers
+                        })
+                        .then(response => response.json())
+                        .then(responseJson => {
+                            return responseJson.code == 200 ? 
+                                resolve(responseJson.data) : 
+                                reject(new Error(responseJson.message));
+                        })
+                        .catch(e => reject(e));
             });
         }
 
-        return doSendRequest(options);
-    }
+        function loadRequestOptions() {
+            const keys = ['host', 'port', 'accessToken'].map(k => `${namespace}.${k}`);
 
-    function doSendRequest(options) {
-        return fetch(options.url, {
-            method: options.method,
-            mode: 'cors',
-            headers: {
-                access_token: accessToken
-            }
-        })
-        .then(resp => resp.json());
-    }
-}) ();
+            return chrome.storage.local.get(keys)
+                .then(result => {
+                    return [
+                        result[`${namespace}.host`] || defaultHost,
+                        result[`${namespace}.port`] || defaultPort,
+                        result[`${namespace}.accessToken`],
+                    ];
+                })
+        }
+
+        function getWorkbookId() {
+            return getStorageInfo(['bookId']).then(([bookId]) => bookId || 0);
+        }
+
+        function getStorageInfo(keys) {
+            let completeKeys = keys.map(key => `${namespace}.${key}`);
+
+            return chrome.storage.local.get(completeKeys)
+                        .then(result => completeKeys.map(k => result[k]));
+        }
+
+        return {getWordInfo, collectWord, getStorageInfo};
+    } ())
+));

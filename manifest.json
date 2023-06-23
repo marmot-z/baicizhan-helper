@@ -6,7 +6,7 @@
     "manifest_version": 3,
     "options_page": "src/options/html/index.html",
     "background": {
-        "service_worker": "src/script/background.js"
+        "service_worker": "src/script/js/background.js"
     },
     "permissions": [
         "storage"
@@ -29,12 +29,17 @@
         {
             "css": [
                 "src/assets/webui-popover-1.2.17/jquery.webui-popover.min.css",
-                "src/script/css/*.css"
+                "src/assets/bootstrap-4.6.2/css/bootstrap.min.css",
+                "src/script/css/icon-tips.css",
+                "src/script/css/baicizhan-helper.css"
             ],
             "js": [
                 "src/assets/jquery-3.6.0/jquery-3.6.0.min.js",
+                "src/assets/bootstrap-4.6.2/js/bootstrap.bundle.min.js",                
                 "src/assets/webui-popover-1.2.17/jquery.webui-popover.min.js",
-                "src/script/js/*.js"
+                "src/script/js/icon-tips.js",
+                "src/script/js/my-webui-popover.js",
+                "src/script/js/content-script.js"
             ],
             "matches": ["<all_urls>"],
             "run_at": "document_start"
@@ -44,7 +49,10 @@
         {
             "resources": [
                 "icon.png",
-                "src/options/html/index.html"
+                "svgs/star.svg",
+                "svgs/star-fill.svg",
+                "svgs/volume-up.svg",
+                "src/assets/bootstrap-4.6.2/js/bootstrap.bundle.min.js.map"
             ],
             "matches": ["<all_urls>"]
         }

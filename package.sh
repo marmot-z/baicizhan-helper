@@ -7,9 +7,10 @@ rm -f baicizhan-helper.zip
 mkdir dist
 
 # 将 src、src/assets/images/icon.png、manifest.json 拷贝到 dist 文件夹中
-cp -vR src \
+cp -vR src                     \
     src/assets/images/icon.png \
-    manifest.json \
+    src/assets/images/svgs     \
+    manifest.json              \
     dist
 
 # 打包压缩 dist 文件夹
