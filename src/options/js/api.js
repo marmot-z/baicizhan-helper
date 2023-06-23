@@ -64,7 +64,8 @@
                     .then(responseJson => responseJson.code == 200 ? 
                             resolve(responseJson.data) : 
                             reject(new Error(responseJson.message))
-                    );
+                    )
+                    .catch(e => reject(e));
         });
     }
 
