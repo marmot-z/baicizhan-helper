@@ -165,10 +165,10 @@
         return new Promise((resolve, reject) => {
             chrome.runtime.sendMessage(option, (result) => {
                 // 以 [Error]: 开头代表请求报错
-                if (result instanceof String && result.startsWith('[Error]:')) {
+                if (typeof result === 'string' && result.startsWith('[Error]:')) {
                     return reject(new Error(result.substring(8)));
                 }
-                
+
                 resolve(result);
             });
         });
