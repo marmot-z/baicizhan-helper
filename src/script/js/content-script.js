@@ -158,7 +158,11 @@
             });
 
             window.setTimeout(() => $popover.show(), 100);
-        });
+        })
+        .catch(e => {
+            console.error(e);
+            $supportElement.$el.trigger('baicizhanHelper:alert', ['查询失败，稍后再试']);
+        })
     }
 
     function sendRequest(option) {
