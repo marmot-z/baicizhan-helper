@@ -147,7 +147,7 @@
             }
 
             if (starIcon) {
-                starIcon.addEventListener('click', collectWord(starIcon, this.$el, this.data.word_basic_info.word));
+                starIcon.addEventListener('click', collectWord(starIcon, this.$el, this.data.word_basic_info.topic_id));
             }
 
             this.inited = true;
@@ -203,21 +203,29 @@
         return audioContext = new (window.AudioContext || window.webkitAudioContext)();
     }
 
-    function collectWord(el, $supportEl, word) {
+    function collectWord(el, $supportEl, topicId) {
+        let collected = false;
+
         return (e) => {
             e.preventDefault();
 
+            let action = collected ? 'cancelCollectWord' : 'collectWord';
+            let tips = collected ? '取消收藏' : '收藏';
+
             sendRequest({
-                action: 'collectWord',
-                args: [word]
+                action,
+                args: [topicId]
             })
-            .then(response => {                
+            .then(response => {                                        
                 if (response) {
+                    collected = !collected;
                     let svgPath = `chrome-extension://${chrome.runtime.id}/svgs`;
-                    $(el).html(`<img src="${svgPath}/star-fill.svg"/>`);
-                    $supportEl.trigger('baicizhanHelper:alert', ['收藏成功']);
+                    let starIconSvgPath = collected ? `${svgPath}/star-fill.svg` : `${svgPath}/star.svg`;
+
+                    $(el).html(`<img src="${starIconSvgPath}"/>`);
+                    $supportEl.trigger('baicizhanHelper:alert', [`${tips}成功`]);
                 } else {
-                    $supportEl.trigger('baicizhanHelper:alert', ['收藏失败！']);
+                    $supportEl.trigger('baicizhanHelper:alert', [`${tips}失败！`]);
                 }
             })
             .catch(e => {

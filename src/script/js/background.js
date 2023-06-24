@@ -51,16 +51,31 @@
             });
         }
 
-        function collectWord(word) {
+        function collectWord(topicId) {
             return Promise.all([
                 loadRequestOptions(),
                 getWorkbookId()
             ]).then(([[host, port, accessToken], bookId]) => {
-                const url = `http://${host}:${port}/book/${bookId}/word/${word}`;
+                const url = `http://${host}:${port}/book/${bookId}/word/${topicId}`;
 
                 return sendRequest({
                     url,
                     method: 'PUT',
+                    headers: {'access_token': accessToken}
+                });
+            });
+        }
+
+        function cancelCollectWord(topicId) {
+            return Promise.all([
+                loadRequestOptions(),
+                getWorkbookId()
+            ]).then(([[host, port, accessToken], bookId]) => {
+                const url = `http://${host}:${port}/book/${bookId}/word/${topicId}`;
+
+                return sendRequest({
+                    url,
+                    method: 'DELETE',
                     headers: {'access_token': accessToken}
                 });
             });
@@ -107,6 +122,6 @@
                         .then(result => completeKeys.map(k => result[k]));
         }
 
-        return {getWordInfo, collectWord, getStorageInfo};
+        return {getWordInfo, collectWord, cancelCollectWord, getStorageInfo};
     } ())
 ));
