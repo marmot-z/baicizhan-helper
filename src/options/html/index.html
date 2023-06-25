@@ -9,16 +9,16 @@
 
 <body>
     <ul class="nav nav-pills justify-content-center" id="myTab" role="tablist">
-        <li class="nav-item" role="presentation">
+        <!-- <li class="nav-item" role="presentation">
             <button class="nav-link active" id="searchTab" data-toggle="tab" data-target="#searchTabContent"
                 type="button" role="tab" aria-controls="searchTabContent" aria-selected="true">搜索</button>
         </li>
         <li class="nav-item" role="presentation">
             <button class="nav-link" id="workbookTab" data-toggle="tab" data-target="#workbookTabContent" type="button"
                 role="tab" aria-controls="workbookTabContent" aria-selected="true">单词本</button>
-        </li>
+        </li> -->
         <li class="nav-item" role="presentation">
-            <button class="nav-link" id="settingTab" data-toggle="tab" data-target="#settingTabContent" type="button"
+            <button class="nav-link active" id="settingTab" data-toggle="tab" data-target="#settingTabContent" type="button"
                 role="tab" aria-controls="settingTabContent" aria-selected="true">系统设置</button>
         </li>
         <li class="nav-item dropdown">
@@ -33,10 +33,10 @@
     </ul>
 
     <div class="tab-content" id="myTabContent">
-        <div class="tab-pane fade show active" id="searchTabContent" role="tabpanel" aria-labelledby="searchTab">搜索
+        <div class="tab-pane fade" id="searchTabContent" role="tabpanel" aria-labelledby="searchTab">搜索
         </div>
         <div class="tab-pane fade" id="workbookTabContent" role="tabpanel" aria-labelledby="workbookTab">单词本</div>
-        <div class="tab-pane fade" id="settingTabContent" role="tabpanel" aria-labelledby="settingTab">
+        <div class="tab-pane fade show active" id="settingTabContent" role="tabpanel" aria-labelledby="settingTab">
             <div class="container" style="margin-top: 40px;">
                 <div class="row">
                 <div class="col-sm-2"></div>
