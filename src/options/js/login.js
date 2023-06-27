@@ -1,24 +1,23 @@
 ;(function(window, $) {
     'use strict';
 
-    const {getVerifyCode, login, getUserInfo} = window.apiModule;
+    const {getVerifyCode, loginWithPhone, 
+           loginWithEmail, getUserInfo} = window.apiModule;
     const $loginModel = $('#loginModel');
+    // 登录模式：phone, email
+    let loginMode = 'phone';
 
     function initLoginModalEvent() {
         const $sendVerifyButton = $('#sendVerifyButton');
         const $loginButton = $('#loginButton');
 
-        // 发送验证码
-        // 恢复可点击状态
         $sendVerifyButton.on('click', () => {
-            // 未填写手机号码则提示
-            let phoneNum = $('#phoneNum').val();
+            let phoneNum = $('#phoneNumInput').val();
 
             if (!phoneNum) {
                 return alert('手机号码不能为空');
             }
 
-            // 发起发送验证码请求
             getVerifyCode(phoneNum).then(() => {
                     alert('验证码发送成功');
                     $sendVerifyButton.off('click').prop('disabled', true);
@@ -29,44 +28,87 @@
                 });
         });
 
-        // 登录
-        // 恢复可点击状态
         $loginButton.on('click', () => {
-            // 未填写手机号码和验证码则提示
-            let phoneNum = $('#phoneNum').val();
-            let verifyCode = $('#verifyCode').val();
-
-            if (!phoneNum || !verifyCode) {
-                return alert('手机号码或验证码不能为空');
-            }
-
-            // 发起登录请求
-            login(phoneNum, verifyCode).then(data => {                                        
-                    // ccess_token 写入 storage
-                    storageModule.set('accessToken', data.access_token);
-                    // 禁止点击
-                    $loginButton.off('click').prop('disabled', true);
-                    // 登录模态框隐藏
-                    $loginModel.modal('hide');
-                    // 显示用户信息，支持退出
-                    loadUserInfo();
-                    alert('登录成功');
-                })            
-                .catch(e => {
-                    console.error(`${phoneNum}(${verifyCode}) 登录失败`, e);
-                    alert('登录失败，请稍候再试');
-                })
+            loginMode == 'phone' ? loginByPhone() : loginByEmail();
         });
+
+        $('#emailLoginLink').on('click', toggle2emailLoginForm);
+        $('#phoneLoginLink').on('click', toggle2phoneLoginForm);
+        $('#wechatLoginLink, #qqLoginLink').on('click', () => alert('暂不支持'));
     };
+
+    function loginByPhone() {
+        let phoneNum = $('#phoneNumInput').val();
+        let verifyCode = $('#verifyCodeInput').val();
+
+        if (!phoneNum || !verifyCode) {
+            return alert('手机号码或验证码不能为空');
+        }
+
+        loginWithPhone(phoneNum, verifyCode)
+            .then(loginSuccessful)            
+            .catch(loginFailure);
+    }
+
+    function loginSuccessful(data) {
+        // ccess_token 写入 storage
+        storageModule.set('accessToken', data.access_token);
+        // 禁止点击
+        $('#loginButton').off('click').prop('disabled', true);
+        // 登录模态框隐藏
+        $loginModel.modal('hide');
+        // 显示用户信息，支持退出
+        loadUserInfo();
+        alert('登录成功');        
+    }
+
+    function loginFailure(e) {
+        console.error(`登录失败`, e);
+        alert('登录失败，请稍候再试');
+    }
+
+    function loginByEmail() {
+        let email = $('#emailInput').val();
+        let password = $('#passwordInput').val();
+
+        if (!email || !password) {
+            return alert('邮箱或密码不能为空');
+        }
+
+        loginWithEmail(email, password)
+            .then(loginSuccessful)            
+            .catch(loginFailure);
+    }
+
+    function toggle2emailLoginForm(e) {
+        e && e.preventDefault();
+
+        $('#phoneLoginForm').css('display', 'none');
+        $('#emailLoginForm').css('display', 'block');
+        $('#sendVerifyButton').css('display', 'none');
+        $('#loginModelLabel').html('邮箱登录');
+        loginMode = 'email';
+    }
+
+    function toggle2phoneLoginForm(e) {
+        e && e.preventDefault();
+
+        $('#phoneLoginForm').css('display', 'block');
+        $('#emailLoginForm').css('display', 'none');
+        $('#sendVerifyButton').css('display', 'block');
+        $('#loginModelLabel').html('短信登录');
+        loginMode = 'phone';
+    }
 
     function showLoginModel() {
         initLoginModalEvent();
+        toggle2phoneLoginForm();
         $loginModel.modal('show');        
     };
 
     function loadUserInfo() {
         getUserInfo().then(data => {
-            let nickname = data.length ? data[0].nickname : '百词斩用户';
+            let nickname = data.length ? data[0].nickname : 'guest';
             $('#username').html(nickname);
         })
         .catch(e => console.error(`获取用户信息失败`, e));

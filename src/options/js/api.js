@@ -12,9 +12,17 @@
         });
     }
 
-    function login(phoneNum, verifyCode) {
+    function loginWithPhone(phoneNum, verifyCode) {
         return loadRequestOptions().then(([host, port, accessToken]) => {
             const url = `http://${host}:${port}/login/${phoneNum}/${verifyCode}`;
+        
+            return sendRequest({url, method: 'POST'});
+        });
+    }
+
+    function loginWithEmail(email, password) {
+        return loadRequestOptions().then(([host, port, accessToken]) => {
+            const url = `http://${host}:${port}/loginWithEmail?email=${encodeURIComponent(email)}&password=${password}`;
         
             return sendRequest({url, method: 'POST'});
         });
@@ -54,7 +62,7 @@
     }
 
     function sendRequest(options = {}) {
-        return new Promise((resolve, reject) => {
+        return new Promise((resolve, reject) => {            
             return fetch(options.url, {
                         method: options.method,
                         mode: 'cors',
@@ -70,7 +78,7 @@
     }
 
     window.apiModule = {
-        getVerifyCode, login, getUserInfo, 
-        getBooks, defaultHost, defaultPort
+        getVerifyCode, loginWithPhone, getUserInfo, 
+        getBooks, defaultHost, defaultPort, loginWithEmail
     };
 } (this));
