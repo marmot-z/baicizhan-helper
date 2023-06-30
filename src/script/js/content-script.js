@@ -37,9 +37,7 @@
         init: function() {
             this.$el = $(`<div id="_baicizhanHelperSupportDiv" style="position: absolute;"></div>`);
             this.$el.appendTo(document.body);
-            this.$el.on('baicizhanHelper:alert', (e, message) => {
-                $toastElement.alert(message);
-            });
+            this.$el.on('baicizhanHelper:alert', (e, message) => $toastElement.alert(message));
         },
         display: function() {
             this.$el.css('display', 'block');            
@@ -93,7 +91,6 @@
             popoverStyle = _popoverStyle || defaultPopoverStyle;
             theme = _theme || defaultTheme;
 
-            // 判断当前系统的主题
             if (theme == THEME.AUTO) {
                 let isSystemDarkTheme = window.matchMedia && 
                         window.matchMedia('(prefers-color-scheme: dark)').matches;
@@ -106,7 +103,6 @@
     async function selectWordHandler() {
         let selectedWord = window.getSelection().toString().trim();
 
-        // 不为空且为英文
         if (selectedWord == '' || !/^[a-zA-Z\\-\s']+$/.test(selectedWord)) {
             return;
         }
@@ -129,6 +125,7 @@
         if (triggerMode == TRIGGER_MODE.DIRECT) {
             return Promise.resolve(true);
         }
+        
         if (triggerMode == TRIGGER_MODE.NEVER) {
             return Promise.resolve(false);
         }

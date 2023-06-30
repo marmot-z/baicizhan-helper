@@ -1,4 +1,4 @@
-;(function(window) {
+;(function(window, $) {
     'use strict';
 
     const {getBooks} = window.apiModule;
@@ -81,4 +81,4 @@
     }
 
     window.settingModule = {init};
-} (this));
+} (this, jQuery));

@@ -147,7 +147,8 @@
             }
 
             if (starIcon) {
-                starIcon.addEventListener('click', collectWord(starIcon, this.$el, this.data.word_basic_info.topic_id));
+                starIcon.addEventListener('click', 
+                    collectWord(starIcon, this.$el, this.data.word_basic_info.topic_id));
             }
 
             this.inited = true;

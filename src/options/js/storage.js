@@ -1,4 +1,4 @@
-;(function() {
+;(function(window) {
     'use strict';
 
     const namespace = 'baicizhan-helper';
@@ -25,4 +25,4 @@
     }
 
     window.storageModule = {set, get, remove};
-} ());
+} (this));

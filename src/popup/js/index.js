@@ -20,6 +20,7 @@
 
     function generateWordList(data) {
         let $tbody = $('#searchTable > tbody');
+
         $tbody.empty().parent().css('display', 'block');
         $('#detailDiv').css('display', 'none');
 
@@ -85,6 +86,7 @@
         
         generateAccent(data.word_basic_info, $section);
         generateMeansTable(data.chn_means, $section);
+
         $section.appendTo($parent);
         $section.find('#starIcon').on('click', function() {
             favoriteWord.bind(this)(data.word_basic_info.topic_id)
@@ -128,7 +130,7 @@
             `;
         }
 
-        let $el = $(html).appendTo($parent);
+        $(html).appendTo($parent);
         $parent.find('#accentUkIcon').on('click', () => $('#accentUkAudio')[0].play());
         $parent.find('#accentUsaIcon').on('click', () => $('#accentUsaAudio')[0].play());
     }

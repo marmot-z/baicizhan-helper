@@ -1,8 +1,7 @@
 ;(function(window, $) {
     'use strict';
 
-    const {getVerifyCode, loginWithPhone, 
-           loginWithEmail, getUserInfo} = window.apiModule;
+    const {getVerifyCode, loginWithPhone, loginWithEmail, getUserInfo} = window.apiModule;
     const $loginModel = $('#loginModel');
     // 登录模式：phone, email
     let loginMode = 'phone';
