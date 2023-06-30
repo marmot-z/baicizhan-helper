@@ -52,6 +52,64 @@
         });
     }
 
+    function searchWord(word) {
+        return loadRequestOptions().then(([host, port, accessToken]) => {
+            const url = `http://${host}:${port}/search/word/${word}`;
+
+            return sendRequest({
+                url, 
+                method: 'GET',
+                headers: {'access_token': accessToken}
+            });
+        });
+    }
+
+    function getWordDetail(topicId) {
+        return loadRequestOptions().then(([host, port, accessToken]) => {
+            const url = `http://${host}:${port}/word/${topicId}`;                      
+
+            return sendRequest({
+                url, 
+                method: 'GET',
+                headers: {'access_token': accessToken}
+            });
+        });
+    }
+
+    function collectWord(topicId) {
+        return Promise.all([
+            loadRequestOptions(),
+            getWorkbookId()
+        ]).then(([[host, port, accessToken], bookId]) => {
+            const url = `http://${host}:${port}/book/${bookId}/word/${topicId}`;
+
+            return sendRequest({
+                url,
+                method: 'PUT',
+                headers: {'access_token': accessToken}
+            });
+        });
+    }
+
+    function cancelCollectWord(topicId) {
+        return Promise.all([
+            loadRequestOptions(),
+            getWorkbookId()
+        ]).then(([[host, port, accessToken], bookId]) => {
+            const url = `http://${host}:${port}/book/${bookId}/word/${topicId}`;
+
+            return sendRequest({
+                url,
+                method: 'DELETE',
+                headers: {'access_token': accessToken}
+            });
+        });
+    }
+
+    function getWorkbookId() {
+        return storageModule.get('bookId').then(bookId => bookId || 0);
+    }
+
     function loadRequestOptions() {
         const keys = ['host', 'port', 'accessToken'];
 
@@ -79,6 +137,7 @@
 
     window.apiModule = {
         getVerifyCode, loginWithPhone, getUserInfo, 
-        getBooks, defaultHost, defaultPort, loginWithEmail
+        getBooks, defaultHost, defaultPort, loginWithEmail,
+        searchWord, getWordDetail, collectWord, cancelCollectWord
     };
 } (this));

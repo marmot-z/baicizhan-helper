@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" type="text/css" href="../assets/bootstrap-4.6.2/css/bootstrap.css" />
+    <link rel="stylesheet" type="text/css" href="./css/popup.css" />
+</head>
+
+<body>
+    <div class="container popup-body">
+        <div class="input-group mb-3">
+            <input id="searchInput" type="text" class="form-control" placeholder="请输入要查询的中文或英文">
+            <span id="searchButton" class="input-group-text" id="basic-addon2">
+                <img src="../assets/images/svgs/search.svg">
+            </span>
+        </div>
+
+        <table id="searchTable" class="table table-hover">
+            <tbody></tbody>
+        </table>
+
+        <div id="detailDiv" style="display: none;"></div>
+
+        <script type="text/javascript" src="../assets/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+        <script type="text/javascript" src="../assets/bootstrap-4.6.2/js/bootstrap.bundle.js"></script>
+        <script type="text/javascript" src="../options/js/storage.js"></script>
+        <script type="text/javascript" src="../options/js/api.js"></script>
+        <script type="text/javascript" src="./js/index.js"></script>
+</body>
+
+</html>

@@ -23,7 +23,8 @@
             "32": "icon.png",
             "48": "icon.png",
             "128": "icon.png"
-        }
+        },
+        "default_popup": "src/popup/index.html"
     },
     "content_scripts": [
         {
