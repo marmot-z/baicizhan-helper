@@ -1,6 +1,7 @@
-;(function(window, $) {
+;(function(window, document, $) {
     'use strict';
 
+    const $doc = $(document);
     const {getBooks} = window.apiModule;
 
     function loadWorkbook() {
@@ -10,14 +11,15 @@
             )
             .join('');
 
-            $('#workbookSelect').html(html);
+            $('#collectWorkbookSelect').html(html);
+            $doc.trigger(events.BOOKS_LOADED, [data]);
         })
         .catch(e => console.error('加载单词本失败', e));
     }
 
     function loadSettings() {
         storageModule.get('bookId')
-            .then(bookId => $('#workbookSelect').val(bookId || 0));
+            .then(bookId => $('#collectWorkbookSelect').val(bookId || 0));
         storageModule.get('popoverStyle')
             .then(popoverStyle => {
                 if (!popoverStyle) return;                
@@ -40,7 +42,7 @@
     }
 
     function reset() {
-        $('#workbookSelect').val('0');
+        $('#collectWorkbookSelect').val('0');
         $('input[name="popoverStyle"]').first().prop("checked", true);
         $('input[name="triggerMode"]').first().prop("checked", true);
         $('input[name="theme"]').first().prop("checked", true);
@@ -49,7 +51,7 @@
     }
 
     function save() {
-        let bookId = $('#workbookSelect').val();
+        let bookId = $('#collectWorkbookSelect').val();
         let popoverStyle = $('input[name="popoverStyle"]:checked').val();
         let triggerMode = $('input[name="triggerMode"]:checked').val();
         let theme = $('input[name="theme"]:checked').val();
@@ -64,8 +66,13 @@
         storageModule.set('port', port);
     }
 
+    function clearStorageBookId() {
+        storageModule.remove(['bookId']);
+    }
+
     function init() {
-        loadWorkbook().finally(loadSettings);
+        $doc.on(events.AUTHED, () => loadWorkbook().finally(loadSettings));
+        $doc.on(events.UNAUTHED, clearStorageBookId);
 
         $('#resetButton').on('click', e => {
             e.preventDefault();
@@ -81,4 +88,4 @@
     }
 
     window.settingModule = {init};
-} (this, jQuery));
+} (this, document, jQuery));

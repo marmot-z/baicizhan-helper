@@ -4,7 +4,7 @@
     "author": "zhangxunwei",
     "version": "1.3",
     "manifest_version": 3,
-    "options_page": "src/options/html/index.html",
+    "options_page": "src/options/index.html",
     "background": {
         "service_worker": "src/script/js/background.js"
     },

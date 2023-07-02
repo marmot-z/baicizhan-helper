@@ -1,16 +1,21 @@
-;(function(window, $) {
+;(function(window, document, $) {
     'use strict';
 
-    const {showLoginModel} = window.loginModule;
+    const $doc = $(document);
 
-    function init() {
+    async function init() {
         loginModule.init();
         settingModule.init();
+        workbookModule.init();
         
-        // 获取当前 accessToken，如果没有登录则跳转登录
-        storageModule.get('accessToken')
-            .then(accessToken => !accessToken && showLoginModel());
+        let accessToken = await storageModule.get('accessToken');
+
+        if (!accessToken) {
+            $doc.trigger(events.UNAUTHED);
+        } else {
+            $doc.trigger(events.AUTHED);
+        }
     }
 
     window.onload = init;
-} (this, jQuery));
+} (this, document, jQuery));

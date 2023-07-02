@@ -106,6 +106,18 @@
         });
     }
 
+    function getBookWords(bookId) {
+        return loadRequestOptions().then(([host, port, accessToken]) => {
+            const url = `http://${host}:${port}/book/${bookId}/words`;
+
+            return sendRequest({
+                url,
+                method: 'GET',
+                headers: {'access_token': accessToken}
+            });
+        });
+    }
+
     function getWorkbookId() {
         return storageModule.get('bookId').then(bookId => bookId || 0);
     }
@@ -138,6 +150,7 @@
     window.apiModule = {
         getVerifyCode, loginWithPhone, getUserInfo, 
         getBooks, defaultHost, defaultPort, loginWithEmail,
-        searchWord, getWordDetail, collectWord, cancelCollectWord
+        searchWord, getWordDetail, collectWord,
+        cancelCollectWord, getBookWords
     };
 } (this));

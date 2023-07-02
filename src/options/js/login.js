@@ -1,8 +1,9 @@
-;(function(window, $) {
+;(function(window, document, $) {
     'use strict';
 
     const {getVerifyCode, loginWithPhone, loginWithEmail, getUserInfo} = window.apiModule;
     const $loginModel = $('#loginModel');
+    const $doc = $(document);
     // 登录模式：phone, email
     let loginMode = 'phone';
 
@@ -33,7 +34,7 @@
 
         $('#emailLoginLink').on('click', toggle2emailLoginForm);
         $('#phoneLoginLink').on('click', toggle2phoneLoginForm);
-        $('#wechatLoginLink, #qqLoginLink').on('click', () => alert('暂不支持'));
+        $('#wechatLoginLink, #qqLoginLink').on('click', () => alert('请先绑定手机再使用短信方式进行登录'));
     };
 
     function loginByPhone() {
@@ -57,8 +58,9 @@
         // 登录模态框隐藏
         $loginModel.modal('hide');
         // 显示用户信息，支持退出
-        loadUserInfo();
+        loadUserInfo();        
         alert('登录成功');        
+        $doc.trigger(events.AUTHED);
     }
 
     function loginFailure(e) {
@@ -108,18 +110,23 @@
     function loadUserInfo() {
         getUserInfo().then(data => {
             let nickname = data.length ? data[0].nickname : 'guest';
-            $('#username').html(nickname);
+            $('#username').html(nickname);            
         })
         .catch(e => console.error(`获取用户信息失败`, e));
     }
 
     function logout() {
-        storageModule.remove(['accessToken', 'bookId']);
-        showLoginModel();
+        $doc.trigger(events.UNAUTHED);
+    }
+
+    function clearStorageAccessToken() {
+        storageModule.remove(['accessToken']);
     }
 
     function init() {
-        loadUserInfo();
+        $doc.on(events.AUTHED, loadUserInfo);
+        $doc.on(events.UNAUTHED, showLoginModel);
+        $doc.on(events.UNAUTHED, clearStorageAccessToken);
 
         $('#exit').on('click', (e) => {
             e.preventDefault();
@@ -127,5 +134,5 @@
         });
     }
 
-    window.loginModule = {init, showLoginModel};
-} (this, jQuery));
+    window.loginModule = {init};
+} (this, document, jQuery));
