@@ -1,7 +1,7 @@
 ;(function(window, $) {
     'use strict';
 
-    const {MyWebuiPopover, Toast} = window.__baicizhanHelperModule;
+    const {MyWebuiPopover, Toast} = window.__baicizhanHelperModule__;
     const TRIGGER_MODE = {'SHOW_ICON': 'showIcon','DIRECT': 'direct','NEVER': 'never'},
             POPOVER_STYLE = {'SIMPLE': 'simple', 'RICH': 'rich'},
             THEME = {'LIGHT': 'light', 'DARK': 'dark', 'AUTO': 'auto'};

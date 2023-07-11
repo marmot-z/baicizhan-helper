@@ -12,62 +12,8 @@
             </div>
         </div>
     `;
-    const wordClass = {};
-    const cssMap = {
-        "translate-content": {
-            "min-width": "240px"
-        },
-        "title": {
-            "margin-bottom": "0px;"
-        },
-        "accent": {
-            "font-size": "small",
-            "color": "#606266",
-            "margin-top": "2px",
-            "white-space": "nowrap",
-            "font-size": "14px",
-        },
-        "star": {
-            "float": "right",
-            "cursor": "pointer",
-            "font-size": "large"
-        },
-        "sound-size": {
-            "cursor": "pointer"
-        },
-        "means-table": {
-            "table-layout": "auto",
-            "border-collapse": "separate",
-            "border-spacing": "0 8px"
-        },
-        "data-cell-first": {
-            "text-align": "left",
-            "min-width": "40px",
-            "padding-right": "5px",
-            "color": "#636363",
-            "font-style": "italic",
-            "font-weight": "400",
-            "font-size": "15px",
-        },
-        "data-cell": {
-            "overflow": "hidden",
-            "text-overflow": "ellipsis",
-            "word-wrap": "break-word",
-            "font-size": "14px",
-            "font-weight": "400",
-        },
-        "sentence": {
-            "padding-top": "2px"
-        },
-        "sentence-img": {
-            "width": "180px"
-        },
-        "sentence-p": {
-            "margin": "3px 0",
-            "font-size": "14px",
-            "font-weight": "400",
-        }
-    };
+    const cssMap = window.__baicizhanHelperModule__.webuiPopoverClassMap;
+    const replaceCss2style = window.__baicizhanHelperModule__.replaceCss2style.bind(cssMap);
     let audioContext;
 
     function MyWebuiPopover(options) {
@@ -97,7 +43,7 @@
         let wordInfo = data.word_basic_info;
         let titleHtml = `
             <p class="title">
-                <span style="color:rgb(0,0,0);font-size:18px;line-height:18px;font-weight:700;">${wordInfo.word}</span>
+                <span class="word">${wordInfo.word}</span>
                 <span id="starIcon" class="star">
                     <img src="${svgPath}/star.svg"/>
                 </span>
@@ -115,14 +61,6 @@
             </p>`;
 
         return replaceCss2style(titleHtml + accentHtml);
-    }
-
-    function replaceCss2style(html) {
-        return html.replace(/class="([\w-]*?)"/ig, (match, g1) => {
-            return cssMap[g1] ?
-                `style="${Object.entries(cssMap[g1]).map(([k,v]) => `${k}: ${v};`).join('')}"` :
-                match;
-        });
     }
 
     function generateContent(data, style = 'simple') {
@@ -146,7 +84,7 @@
                     Object.entries(chineseMeans)
                                 .map(([k, v]) => `
                                     <tr>
-                                        <td class="data-cell-first">${wordClass[k] || k}</td>
+                                        <td class="data-cell-first">${k}</td>
                                         <td class="data-cell">${v.join(';&nbsp;')}</td>
                                     </tr>
                                 `)
@@ -303,9 +241,9 @@
         });
     }
 
-    if (!window.__baicizhanHelperModule) {
-        window.__baicizhanHelperModule = {};
+    if (!window.__baicizhanHelperModule__) {
+        window.__baicizhanHelperModule__ = {};
     }
 
-    window.__baicizhanHelperModule.MyWebuiPopover = MyWebuiPopover;
+    window.__baicizhanHelperModule__.MyWebuiPopover = MyWebuiPopover;
 } (this));
