@@ -63,7 +63,9 @@
             "width": "180px"
         },
         "sentence-p": {
-            "margin": "3px 0"
+            "margin": "3px 0",
+            "font-size": "14px",
+            "font-weight": "400",
         }
     };
     let audioContext;
