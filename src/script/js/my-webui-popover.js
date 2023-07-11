@@ -12,8 +12,60 @@
             </div>
         </div>
     `;
-    const wordClass = {"a.":"形容词","c.":"可数名词","n.":"名词","u.":"不可数名词","v.":"动词","pl.":"复数","vi.":"不及物动词","vt.":"及物动词","adv.":"副词","adj.":"形容词","num.":"数词","art.":"冠词","int.":"感叹词","pron.":"代词","prep.":"介词","conj.":"连词","abbr.":"缩写","auxv.":"助动词","interj.":"感叹词","link-v.":"联系动词"};
-    const cssMap = {"translate-content":{"min-width":"240px"},"title":{"margin-bottom":"0px;"},"accent":{"font-size":"small","color":"#606266","margin-top":"2px","white-space":"nowrap"},"star":{"float":"right","cursor":"pointer","font-size":"large"},"sound-size":{"cursor":"pointer"},"means-table":{"table-layout":"auto","border-collapse":"separate","border-spacing":"0 8px"},"data-cell-first":{"text-align":"left","min-width":"40px","padding-right":"5px","color":"#636363","font-style":"italic"},"data-cell":{"overflow":"hidden","text-overflow":"ellipsis","word-wrap":"break-word"},"sentence":{"padding-top":"2px"},"sentence-img":{"width":"180px"},"sentence-p":{"margin":"3px 0"}};
+    const wordClass = {};
+    const cssMap = {
+        "translate-content": {
+            "min-width": "240px"
+        },
+        "title": {
+            "margin-bottom": "0px;"
+        },
+        "accent": {
+            "font-size": "small",
+            "color": "#606266",
+            "margin-top": "2px",
+            "white-space": "nowrap",
+            "font-size": "14px",
+        },
+        "star": {
+            "float": "right",
+            "cursor": "pointer",
+            "font-size": "large"
+        },
+        "sound-size": {
+            "cursor": "pointer"
+        },
+        "means-table": {
+            "table-layout": "auto",
+            "border-collapse": "separate",
+            "border-spacing": "0 8px"
+        },
+        "data-cell-first": {
+            "text-align": "left",
+            "min-width": "40px",
+            "padding-right": "5px",
+            "color": "#636363",
+            "font-style": "italic",
+            "font-weight": "400",
+            "font-size": "15px",
+        },
+        "data-cell": {
+            "overflow": "hidden",
+            "text-overflow": "ellipsis",
+            "word-wrap": "break-word",
+            "font-size": "14px",
+            "font-weight": "400",
+        },
+        "sentence": {
+            "padding-top": "2px"
+        },
+        "sentence-img": {
+            "width": "180px"
+        },
+        "sentence-p": {
+            "margin": "3px 0"
+        }
+    };
     let audioContext;
 
     function MyWebuiPopover(options) {
@@ -30,9 +82,10 @@
             mutil: options.multi || false,
             template: template,
             onShow: ($popover) => !this.inited && this.init($popover),
-            onHide: () => {
+            onHide: () => {            
                 this.$el.css('display', 'none');
                 audioContext && audioContext.close();
+                this.options.onHide();
             }
         });
     }
@@ -42,7 +95,7 @@
         let wordInfo = data.word_basic_info;
         let titleHtml = `
             <p class="title">
-                ${wordInfo.word}
+                <span style="color:rgb(0,0,0);font-size:18px;line-height:18px;font-weight:700;">${wordInfo.word}</span>
                 <span id="starIcon" class="star">
                     <img src="${svgPath}/star.svg"/>
                 </span>
@@ -248,5 +301,9 @@
         });
     }
 
-    window.MyWebuiPopover = MyWebuiPopover;
+    if (!window.__baicizhanHelperModule) {
+        window.__baicizhanHelperModule = {};
+    }
+
+    window.__baicizhanHelperModule.MyWebuiPopover = MyWebuiPopover;
 } (this));

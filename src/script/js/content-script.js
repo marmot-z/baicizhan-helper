@@ -1,41 +1,18 @@
 ;(function(window, $) {
     'use strict';
 
+    const {MyWebuiPopover, Toast} = window.__baicizhanHelperModule;
     const TRIGGER_MODE = {'SHOW_ICON': 'showIcon','DIRECT': 'direct','NEVER': 'never'},
             POPOVER_STYLE = {'SIMPLE': 'simple', 'RICH': 'rich'},
             THEME = {'LIGHT': 'light', 'DARK': 'dark', 'AUTO': 'auto'};
     const defaultTriggerMode = TRIGGER_MODE.SHOW_ICON, 
             defaultPopoverStyle = POPOVER_STYLE.SIMPLE,
             defaultTheme = THEME.LIGHT;
-    let triggerMode, popoverStyle, theme, $popover, preWord;    
-    const $toastElement = {
-        init: function() {
-            let iconSrc = `chrome-extension://${chrome.runtime.id}/icon.png`;
-            this.$el = $(`                
-                <div id="_baicizhanHelperToast" class="toast" data-delay="3000"
-                    style="position: fixed; top: 10px; right: 10px; z-index: 9999; min-width: 200px;">
-                    <div class="toast-header">
-                        <img src="${iconSrc}" class="rounded mr-2" style="height: 20px; widht: 20px;">
-                        <strong class="mr-auto">Baicizhan-helper</strong>
-                        <button type="button" class="ml-2 mb-1 close" data-dismiss="toast" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
-                    </div>
-                    <div class="toast-body">
-                        Hello, world! This is a toast message.
-                    </div>
-                </div>
-            `);
-            this.$el.appendTo(document.body);
-        }, 
-        alert: function(message) {
-            this.$el.find('.toast-body').html(message);
-            this.$el.toast('show');
-        }
-    };
+    let triggerMode, popoverStyle, theme, $popover, preWord, popuped = false;    
+    const $toastElement = new Toast();
     const $supportElement = {
         init: function() {
-            this.$el = $(`<div id="_baicizhanHelperSupportDiv" style="position: absolute;"></div>`);
+            this.$el = $(`<div id="__baicizhanHelperSupportDiv__" style="position: absolute;"></div>`);
             this.$el.appendTo(document.body);
             this.$el.on('baicizhanHelper:alert', (e, message) => $toastElement.alert(message));
         },
@@ -102,12 +79,10 @@
 
     async function selectWordHandler() {
         let selectedWord = window.getSelection().toString().trim();
+        let englishWordRegex = /^[a-zA-Z\\-\s']+$/;
 
-        if (selectedWord == '' || !/^[a-zA-Z\\-\s']+$/.test(selectedWord)) {
-            return;
-        }
-
-        if (preWord === selectedWord) {
+        if (popuped || selectedWord == '' || 
+                preWord === selectedWord || !englishWordRegex.test(selectedWord)) {
             return;
         }
 
@@ -151,10 +126,14 @@
                 $el: $supportElement.$el,
                 wordInfo: response.dict,
                 popoverStyle,
-                theme
+                theme,
+                onHide: () => popuped = false
             });
 
-            window.setTimeout(() => $popover.show(), 100);
+            window.setTimeout(() => {
+                popuped = true;
+                $popover.show()
+            }, 100);
         })
         .catch(e => {
             console.error(e);
