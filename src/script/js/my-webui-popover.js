@@ -1,4 +1,4 @@
-;(function(window) {
+;(function(window, $) {
     'use strict';
 
     const resourceDomain = 'https://7n.bczcdn.com';
@@ -29,6 +29,7 @@
             trigger: options.trigger || 'click',
             mutil: options.multi || false,
             template: template,
+            placement: 'auto-bottom',
             onShow: ($popover) => !this.inited && this.init($popover),
             onHide: () => {            
                 this.$el.css('display', 'none');
@@ -246,4 +247,4 @@
     }
 
     window.__baicizhanHelperModule__.MyWebuiPopover = MyWebuiPopover;
-} (this));
+} (this, jQuery));

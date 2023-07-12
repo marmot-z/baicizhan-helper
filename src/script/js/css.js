@@ -9,7 +9,7 @@
             'margin-bottom': '0px;'
         },
         'word': {
-            'color': 'rgb(0,0,0)',
+            'color': 'black',
             'font-size': '18px',
             'line-height': '18px',
             'font-weight': '700',
@@ -32,7 +32,7 @@
         'means-table': {
             'table-layout': 'auto',
             'border-collapse': 'separate',
-            'border-spacing': '0 8px'
+            'border-spacing': '0 2px'
         },
         'data-cell-first': {
             'text-align': 'left',
@@ -41,7 +41,7 @@
             'color': '#636363',
             'font-style': 'italic',
             'font-weight': '400',
-            'font-size': '15px',
+            'font-size': '14px',
         },
         'data-cell': {
             'overflow': 'hidden',
@@ -49,6 +49,7 @@
             'word-wrap': 'break-word',
             'font-size': '14px',
             'font-weight': '400',
+            'color': 'black',
         },
         'sentence': {
             'padding-top': '2px'
@@ -60,6 +61,7 @@
             'margin': '3px 0',
             'font-size': '14px',
             'font-weight': '400',
+            'color': 'black',
         }
     };
     let toastCssMap = {
@@ -113,6 +115,7 @@
         },
         'toast-body': {
             'padding': '0.75rem',
+            'color': 'black'
         },
         'mr-auto': {
             'margin-right': 'auto !important',
