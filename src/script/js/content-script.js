@@ -1,7 +1,7 @@
 ;(function(window, $) {
     'use strict';
 
-    const {MyWebuiPopover, Toast} = window.__baicizhanHelperModule__;
+    const {MyWebuiPopover, Toast, EnglishStemmer} = window.__baicizhanHelperModule__;
     const TRIGGER_MODE = {'SHOW_ICON': 'showIcon','DIRECT': 'direct','NEVER': 'never'},
             POPOVER_STYLE = {'SIMPLE': 'simple', 'RICH': 'rich'},
             THEME = {'LIGHT': 'light', 'DARK': 'dark', 'AUTO': 'auto'};
@@ -9,7 +9,8 @@
             defaultPopoverStyle = POPOVER_STYLE.SIMPLE,
             defaultTheme = THEME.LIGHT;
     let triggerMode, popoverStyle, theme, $popover, preWord, popuped = false;    
-    const $toastElement = new Toast();
+    const stemmer = new EnglishStemmer();
+    const $toastElement = new Toast();    
     const $supportElement = {
         init: function() {
             this.$el = $(`<div id="__baicizhanHelperSupportDiv__" style="position: absolute;"></div>`);
@@ -117,9 +118,10 @@
         // 销毁上一个 $popover
         $popover && $popover.destory();
 
-        // TODO 很多单词为原单词的复数等形态（如：words -> 原单词应为 word），容易误显示
-        // 尝试使用 NLP 将单词转换为词根形式
-        sendRequest({action: 'getWordInfo', args: [word]}).then(response => {
+        // 词干提取，如：words -> word
+        let stemWord = stemmer.stemWord(word);
+
+        sendRequest({action: 'getWordInfo', args: [stemWord]}).then(response => {
             if (!response) return;
 
             $popover = new MyWebuiPopover({

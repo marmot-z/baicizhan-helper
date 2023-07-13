@@ -34,6 +34,8 @@
             "js": [
                 "src/assets/jquery-3.6.0/jquery-3.6.0.min.js",             
                 "src/assets/webui-popover-1.2.17/jquery.webui-popover.min.js",
+                "src/script/js/base-stemmer.js",
+                "src/script/js/english-stemmer.js",
                 "src/script/js/css.js",
                 "src/script/js/icon-tips.js",
                 "src/script/js/toast.js",
