@@ -66,7 +66,7 @@
 
     function init() {
         $('#searchButton').on('click', search);
-        $('#searchInput').on('keypress', (e) => {
+        $('#searchInput').focus().on('keypress', (e) => {
             if (e.keyCode == 13) {
                 search();
             }
