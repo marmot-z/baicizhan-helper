@@ -21,15 +21,13 @@
 
         $tbody.empty().parent().css('display', 'block');
         $('#detailDiv').css('display', 'none');
-
-        for (let item of data) {
-            generateWordRow(item, $tbody);
-        }
+        
+        data.forEach((item, index) => generateWordRow(item, $tbody, index))
     }
 
-    function generateWordRow(data, $parent) {
+    function generateWordRow(data, $parent, index) {
         let $el = $(`
-            <tr style="cursor: pointer;">
+            <tr style="cursor: pointer;" tabIndex="${++index}">
                 <td>
                     <span class="searchWord">${data.word}</span> &nbsp;&nbsp;
                     <span class="searchAccent">${data.accent}</span>
@@ -40,6 +38,11 @@
 
         $el.appendTo($parent);
         $el.on('click', () => detail(data.topic_id));
+        $el.on('keypress', (e) => {
+            if (e.keyCode == 13) {
+                detail(data.topic_id)
+            }
+        });
     }
 
     function generateErrorTips($parent) {
