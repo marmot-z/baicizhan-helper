@@ -53,13 +53,13 @@
             <tr>
                 <td>
                     <span name="starIcon" style="cursor: pointer;">
-                        <img src="../assets/images/svgs/star-fill.svg" />
+                        <img src="../svgs/star-fill.svg" />
                     </span>
                 </td>
                 <td>
                     <span style="font-weight: bolder;">${data.word}</span> &nbsp;&nbsp;
                     <span name="accentIcon" style="cursor: pointer;">
-                        <img src="../assets/images/svgs/volume-up.svg" />
+                        <img src="../svgs/volume-up.svg" />
                     </span>
                     <audio name="accentAudio" style="display: none;">
                         <source src="${data.audio_uk}">

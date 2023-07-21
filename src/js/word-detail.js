@@ -20,7 +20,7 @@
             <div class="section">
                 <span class="word">${data.word_basic_info.word}</span>
                 <span id="starIcon" class="star">
-                    <img src="../assets/images/svgs/${starIconSvg}">
+                    <img src="../svgs/${starIconSvg}">
                 </span>
                 <br>                
             </div>
@@ -44,7 +44,7 @@
                 collected = !collected;
                 let starIconSvg = collected ? 'star-fill.svg' : 'star.svg';                
 
-                $(this).html(`<img src="../assets/images/svgs/${starIconSvg}">`);
+                $(this).html(`<img src="../svgs/${starIconSvg}">`);
                 return;
             }
 
@@ -57,7 +57,7 @@
         let html = `
             <span>${data.accent_uk}</span>
             <span id="accentUkIcon" class="volume-up">
-                <img src="../assets/images/svgs/volume-up.svg">
+                <img src="../svgs/volume-up.svg">
             </span>
             <audio id="accentUkAudio" style="display: none;"><source src="${resourceDomain + data.accent_uk_audio_uri}"></audio>
         `;
@@ -66,7 +66,7 @@
             html += `
                 <span>${data.accent_usa}</span>
                 <span id="accentUsaIcon" class="volume-up">
-                    <img src="../assets/images/svgs/volume-up.svg">
+                    <img src="../svgs/volume-up.svg">
                 </span>
                 <audio id="accentUsaAudio" style="display: none;"><source src="${resourceDomain + data.accent_usa_audio_uri}"></audio>
             `;
@@ -111,7 +111,7 @@
                 <p style="font-weight: bolder;">图文例句</p>
                 <span>${sentence.sentence}</span>
                 <span id="phreaseAccentIcon" class="volume-up">
-                    <img src="../assets/images/svgs/volume-up.svg">
+                    <img src="../svgs/volume-up.svg">
                 </span>
                 <audio id="phraseAudio" style="display: none;"><source src="${resourceDomain + sentence.audio_uri}"></audio>
                 <br>

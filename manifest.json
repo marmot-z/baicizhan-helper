@@ -4,9 +4,9 @@
     "author": "zhangxunwei",
     "version": "1.6",
     "manifest_version": 3,
-    "options_page": "src/options/index.html",
+    "options_page": "src/options.html",
     "background": {
-        "service_worker": "src/script/js/background.js"
+        "service_worker": "src/js/background.js"
     },
     "permissions": [
         "storage"
@@ -24,7 +24,7 @@
             "48": "icon.png",
             "128": "icon.png"
         },
-        "default_popup": "src/popup/index.html"
+        "default_popup": "src/popup.html"
     },
     "content_scripts": [
         {
@@ -34,13 +34,13 @@
             "js": [
                 "src/assets/jquery-3.6.0/jquery-3.6.0.min.js",             
                 "src/assets/webui-popover-1.2.17/jquery.webui-popover.min.js",
-                "src/script/js/base-stemmer.js",
-                "src/script/js/english-stemmer.js",
-                "src/script/js/css.js",
-                "src/script/js/icon-tips.js",
-                "src/script/js/toast.js",
-                "src/script/js/my-webui-popover.js",
-                "src/script/js/content-script.js"
+                "src/js/base-stemmer.js",
+                "src/js/english-stemmer.js",
+                "src/js/css.js",
+                "src/js/icon-tips.js",
+                "src/js/toast.js",
+                "src/js/my-webui-popover.js",
+                "src/js/content-script.js"
             ],
             "matches": ["<all_urls>"],
             "run_at": "document_start"
