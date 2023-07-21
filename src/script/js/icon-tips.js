@@ -14,7 +14,7 @@
         }
     } (function($) {
         var pluginName = 'iconTips';        
-        var style = 'width: 25px; height: 25px; z-index: 9999;';
+        var style = 'width: 25px; height: 25px;';
         var iconStyle = 'max-width: 25px; border-radius: 5px; opacity: 0.8; cursor: pointer;';
         var _bodyEventHandled = false;
 
@@ -26,7 +26,7 @@
         }
 
         IconTips.prototype.init = function() {            
-            var $target = $('<div style="position: absolute;"/>');            
+            var $target = $('<div name="__baicizhanHelperIconTips__" style="position: absolute; z-index: 9999;"></div>');            
             var shadow = $target.get(0).attachShadow({mode: 'open'});
             var position = this.calcutePosition();
             var $body = $(document.body);
