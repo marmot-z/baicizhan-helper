@@ -42,11 +42,14 @@
     function generateTitle(data) {
         let svgPath = `chrome-extension://${chrome.runtime.id}/svgs`;
         let wordInfo = data.word_basic_info;
+        let svg = wordInfo.__collected__ ? 
+            svgPath + '/star-fill.svg' :
+            svgPath + '/star.svg';
         let titleHtml = `
             <p class="title">
                 <span class="word">${wordInfo.word}</span>
                 <span id="starIcon" class="star">
-                    <img src="${svgPath}/star.svg"/>
+                    <img src="${svg}"/>
                 </span>
             </p>`;
         let volumeIconHtml = `<img src="${svgPath}/volume-up.svg"/>`;
@@ -142,7 +145,7 @@
 
             if (starIcon) {
                 starIcon.addEventListener('click', 
-                    collectWord(starIcon, this.$el, this.data.word_basic_info.topic_id));
+                    collectWord(starIcon, this.$el, this.data, this.data.word_basic_info.__collected__));
             }
 
             this.inited = true;
@@ -198,18 +201,19 @@
         return audioContext = new (window.AudioContext || window.webkitAudioContext)();
     }
 
-    function collectWord(el, $supportEl, topicId) {
-        let collected = false;
+    function collectWord(el, $supportEl, data, initCollected) {
+        let collected = initCollected;
 
         return (e) => {
             e.preventDefault();
 
             let action = collected ? 'cancelCollectWord' : 'collectWord';
+            let arg = collected ? data.word_basic_info.topic_id : data;
             let tips = collected ? '取消收藏' : '收藏';
 
             sendRequest({
                 action,
-                args: [topicId]
+                args: arg
             })
             .then(response => {                                        
                 if (response) {

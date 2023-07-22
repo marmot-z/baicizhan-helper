@@ -132,7 +132,7 @@
         // 词干提取，如：words -> word
         let stemWord = stemmer.stemWord(word);
 
-        sendRequest({action: 'getWordInfo', args: [stemWord]}).then(response => {
+        sendRequest({action: 'getWordInfo', args: stemWord}).then(response => {
             if (!response) return;
 
             $popover = new MyWebuiPopover({

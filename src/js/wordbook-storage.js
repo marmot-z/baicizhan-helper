@@ -1,4 +1,4 @@
-; (function (window) {
+; (function (global) {
     'use strict';
 
     /**
@@ -97,9 +97,5 @@
         });
     };
 
-    if (window) {
-        window.wordbookStorageModule = { WordbookStorage };
-    }
-
-    return WordbookStorage;
-}(this));
+    global.wordbookStorageModule = {WordbookStorage};
+}(this /* WorkerGlobalScope or Window */));

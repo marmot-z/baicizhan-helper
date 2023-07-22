@@ -1,9 +1,9 @@
-;(function(window) {
+;(function(global) {
     'use strict';
 
     const defaultHost = '110.42.229.221';
     const defaultPort = 8080;
-    const {storageModule, wordbookStorageModule} = window;
+    const {storageModule, wordbookStorageModule} = global;
     const {WordbookStorage} = wordbookStorageModule;
 
     function getVerifyCode(phoneNum) {
@@ -51,6 +51,17 @@
                 method: 'GET',
                 headers: {'access_token': accessToken}
             });
+        });
+    }
+
+    function getWordInfo(word) {
+        return searchWord(word).then(data => {
+            let bestMatch = data[0];
+            let topicId = bestMatch?.topic_id;
+
+            return topicId ?
+                    getWordDetail(topicId) :
+                    Promise.resolve(null);
         });
     }
 
@@ -188,6 +199,10 @@
                     });
     }
 
+    function getStorageInfo(keys) {
+        return storageModule.get(keys);
+    }
+
     function sendRequest(options = {}) {
         return new Promise((resolve, reject) => {            
             return fetch(options.url, {
@@ -204,10 +219,12 @@
         });
     }
 
-    window.apiModule = {
+    const exports = {
         getVerifyCode, loginWithPhone, getUserInfo, 
         getBooks, defaultHost, defaultPort, loginWithEmail,
         searchWord, getWordDetail, collectWord,
-        cancelCollectWord, getBookWords
+        cancelCollectWord, getBookWords, getWordInfo, getStorageInfo
     };
-} (this));
+
+    global.apiModule = exports;
+} (this /* WorkerGlobalScope or Window */));
