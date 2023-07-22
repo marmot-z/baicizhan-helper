@@ -79,17 +79,28 @@
     }
 
     async function selectWordHandler() {
-        let selectedWord = window.getSelection().toString().trim();
-        let englishWordRegex = /^[a-zA-Z\\-\s']+$/;
+        let selectedWord = window.getSelection().toString().trim();        
 
-        if (popuped || selectedWord == '' || 
-                preWord === selectedWord || !englishWordRegex.test(selectedWord)) {
+        if (popuped || selectedWord == '' || preWord === selectedWord) {            
+            return;
+        }
+
+        if (!isChinese(selectedWord) && !isEnglish(selectedWord)) {
             return;
         }
 
         prepopup();
 
         (await canPopup()) && popup(selectedWord);
+    }
+
+    function isChinese(str) {
+        return str.split('').every(char => /\p{Script=Han}/u.test(char));
+    }
+
+    function isEnglish(str) {
+        let englishWordRegex = /^[a-zA-Z\\-\s']+$/;
+        return englishWordRegex.test(str);
     }
 
     function prepopup() {

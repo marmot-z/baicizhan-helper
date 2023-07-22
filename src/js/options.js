@@ -9,12 +9,9 @@
         workbookModule.init();
         
         let accessToken = await storageModule.get('accessToken');
+        let event = accessToken ? events.AUTHED : events.UNAUTHED;
 
-        if (!accessToken) {
-            $doc.trigger(events.UNAUTHED);
-        } else {
-            $doc.trigger(events.AUTHED);
-        }
+        $doc.trigger(event);
     }
 
     window.onload = init;
