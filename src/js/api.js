@@ -199,10 +199,6 @@
                     });
     }
 
-    function getStorageInfo(keys) {
-        return storageModule.get(keys);
-    }
-
     function sendRequest(options = {}) {
         return new Promise((resolve, reject) => {            
             return fetch(options.url, {
@@ -223,7 +219,7 @@
         getVerifyCode, loginWithPhone, getUserInfo, 
         getBooks, defaultHost, defaultPort, loginWithEmail,
         searchWord, getWordDetail, collectWord,
-        cancelCollectWord, getBookWords, getWordInfo, getStorageInfo
+        cancelCollectWord, getBookWords, getWordInfo
     };
 
     global.apiModule = exports;

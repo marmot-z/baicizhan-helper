@@ -22,8 +22,10 @@
     function(global) {
         'use strict';
 
-        importScripts('storage.js', 'wordbook-storage.js', 'api.js');
+        importScripts('storage.js', 'wordbook-storage.js', 'api.js');        
 
-        return global.apiModule;
+        return Object.assign({
+            getStorageInfo: global.storageModule.get
+        }, global.apiModule);
     } (this)
 ));
