@@ -1,7 +1,7 @@
 ;(function(window, $) {
     'use strict';
 
-    const {searchWord, getWordDetail} = window.apiModule;    
+    const {searchWord, getWordDetail} = window.apiModule;
 
     function search() {
         let content = $('#searchInput').val().trim();
@@ -59,7 +59,7 @@
         getWordDetail(topicId)
             .then((data) => {
                 $('#searchTable').css('display', 'none');
-                generateWordDetail(data, $('#detailDiv'));
+                generateWordDetail(data, $('#detailDiv'), data.dict.word_basic_info.__collected__);
             })
             .catch((e) => {
                 console.error(e);

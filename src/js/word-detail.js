@@ -31,15 +31,16 @@
 
         $section.appendTo($parent);
         $section.find('#starIcon').on('click', function() {
-            favoriteWord.bind(this)(data.word_basic_info.topic_id)
+            favoriteWord.bind(this)(data)
         });
     }
 
-    function favoriteWord(topicId) {
+    function favoriteWord(data) {
         let fn = !collected ? collectWord : cancelCollectWord;
+        let args = !collected ? data : data.word_basic_info.topic_id;
         let tips = !collected ? '收藏' : '取消收藏';
 
-        fn(topicId).then(response => {
+        fn(args).then(response => {
             if (response) {
                 collected = !collected;
                 let starIconSvg = collected ? 'star-fill.svg' : 'star.svg';                

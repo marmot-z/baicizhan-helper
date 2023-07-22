@@ -3,6 +3,8 @@
 
     const defaultHost = '110.42.229.221';
     const defaultPort = 8080;
+    const {storageModule, wordbookStorageModule} = window;
+    const {WordbookStorage} = wordbookStorageModule;
 
     function getVerifyCode(phoneNum) {
         return loadRequestOptions().then(([host, port, accessToken]) => {
@@ -73,14 +75,28 @@
                 method: 'GET',
                 headers: {'access_token': accessToken}
             });
-        });
+        })
+        .then(fillCollectedField);
     }
 
-    function collectWord(topicId) {
+    async function fillCollectedField(data) {
+        let topicId = data.dict.word_basic_info.topic_id;
+        let bookId = await getWordbookId();        
+        let collected = await WordbookStorage.contains(bookId, topicId);
+
+        data.dict.word_basic_info.__collected__ = collected;
+
+        return data;
+    }
+
+    function collectWord(word) {        
+        let topicId = word.word_basic_info.topic_id;        
+
         return Promise.all([
             loadRequestOptions(),
             getWordbookId()
-        ]).then(([[host, port, accessToken], bookId]) => {
+        ])
+        .then(([[host, port, accessToken], bookId]) => {
             const url = `http://${host}:${port}/book/${bookId}/word/${topicId}`;
 
             return sendRequest({
@@ -88,14 +104,48 @@
                 method: 'PUT',
                 headers: {'access_token': accessToken}
             });
+        })
+        .then(async (data) => addWord(word, data));
+    }
+
+    async function addWord(word, data) {
+        let wordInfo = word.word_basic_info;
+        let chineseMeans = word.chn_means.reduce((prev, curr) => {
+            prev[curr.mean_type] = prev[curr.mean_type] || [];
+            prev[curr.mean_type].push(curr.mean);
+
+            return prev;
+        }, Object.create(null));
+        let meanString = Object.entries(chineseMeans)
+            .map(([k, v]) => `${k} ${v.join('；')}`)
+            .join('； ');
+        let bookId = await getWordbookId();
+
+        WordbookStorage.add(bookId, {
+            'audio_uk': wordInfo.accent_uk_audio_uri,
+            'audio_us': wordInfo.accent_usa_audio_uri,
+            'book_id': bookId,
+            'mean': meanString,
+            'setAudio_uk': true,
+            'setAudio_us': true,
+            'setBook_id': true,
+            'setCreated_at': true,
+            'setMean': true,
+            'setTopic_id': true,
+            'setWord': true,
+            'topic_id': wordInfo.topic_id,
+            'word': wordInfo.word,
         });
+
+        return data;
     }
 
     function cancelCollectWord(topicId) {
         return Promise.all([
             loadRequestOptions(),
             getWordbookId()
-        ]).then(([[host, port, accessToken], bookId]) => {
+        ])
+        .then(([[host, port, accessToken], bookId]) => {
             const url = `http://${host}:${port}/book/${bookId}/word/${topicId}`;
 
             return sendRequest({
@@ -103,7 +153,14 @@
                 method: 'DELETE',
                 headers: {'access_token': accessToken}
             });
-        });
+        })
+        .then(async (data) => removeWord(data, topicId));
+    }
+
+    async function removeWord(data, topicId) {
+        WordbookStorage.remove(await getWordbookId(), topicId);
+
+        return data;
     }
 
     function getBookWords(bookId) {

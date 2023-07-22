@@ -26,7 +26,7 @@
 
         return new Promise((resolve) => {
             chrome.storage.local.get([key])
-                .then(result => resolve(result[key]));
+                .then(result => resolve(result[key] || []));
         });
     }
 
@@ -48,11 +48,11 @@
         return new Promise((resolve) => {
             WordbookStorage.load(bookId)
                 .then(wordbook => {
-                    let topicIdSet = new Set(wordbook.map(word => word.topicId));
+                    let topicIdSet = new Set(wordbook.map(word => word.topic_id));
 
                     if (!topicIdSet.has(word.topic_id)) {
                         wordbook.push(word);
-                        save(bookId, wordbook);
+                        WordbookStorage.save(bookId, wordbook);
                     }
 
                     resolve(true);
@@ -68,7 +68,7 @@
                 .then(wordbook => {
                     let filteredWordbook = wordbook.filter(word => word.topic_id != topicId);
 
-                    save(bookId, filteredWordbook);
+                    WordbookStorage.save(bookId, filteredWordbook);
                     resolve(true);
                 });
         });
@@ -78,7 +78,7 @@
         return new Promise((resolve) => {
             WordbookStorage.load(bookId)
                 .then(wordbook => {
-                    let topicIdSet = new Set(wordbook.map(word => word.topicId));
+                    let topicIdSet = new Set(wordbook.map(word => word.topic_id));
 
                     resolve(topicIdSet.has(topicId));
                 });
