@@ -54,7 +54,7 @@
         function collectWord(topicId) {
             return Promise.all([
                 loadRequestOptions(),
-                getWorkbookId()
+                getWordbookId()
             ]).then(([[host, port, accessToken], bookId]) => {
                 const url = `http://${host}:${port}/book/${bookId}/word/${topicId}`;
 
@@ -69,7 +69,7 @@
         function cancelCollectWord(topicId) {
             return Promise.all([
                 loadRequestOptions(),
-                getWorkbookId()
+                getWordbookId()
             ]).then(([[host, port, accessToken], bookId]) => {
                 const url = `http://${host}:${port}/book/${bookId}/word/${topicId}`;
 
@@ -111,7 +111,7 @@
                 })
         }
 
-        function getWorkbookId() {
+        function getWordbookId() {
             return getStorageInfo(['bookId']).then(([bookId]) => bookId || 0);
         }
 

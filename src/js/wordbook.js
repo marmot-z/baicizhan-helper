@@ -5,21 +5,21 @@
     const {getBookWords, cancelCollectWord, getWordDetail} = window.apiModule;
 
     function init() {
-        $doc.on(events.AUTHED, (e) => loadWorkbookTable(false));        
-        $doc.on(events.BOOKS_LOADED, generateWorkbooks);
+        $doc.on(events.AUTHED, (e) => loadWordbookTable(false));        
+        $doc.on(events.BOOKS_LOADED, generateWordbooks);
         $doc.on(events.UNAUTHED, clearStorageWords);
-        $('#workbookRefreshButton').on('click', (e) => loadWorkbookTable(true));
+        $('#wordbookRefreshButton').on('click', (e) => loadWordbookTable(true));
     }
 
-    async function loadWorkbookTable(focus) {
-        let bookId = $('#workbookSelect').val() || 0;
+    async function loadWordbookTable(focus) {
+        let bookId = $('#wordbookSelect').val() || 0;
 
         try {
-            let workbookData = focus ?
+            let wordbookData = focus ?
                     await loadFromServer(bookId) :
                     await loadFromLocal(bookId) || await loadFromServer(bookId);
 
-            generateWorkbookTable(workbookData);
+            generateWordbookTable(wordbookData);
         } catch(e) {
             console.error(`加载单词本 ${bookId} 内容错误`, e);
             generateErrorTips();
@@ -28,18 +28,18 @@
 
     function loadFromServer(bookId) {
         return getBookWords(bookId).then(data => {
-            storageModule.set('workbookContent', data);
+            storageModule.set('wordbookContent', data);
 
             return data;
         });
     }
 
     function loadFromLocal() {
-        return storageModule.get('workbookContent');
+        return storageModule.get('wordbookContent');
     }
 
-    function generateWorkbookTable(data) {
-        let $tbody = $('#workbookContentTable > tbody').empty();
+    function generateWordbookTable(data) {
+        let $tbody = $('#wordbookContentTable > tbody').empty();
 
         data.sort((a, b) => b.created_at - a.created_at);
 
@@ -73,7 +73,7 @@
 
         $el.appendTo($parent);
         $el.find('span[name="starIcon"]').on('click', async function() {
-            removeWork.bind(this)(data.topic_id);
+            removeWord.bind(this)(data.topic_id);
         });
         $el.find('span[name="accentIcon"]').on('click', () => $el.find('audio')[0].play());
         $el.find('a[name="detailLink"]').on('click', () => {            
@@ -100,7 +100,7 @@
                pad2(date.getSeconds());
     }
 
-    async function removeWork(topicId) {
+    async function removeWord(topicId) {
         let successful;
         try {
             successful = await cancelCollectWord(topicId);
@@ -119,10 +119,10 @@
     }
 
     async function refreshStorageWords(topicId) {
-        let workbookContent = await loadFromLocal();
-        let collectedWords = workbookContent.filter(word => word.topic_id != topicId);
+        let wordbookContent = await loadFromLocal();
+        let collectedWords = wordbookContent.filter(word => word.topic_id != topicId);
 
-        storageModule.set('workbookContent', collectedWords);
+        storageModule.set('wordbookContent', collectedWords);
     }
 
     function generateErrorTips() {
@@ -131,23 +131,23 @@
                 <td>加载失败，请稍后重试</td>
             </tr>
         `);
-        let $tbody = $('#workbookContentTable > tbody');
+        let $tbody = $('#wordbookContentTable > tbody');
 
         $tbody.empty().append($el);
     }
 
-    function generateWorkbooks(e, data) {
+    function generateWordbooks(e, data) {
         let html = data.user_books.map(book => 
             `<option value="${book.user_book_id}">${book.book_name}(已收录 ${book.word_num} 词)</option>`
         )
         .join('');
 
-        $('#workbookSelect').html(html);
+        $('#wordbookSelect').html(html);
     }
 
     function clearStorageWords() {
-        storageModule.remove(['workbookContent']);
+        storageModule.remove(['wordbookContent']);
     }
 
-    window.workbookModule = {init};
+    window.wordbookModule = {init};
 } (this, document, jQuery));

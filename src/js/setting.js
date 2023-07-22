@@ -4,14 +4,14 @@
     const $doc = $(document);
     const {getBooks} = window.apiModule;
 
-    function loadWorkbook() {
+    function loadWordbook() {
         return getBooks().then(data => {
             let html = data.user_books.map(book => 
                 `<option value="${book.user_book_id}">${book.book_name}(已收录 ${book.word_num} 词)</option>`
             )
             .join('');
 
-            $('#collectWorkbookSelect').html(html);
+            $('#collectWordbookSelect').html(html);
             $doc.trigger(events.BOOKS_LOADED, [data]);
         })
         .catch(e => console.error('加载单词本失败', e));
@@ -19,7 +19,7 @@
 
     function loadSettings() {
         storageModule.get('bookId')
-            .then(bookId => $('#collectWorkbookSelect').val(bookId || 0));
+            .then(bookId => $('#collectWordbookSelect').val(bookId || 0));
         storageModule.get('popoverStyle')
             .then(popoverStyle => {
                 if (!popoverStyle) return;                
@@ -42,7 +42,7 @@
     }
 
     function reset() {
-        $('#collectWorkbookSelect').val('0');
+        $('#collectWordbookSelect').val('0');
         $('input[name="popoverStyle"]').first().prop("checked", true);
         $('input[name="triggerMode"]').first().prop("checked", true);
         $('input[name="theme"]').first().prop("checked", true);
@@ -51,7 +51,7 @@
     }
 
     function save() {
-        let bookId = $('#collectWorkbookSelect').val();
+        let bookId = $('#collectWordbookSelect').val();
         let popoverStyle = $('input[name="popoverStyle"]:checked').val();
         let triggerMode = $('input[name="triggerMode"]:checked').val();
         let theme = $('input[name="theme"]:checked').val();
@@ -71,7 +71,7 @@
     }
 
     function init() {
-        $doc.on(events.AUTHED, () => loadWorkbook().finally(loadSettings));
+        $doc.on(events.AUTHED, () => loadWordbook().finally(loadSettings));
         $doc.on(events.UNAUTHED, clearStorageBookId);
 
         $('#resetButton').on('click', e => {

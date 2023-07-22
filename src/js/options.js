@@ -6,7 +6,7 @@
     async function init() {
         loginModule.init();
         settingModule.init();
-        workbookModule.init();
+        wordbookModule.init();
         
         let accessToken = await storageModule.get('accessToken');
         let event = accessToken ? events.AUTHED : events.UNAUTHED;

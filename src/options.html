@@ -11,8 +11,8 @@
 <body>
     <ul class="nav nav-pills justify-content-center" id="myTab" role="tablist">
         <li class="nav-item" role="presentation">
-            <button class="nav-link active" id="workbookTab" data-toggle="tab" data-target="#workbookTabContent"
-                type="button" role="tab" aria-controls="workbookTabContent" aria-selected="true">单词本</button>
+            <button class="nav-link active" id="wordbookTab" data-toggle="tab" data-target="#wordbookTabContent"
+                type="button" role="tab" aria-controls="wordbookTabContent" aria-selected="true">单词本</button>
         </li>
         <li class="nav-item" role="presentation">
             <button class="nav-link" id="settingTab" data-toggle="tab" data-target="#settingTabContent" type="button"
@@ -31,19 +31,19 @@
     </ul>
 
     <div class="tab-content" id="myTabContent">
-        <div class="tab-pane fade show active" id="workbookTabContent" role="tabpanel" aria-labelledby="workbookTab">
+        <div class="tab-pane fade show active" id="wordbookTabContent" role="tabpanel" aria-labelledby="wordbookTab">
             <div class="container">
                 <div class="row">
                     <div class="col-sm-8 offset-sm-2">
                         <div class="row" style="margin: 20px 0;">
-                            <select id="workbookSelect" class="form-control col-sm-5">
+                            <select id="wordbookSelect" class="form-control col-sm-5">
                             </select>
-                            <button id="workbookRefreshButton" type="button" class="btn btn-primary"
+                            <button id="wordbookRefreshButton" type="button" class="btn btn-primary"
                                 style="margin-left: 10px;" data-toggle="tooltip" title="刷新单词本显示最新内容">
                                 <img style="width: 20px;" src="./assets/images/svgs/refresh.svg" />
                             </button>
                         </div>
-                        <table id="workbookContentTable" class="table table-hover">
+                        <table id="wordbookContentTable" class="table table-hover">
                             <tbody></tbody>
                         </table>
                     </div>
@@ -56,8 +56,8 @@
                     <div class="col-sm-2"></div>
                     <form id="settingForm">
                         <div class="form-group row">
-                            <label for="collectWorkbookSelect" class="col-sm-3 col-form-label">单词本</label>
-                            <select class="form-control col-sm-5" id="collectWorkbookSelect"></select>
+                            <label for="collectWordbookSelect" class="col-sm-3 col-form-label">单词本</label>
+                            <select class="form-control col-sm-5" id="collectWordbookSelect"></select>
                             &nbsp;
                             <small class="form-text text-muted">
                                 选中单词本用于后续单词收藏
@@ -220,7 +220,7 @@
     <script type="text/javascript" src="./js/login.js"></script>
     <script type="text/javascript" src="./js/setting.js"></script>
     <script type="text/javascript" src="./js/word-detail.js"></script>
-    <script type="text/javascript" src="./js/workbook.js"></script>
+    <script type="text/javascript" src="./js/wordbook.js"></script>
     <script type="text/javascript" src="./js/options.js"></script>
 </body>
 
