@@ -3,6 +3,7 @@
 
     const $doc = $(document);
     const {getBookWords, cancelCollectWord, getWordDetail} = window.apiModule;
+    const {WordbookStorage} = window.wordbookStorageModule;
 
     function init() {
         $doc.on(events.AUTHED, (e) => loadWordbookTable(false));        
@@ -28,14 +29,14 @@
 
     function loadFromServer(bookId) {
         return getBookWords(bookId).then(data => {
-            storageModule.set('wordbookContent', data);
+            WordbookStorage.save(bookId, data);
 
             return data;
         });
     }
 
-    function loadFromLocal() {
-        return storageModule.get('wordbookContent');
+    function loadFromLocal(bookId) {
+        return WordbookStorage.load(bookId);
     }
 
     function generateWordbookTable(data) {
@@ -115,14 +116,7 @@
 
         $(this).parent().parent().hide(500);
 
-        refreshStorageWords(topicId);
-    }
-
-    async function refreshStorageWords(topicId) {
-        let wordbookContent = await loadFromLocal();
-        let collectedWords = wordbookContent.filter(word => word.topic_id != topicId);
-
-        storageModule.set('wordbookContent', collectedWords);
+        WordbookStorage.remove(topicId);
     }
 
     function generateErrorTips() {
@@ -146,7 +140,7 @@
     }
 
     function clearStorageWords() {
-        storageModule.remove(['wordbookContent']);
+        WordbookStorage.clear();
     }
 
     window.wordbookModule = {init};
