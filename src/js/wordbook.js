@@ -9,6 +9,7 @@
         $doc.on(events.AUTHED, (e) => loadWordbookTable(false));        
         $doc.on(events.BOOKS_LOADED, generateWordbooks);
         $doc.on(events.UNAUTHED, clearStorageWords);
+        $('#wordbookSelect').on('change', (e) => loadWordbookTable(false));
         $('#wordbookRefreshButton').on('click', (e) => loadWordbookTable(true));
     }
 
