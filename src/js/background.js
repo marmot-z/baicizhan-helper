@@ -24,8 +24,11 @@
 
         importScripts('storage.js', 'wordbook-storage.js', 'api.js');        
 
-        return Object.assign({
-            getStorageInfo: global.storageModule.get
-        }, global.apiModule);
+        return {
+            getStorageInfo: storgaeModule.getStorageInfo,
+            getWordInfo: apiModule.getWordInfo,
+            cancelCollectWord: apiModule.cancelCollectWord,
+            collectWord: apiModule.collectWord,
+        };
     } (this)
 ));

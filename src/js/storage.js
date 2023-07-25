@@ -35,5 +35,8 @@
         return chrome.storage.local.remove(completeKeys);
     }
 
-    global.storageModule = {set, get, remove};
+    // alias
+    const getStorageInfo = get;
+
+    global.storageModule = {set, get, getStorageInfo, remove};
 } (this  /* WorkerGlobalScope or Window */));
