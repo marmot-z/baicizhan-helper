@@ -21,6 +21,10 @@
 ## 声明
 本项目仅用于个人练习，你可以使用此软件，但不得使用此软件从事任何形式的商业活动以及二次开发
 
+## 赞助商
+本项目由 [jetBrains](https://www.jetbrains.com/community/opensource/#support) 赞助。    
+<img src="./images/jb_beam.png" alt="sponsor" width="200"/>
+
 ## LICENSE
 本项目基于 Apache-2 licence 开发    
 最后，如果这个项目对你有所帮助，请给我点亮右上角的 ⭐ 吧
