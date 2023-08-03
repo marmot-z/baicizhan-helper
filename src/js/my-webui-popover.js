@@ -12,6 +12,7 @@
             </div>
         </div>
     `;
+    const levenshtein = window.__baicizhanHelperModule__.levenshtein;
     const cssMap = window.__baicizhanHelperModule__.webuiPopoverClassMap;
     const replaceCss2style = window.__baicizhanHelperModule__.replaceCss2style.bind(cssMap);
     let audioContext;
@@ -103,13 +104,14 @@
         if (!data.sentences[0]) return '';
 
         let sentence = data.sentences[0];
+        let sentenceHtml = highlight(sentence, data.word_basic_info.word);  
         let svgPath = `chrome-extension://${chrome.runtime.id}/svgs`;        
 
         return `
             <div class="sentence">
                 <img class="sentence-img" src="${resourceDomain}${sentence.img_uri}"></img>
                 <p class="sentence-p">
-                    ${sentence.sentence}
+                    ${sentenceHtml}
                     <span id="sentenceAudio" class="sound-size">
                         <img src="${svgPath}/volume-up.svg"/>
                     </span>
@@ -117,6 +119,38 @@
                 <p class="sentence-p">${sentence.sentence_trans}</p>
             </div>
         `;
+    }
+
+    function highlight(sentence, word) {
+        if (sentence.highlight_phrase) {
+            return sentence.sentence.replace(
+                sentence.highlight_phrase, 
+                `<span style="color: #007bff;">${sentence.highlight_phrase}</span>`
+            );
+        }
+
+        let highlightWords = sentence.sentence.split(/\s/)
+                .map(s => {
+                    let regex = /[\w-]+/;
+
+                    return !regex.test(s) ? '' : s.match(regex)[0];
+                })
+                .filter(s => {
+                    if (!s) return false;
+
+                    let distance = levenshtein(s, word);
+                    return s.length < 7 ? distance <= 2 : distance <=3;
+                });
+
+        if (highlightWords.length === 0) {
+            return sentence.sentence;
+        }
+        
+        let replaceRegex = new RegExp(`${highlightWords.join('|')}`, 'g');
+
+        return sentence.sentence.replace(replaceRegex, (match) => {
+            return `<span style="color: #007bff;">${match}</span>`;
+        });
     }
 
     Object.assign(MyWebuiPopover.prototype, {

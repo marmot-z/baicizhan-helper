@@ -25,10 +25,10 @@
         importScripts('storage.js', 'wordbook-storage.js', 'api.js');        
 
         return {
-            getStorageInfo: storgaeModule.getStorageInfo,
-            getWordInfo: apiModule.getWordInfo,
-            cancelCollectWord: apiModule.cancelCollectWord,
-            collectWord: apiModule.collectWord,
+            getStorageInfo: global.storageModule.getStorageInfo,
+            getWordInfo: global.apiModule.getWordInfo,
+            cancelCollectWord: global.apiModule.cancelCollectWord,
+            collectWord: global.apiModule.collectWord,
         };
     } (this)
 ));

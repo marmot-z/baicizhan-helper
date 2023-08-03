@@ -2,6 +2,7 @@
     'use strict';
 
     const {collectWord, cancelCollectWord} = window.apiModule;
+    const {levenshtein} = window.utilModule;
     const resourceDomain = 'https://7n.bczcdn.com';
     let collected = false;
 
@@ -10,7 +11,7 @@
         collected = hasCollected || false;
         
         generateWordInfo(data.dict, $target);
-        generateSentence(data.dict.sentences, $target);
+        generateSentence(data.dict.sentences, data.dict.word_basic_info.word, $target);
         generateEnglishParaphrase(data.dict.en_means, $target);
     }
 
@@ -103,14 +104,15 @@
         $el.appendTo($parent);
     }
 
-    function generateSentence(data, $parent) {
+    function generateSentence(data, word, $parent) {
         if (data.length === 0) return;
 
         let sentence = data[Math.floor(Math.random() * data.length)];
+        let sentenceHtml = highlight(sentence, word);        
         let $el = $(`
             <div class="section">
                 <p style="font-weight: bolder;">图文例句</p>
-                <span>${sentence.sentence}</span>
+                <span>${sentenceHtml}</span>
                 <span id="phreaseAccentIcon" class="volume-up">
                     <img src="../svgs/volume-up.svg">
                 </span>
@@ -123,6 +125,38 @@
 
         $el.appendTo($parent);
         $el.find('#phreaseAccentIcon').on('click', () => $('#phraseAudio')[0].play());
+    }
+
+    function highlight(sentence, word) {
+        if (sentence.highlight_phrase) {
+            return sentence.sentence.replace(
+                sentence.highlight_phrase, 
+                `<span style="color: #007bff;">${sentence.highlight_phrase}</span>`
+            );
+        }
+
+        let highlightWords = sentence.sentence.split(/\s/)
+                .map(s => {
+                    let regex = /[\w-]+/;
+
+                    return !regex.test(s) ? '' : s.match(regex)[0];
+                })
+                .filter(s => {
+                    if (!s) return false;
+
+                    let distance = levenshtein(s, word);
+                    return s.length < 7 ? distance <= 2 : distance <=3;
+                });
+
+        if (highlightWords.length === 0) {
+            return sentence.sentence;
+        }
+        
+        let replaceRegex = new RegExp(`${highlightWords.join('|')}`, 'g');
+
+        return sentence.sentence.replace(replaceRegex, (match) => {
+            return `<span style="color: #007bff;">${match}</span>`;
+        });
     }
 
     function generateEnglishParaphrase(data, $parent) {
