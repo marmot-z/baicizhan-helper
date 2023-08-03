@@ -78,7 +78,9 @@
             removeWord.bind(this)(data.topic_id);
         });
         $el.find('span[name="accentIcon"]').on('click', () => $el.find('audio')[0].play());
-        $el.find('a[name="detailLink"]').on('click', () => {            
+        $el.find('a[name="detailLink"]').on('click', (e) => {  
+            e.preventDefault();
+            
             getWordDetail(data.topic_id)
                 .then(data => {
                     let $modal = $('#wordDetailModal').modal('show');
