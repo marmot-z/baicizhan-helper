@@ -42,7 +42,7 @@
                 },
                 onHide: () => {                    
                     this.destoryIconTips();
-                    this.hide();
+                    postpopup();
                     onHide();
                 }
             });
@@ -108,22 +108,30 @@
         $supportElement.updatePosition();
     }
 
+    function postpopup() {
+        $supportElement.hide();
+    }
+
     function canPopup() {
         if (triggerMode == TRIGGER_MODE.DIRECT) {
+            postpopup();
             return Promise.resolve(true);
         }
         
-        if (triggerMode == TRIGGER_MODE.NEVER) {
+        if (triggerMode == TRIGGER_MODE.NEVER) {  
+            postpopup();  
             return Promise.resolve(false);
         }
 
         return new Promise(resolve => {
             $supportElement.createIconTips(
+                // click
                 () => resolve(true),
+                // hide
                 () => resolve(false)
             )
         });
-    }
+    }    
 
     function popup(word) {
         // 销毁上一个 $popover
