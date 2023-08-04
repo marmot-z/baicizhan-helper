@@ -2,6 +2,7 @@
     'use strict';
 
     const $doc = $(document);
+    const resourceDomain = 'https://7n.bczcdn.com';
     const {getBookWords, cancelCollectWord, getWordDetail} = window.apiModule;
     const {WordbookStorage} = window.wordbookStorageModule;
 
@@ -51,6 +52,9 @@
     }
 
     function generateWordRow(data, $parent) {
+        let audioSrc = data.audio_uk.startsWith('http') ?
+                data.audio_uk :
+                resourceDomain + data.audio_uk;
         let $el = $(`
             <tr>
                 <td>
@@ -64,9 +68,9 @@
                         <img src="../svgs/volume-up.svg" />
                     </span>
                     <audio name="accentAudio" style="display: none;">
-                        <source src="${data.audio_uk}">
+                        <source src="${audioSrc}">
                     </audio>
-                    <span style="font-size: x-small; color: #a1a5ab;">收藏时间：${formatAsYYYYMMDDHHMMSS(data.created_at)}</span>
+                    <span style="font-size: x-small; color: #a1a5ab;">收藏时间：${formatDate(data.created_at)}</span>
                     <a name="detailLink" href="#" style="float: right; color: #606266;">详情 > </a> <br>
                     <span class="searchMeans" title="${data.mean}">${data.mean}</span>
                 </td>
@@ -90,7 +94,7 @@
         });
     }
 
-    function formatAsYYYYMMDDHHMMSS(timestamp) {
+    function formatDate(timestamp) {
         let date = new Date(timestamp);
         let pad2 = (n) => {
             return (n < 10 ? '0' : '') + n;
