@@ -107,24 +107,42 @@
     function generateSentence(data, word, $parent) {
         if (data.length === 0) return;
 
-        let sentence = data[Math.floor(Math.random() * data.length)];
-        let sentenceHtml = highlight(sentence, word);        
+        let index = 0, len = data.length;
         let $el = $(`
             <div class="section">
-                <p style="font-weight: bolder;">图文例句</p>
-                <span>${sentenceHtml}</span>
-                <span id="phreaseAccentIcon" class="volume-up">
-                    <img src="../svgs/volume-up.svg">
-                </span>
-                <audio id="phraseAudio" style="display: none;"><source src="${resourceDomain + sentence.audio_uri}"></audio>
-                <br>
-                <p style="color: #6a6d71;">${sentence.sentence_trans}</p>
-                <img style="max-width: 200px;" src="${resourceDomain + sentence.img_uri}" />
+                <p style="font-weight: bolder;">
+                    图文例句 
+                    <img class="refresh-icon" src="../svgs/refresh.svg" title="刷新例句"></img>
+                </p>
+                <div id="sentenceDiv">                    
+                </div>
             </div>
         `);
+        let $sentenceDiv = $el.find('#sentenceDiv');
+
+        refreshSentence(data[index++ % len], word, $sentenceDiv);
 
         $el.appendTo($parent);
-        $el.find('#phreaseAccentIcon').on('click', () => $('#phraseAudio')[0].play());
+        $el.find('.refresh-icon')
+            .on('click', () => refreshSentence(data[index++ % len], word, $sentenceDiv));
+    }
+
+    function refreshSentence(sentence, word, $parent) {
+        let sentenceHtml = highlight(sentence, word);
+        let $el = $(`
+            <span>${sentenceHtml}</span>
+            <span id="phreaseAccentIcon" class="volume-up">
+                <img src="../svgs/volume-up.svg">
+            </span>
+            <audio id="phraseAudio" style="display: none;"><source src="${resourceDomain + sentence.audio_uri}"></audio>
+            <br>
+            <p style="color: #6a6d71;">${sentence.sentence_trans}</p>
+            <img style="max-width: 200px;" src="${resourceDomain + sentence.img_uri}" />
+        `);
+
+        $parent.empty().append($el);
+        $parent.find('#phreaseAccentIcon')
+                .on('click', () => $('#phraseAudio')[0].play());
     }
 
     function highlight(sentence, word) {

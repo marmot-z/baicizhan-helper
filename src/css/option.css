@@ -50,3 +50,10 @@
     border-collapse: separate;
     border-spacing: 0 8px;
 }
+
+.refresh-icon {
+    float: right;
+    cursor: pointer;
+    width: 20px;
+    margin-right: 15px;
+}
