@@ -263,7 +263,7 @@
     function generateVariantWord(word, topicId, title) {
         let $el = $(`
             <span style="color: #6a6d71;">${title}</span> &nbsp;&nbsp;
-            <a href="#" data-topic-id=${topicId}>${word}</a>
+            <a href="#" tabIndex="-1" data-topic-id=${topicId}>${word}</a>
             <br>
         `);
 
@@ -281,7 +281,7 @@
                 <p>
                 ${
                     data.map(antonym => 
-                        `<a href="#" data-topic-id="${antonym.syn_ant_topic_id}">${antonym.syn_ant}</a>`
+                        `<a href="#" tabIndex="-1" data-topic-id="${antonym.syn_ant_topic_id}">${antonym.syn_ant}</a>`
                     )
                     .join('&nbsp;&nbsp;')
                 }
@@ -302,7 +302,7 @@
                 <p>
                 ${
                     data.map(synonym => 
-                        `<a href="#" data-topic-id="${synonym.syn_ant_topic_id}">${synonym.syn_ant}</a>`
+                        `<a href="#" tabIndex="-1" data-topic-id="${synonym.syn_ant_topic_id}">${synonym.syn_ant}</a>`
                     )
                     .join('&nbsp;&nbsp;')
                 }
@@ -323,7 +323,7 @@
                 <p>
                 ${
                     data.map(similarWord => 
-                        `<a href="#" data-topic-id="${similarWord.topic_id}">${similarWord.word}</a>`
+                        `<a href="#" tabIndex="-1" data-topic-id="${similarWord.topic_id}">${similarWord.word}</a>`
                     )
                     .join('&nbsp;&nbsp;')
                 }
