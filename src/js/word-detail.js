@@ -278,7 +278,7 @@
         let $el = $(`
             <div class="section">
                 <p class="section-title">反义词</p>
-                <p>
+                <p class="p-words">
                 ${
                     data.map(antonym => 
                         `<a href="#" tabIndex="-1" data-topic-id="${antonym.syn_ant_topic_id}">${antonym.syn_ant}</a>`
@@ -299,7 +299,7 @@
         let $el = $(`
             <div class="section">
                 <p class="section-title">近义词</p>
-                <p>
+                <p class="p-words">
                 ${
                     data.map(synonym => 
                         `<a href="#" tabIndex="-1" data-topic-id="${synonym.syn_ant_topic_id}">${synonym.syn_ant}</a>`
@@ -320,7 +320,7 @@
         let $el = $(`
             <div class="section">
                 <p class="section-title">形近词</p>
-                <p>
+                <p class="p-words">
                 ${
                     data.map(similarWord => 
                         `<a href="#" tabIndex="-1" data-topic-id="${similarWord.topic_id}">${similarWord.word}</a>`
