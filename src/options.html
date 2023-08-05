@@ -39,10 +39,10 @@
                 <div class="row">
                     <div class="col-sm-8 offset-sm-2">
                         <div class="row" style="margin: 20px 0;">
-                            <select id="wordbookSelect" class="form-control col-sm-5">
+                            <select id="wordbookSelect" class="form-control col-sm-5" tabIndex="-1">
                             </select>
                             <button id="wordbookRefreshButton" type="button" class="btn btn-primary"
-                                style="margin-left: 10px;" data-toggle="tooltip" title="刷新单词本显示最新内容">
+                                style="margin-left: 10px;" data-toggle="tooltip" title="刷新单词本显示最新内容" tabIndex="-1">
                                 <img style="width: 20px;" src="./assets/images/svgs/refresh.svg" />
                             </button>
                         </div>
@@ -165,6 +165,20 @@
                                     <input id="portInput" type="text" class="form-control mb-2" value="8080"
                                         placeholder="默认不需要修改">
                                 </div>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label class="col-sm-3 col-form-label">快捷键</label>
+                            <div class="col-sm-9 row">
+                                <div class="form-check">
+                                    <p><kbd>Tab</kbd> 切换单词</p>
+                                </div>
+                                <div class="form-check">
+                                    <p><kbd>Enter</kbd> 查看单词详情</p>
+                                </div>
+                                <div class="form-check">
+                                    <p><kbd>Esc</kbd> 退出单词详情</p>
+                                </div>                                
                             </div>
                         </div>
                         <div class="form-group row">

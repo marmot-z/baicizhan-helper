@@ -46,18 +46,15 @@
         let $tbody = $('#wordbookContentTable > tbody').empty();
 
         data.sort((a, b) => b.created_at - a.created_at);
-
-        for (let item of data) {
-            generateWordRow(item, $tbody);
-        }
+        data.forEach((item, index) => generateWordRow(item, $tbody, index));
     }
 
-    function generateWordRow(data, $parent) {
+    function generateWordRow(data, $parent, index) {
         let audioSrc = data.audio_uk.startsWith('http') ?
                 data.audio_uk :
                 resourceDomain + data.audio_uk;
         let $el = $(`
-            <tr>
+            <tr tabIndex="${++index}">
                 <td>
                     <span name="starIcon" style="cursor: pointer;">
                         <img src="../svgs/star-fill.svg" />
@@ -72,21 +69,29 @@
                         <source src="${audioSrc}">
                     </audio>
                     <span style="font-size: x-small; color: #a1a5ab;">收藏时间：${formatDate(data.created_at)}</span>
-                    <a name="detailLink" href="#" data-topic-id="${data.topic_id}" style="float: right; color: #606266;">详情 > </a> <br>
+                    <a name="detailLink" href="#" data-topic-id="${data.topic_id}" tabIndex="-1" style="float: right; color: #606266;">详情 > </a> <br>
                     <span class="searchMeans" title="${data.mean}">${data.mean}</span>
                 </td>
             </tr> 
         `);
 
         $el.appendTo($parent);
-        $el.find('span[name="starIcon"]').on('click', async function() {
-            removeWord.bind(this)(data.topic_id);
+        $el.on('keypress', function(e) {
+            if (e.keyCode == 13) {
+                $doc.trigger(events.WORD_DETAIL, [$el.find('a[name="detailLink"]')[0]]);
+            }
         });
-        $el.find('span[name="accentIcon"]').on('click', () => $el.find('audio')[0].play());
-        $el.find('a[name="detailLink"]').on('click', function(e) {  
-            e.preventDefault();
-            $doc.trigger(events.WORD_DETAIL, [this]);                    
-        });
+        $el.find('span[name="starIcon"]')
+            .on('click', async function() {
+                removeWord.bind(this)(data.topic_id);
+            });
+        $el.find('span[name="accentIcon"]')
+            .on('click', () => $el.find('audio')[0].play());
+        $el.find('a[name="detailLink"]')
+            .on('click', function(e) {  
+                e.preventDefault();
+                $doc.trigger(events.WORD_DETAIL, [this]);                    
+            });
     }
 
     function formatDate(timestamp) {
