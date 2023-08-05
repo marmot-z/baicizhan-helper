@@ -14,6 +14,7 @@
     text-overflow: ellipsis;
     white-space: nowrap;
     display: block;
+    cursor: pointer;
 }
 
 .section {
@@ -65,4 +66,5 @@
 
 .p-words {
     word-wrap: break-word;  
+    word-break: break-all;
 }

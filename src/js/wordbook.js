@@ -13,6 +13,7 @@
         $doc.on(events.WORD_DETAIL, refreshWordDetail);
         $('#wordbookSelect').on('change', (e) => loadWordbookTable(false));
         $('#wordbookRefreshButton').on('click', (e) => loadWordbookTable(true));
+        $('#maskMeanButton').on('click', maskWords);
     }
 
     async function loadWordbookTable(focus) {
@@ -44,15 +45,16 @@
 
     function generateWordbookTable(data) {
         let $tbody = $('#wordbookContentTable > tbody').empty();
+        let masked = $('#maskMeanButton').prop('checked');
 
         data.sort((a, b) => b.created_at - a.created_at);
-        data.forEach((item, index) => generateWordRow(item, $tbody, index));
+        data.forEach((item, index) => generateWordRow(item, $tbody, index, masked));
     }
 
-    function generateWordRow(data, $parent, index) {
+    function generateWordRow(data, $parent, index, masked) {
         let audioSrc = data.audio_uk.startsWith('http') ?
                 data.audio_uk :
-                resourceDomain + data.audio_uk;
+                resourceDomain + data.audio_uk;                
         let $el = $(`
             <tr tabIndex="${++index}">
                 <td>
@@ -70,7 +72,7 @@
                     </audio>
                     <span style="font-size: x-small; color: #a1a5ab;">收藏时间：${formatDate(data.created_at)}</span>
                     <a name="detailLink" href="#" data-topic-id="${data.topic_id}" tabIndex="-1" style="float: right; color: #606266;">详情 > </a> <br>
-                    <span class="searchMeans" title="${data.mean}">${data.mean}</span>
+                    <span class="searchMeans" data-masked="${masked}" style="background: ${masked ? '#6a6d71' : 'none'}">${data.mean}</span>
                 </td>
             </tr> 
         `);
@@ -91,6 +93,15 @@
             .on('click', function(e) {  
                 e.preventDefault();
                 $doc.trigger(events.WORD_DETAIL, [this]);                    
+            });
+        $el.find('.searchMeans')
+            .on('click', function(e) {
+                e.preventDefault();
+
+                let $this = $(this), masked = $this.data('masked');
+                
+                $this.data('masked', !masked);
+                $this.css('background', !masked ? '#6a6d71' : 'none');
             });
     }
 
@@ -159,6 +170,14 @@
                 generateWordDetail(data, $modal.find('.modal-body'), true, false);
                 $modal.find('#starIcon').hide();
             });
+    }
+
+    function maskWords(e) {        
+        let $this = $(this), $means = $('#wordbookContentTable > tbody > tr .searchMeans');
+        let masked = $this.prop('checked');
+
+        $means.css('background', masked ? '#6a6d71' : 'none');
+        $means.data('masked', masked);
     }
 
     window.wordbookModule = {init};
