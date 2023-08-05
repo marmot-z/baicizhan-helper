@@ -17,7 +17,7 @@
         <li class="nav-item" role="presentation">
             <button class="nav-link" id="settingTab" data-toggle="tab" data-target="#settingTabContent" type="button"
                 role="tab" aria-controls="settingTabContent" aria-selected="true">系统设置</button>
-        </li>        
+        </li>
         <li class="nav-item" role="presentation">
             <a id="joinLink" class="nav-link" target="_blank" title="Join family">Join family</a>
         </li>
@@ -102,22 +102,49 @@
                             </div>
                         </div>
                         <div class="form-group row">
-                            <label class="col-sm-3 col-form-label">主题</label>
+                            <label class="col-sm-3 col-form-label">单词详情内容</label>
                             <div class="col-sm-9">
                                 <div class="form-check">
-                                    <input class="form-check-input" type="radio" name="theme" id="lightRadio"
-                                        value="light" checked>
-                                    <label class="form-check-label" for="light">明亮</label>
+                                    <input class="form-check-input" type="checkbox" id="showVariantCheck">
+                                    <label class="form-check-label" for="showVariantCheck">
+                                        单词变形
+                                    </label>
                                 </div>
                                 <div class="form-check">
-                                    <input class="form-check-input" type="radio" name="theme" id="blackRadio"
-                                        value="black">
-                                    <label class="form-check-label" for="black">酷黑</label>
+                                    <input class="form-check-input" type="checkbox" id="showSentenceCheck" checked disabled>
+                                    <label class="form-check-label" for="showSentenceCheck">
+                                        图文例句
+                                    </label>
                                 </div>
                                 <div class="form-check">
-                                    <input class="form-check-input" type="radio" name="theme" id="autoRadio"
-                                        value="auto">
-                                    <label class="form-check-label" for="auto">跟随操作系统</label>
+                                    <input class="form-check-input" type="checkbox" id="showShortPhrasesCheck">
+                                    <label class="form-check-label" for="showShortPhrasesCheck">
+                                        短语
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="showSynonymsCheck">
+                                    <label class="form-check-label" for="showSynonymsCheck">
+                                        近义词
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="showAntonymsCheck">
+                                    <label class="form-check-label" for="showAntonymsCheck">
+                                        反义词
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="showSimilarWordsCheck">
+                                    <label class="form-check-label" for="showSimilarWordsCheck">
+                                        形近词
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="showEnglishParaphraseCheck">
+                                    <label class="form-check-label" for="showEnglishParaphraseCheck">
+                                        英文释义
+                                    </label>
                                 </div>
                             </div>
                         </div>
@@ -207,7 +234,7 @@
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title">单词详情</h5>                    
+                    <h5 class="modal-title">单词详情</h5>
                 </div>
                 <div class="modal-body" style="padding-top: 0;">
                 </div>
@@ -224,7 +251,7 @@
     <script type="text/javascript" src="./js/api.js"></script>
     <script type="text/javascript" src="./js/login.js"></script>
     <script type="text/javascript" src="./js/setting.js"></script>
-    <script type="text/javascript" src="./js/word-detail.js"></script>    
+    <script type="text/javascript" src="./js/word-detail.js"></script>
     <script type="text/javascript" src="./js/wordbook.js"></script>
     <script type="text/javascript" src="./js/options.js"></script>
 </body>

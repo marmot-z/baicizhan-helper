@@ -1,26 +1,35 @@
-;(function(window) {
+;(function(window, document, $) {
     'use strict';
 
     const {collectWord, cancelCollectWord} = window.apiModule;
     const {levenshtein} = window.utilModule;
     const resourceDomain = 'https://7n.bczcdn.com';
+    const $doc = $(document);
     let collected = false;
 
-    function generateWordDetail(data, $target, hasCollected) {        
+    function generateWordDetail(data, $target, hasCollected, showIcon = true) {        
         $target.empty().css('display', 'block');
         collected = hasCollected || false;
         
-        generateWordInfo(data.dict, $target);
-        generateSentence(data.dict.sentences, data.dict.word_basic_info.word, $target);
-        generateEnglishParaphrase(data.dict.en_means, $target);
+        storageModule.get('wordDetail')
+            .then(wordDetailSettings => {
+                generateWordInfo(data.dict, $target, showIcon);
+                if (wordDetailSettings.variantDisplay) generateVariant(data.dict.variant_info, $target);
+                if (wordDetailSettings.sentenceDisplay) generateSentence(data.dict.sentences, data.dict.word_basic_info.word, $target);
+                if (wordDetailSettings.shortPhrasesDisplay) generateShortPhrases(data.dict.short_phrases, $target);                 
+                if (wordDetailSettings.synonymsDisplay) generateSynonyms(data.dict.synonyms, $target);
+                if (wordDetailSettings.antonymsDisplay) generateAntonyms(data.dict.antonyms, $target);
+                if (wordDetailSettings.similarWordsDisplay) generateSimilarWords(data.similar_words, $target);
+                if (wordDetailSettings.englishParaphraseDisplay) generateEnglishParaphrase(data.dict.en_means, $target); 
+            });             
     }
 
-    function generateWordInfo(data, $parent) {        
+    function generateWordInfo(data, $parent, showIcon) {        
         let starIconSvg = collected ? 'star-fill.svg' : 'star.svg'; 
         let $section = $(`
             <div class="section">
                 <span class="word">${data.word_basic_info.word}</span>
-                <span id="starIcon" class="star">
+                <span id="starIcon" class="star" style="display: ${showIcon ? 'block' : 'none'}">
                     <img src="../svgs/${starIconSvg}">
                 </span>
                 <br>                
@@ -110,7 +119,7 @@
         let index = 0, len = data.length;
         let $el = $(`
             <div class="section">
-                <p style="font-weight: bolder;">
+                <p class="section-title">
                     图文例句 
                     <img class="refresh-icon" src="../svgs/refresh.svg" title="刷新例句"></img>
                 </p>
@@ -188,7 +197,7 @@
         }, Object.create(null));
         let $el = $(`
             <div class="section">
-                <p style="font-weight: bolder;">英文释义</p>
+                <p class="section-title">英文释义</p>
                 ${
                     Object.entries(englishMeans)
                         .map(([k, v]) => `
@@ -205,5 +214,132 @@
         $el.appendTo($parent);
     }
 
+    function generateShortPhrases(data, $parent) {
+        if (data.length === 0) return;
+
+        let $el = $(`
+            <div class="section">
+                <p class="section-title">短语</p>
+                <ul style="padding-left: 15px;">
+                ${
+                    data.map(shortPhrase => `
+                        <li>
+                            <span>${shortPhrase.short_phrase}</span>
+                            <p style="margin-bottom: 2px; color: #6a6d71;">${shortPhrase.short_phrase_trans}</p>
+                        </li>
+                    `)
+                    .join('')
+                }
+                </ul>
+            </div>
+        `);
+
+        $el.appendTo($parent);
+    }
+
+    function generateVariant(data, $parent) {
+        if (!data) return;
+
+        let $el = $(`
+            <div class="section">
+                <p class="section-title">单词变形</p>                
+            </div>
+        `);
+
+        if (data.noun) $el.append(generateVariantWord(data.noun, data.noun_topic_id, '名词'));
+        if (data.verb) $el.append(generateVariantWord(data.verb, data.verb_topic_id, '动词'));  
+        if (data.adj) $el.append(generateVariantWord(data.adj, data.adj_topic_id, '形容词'));
+        if (data.pl) $el.append(generateVariantWord(data.pl, data.pl_topic_id, '复数'));
+        if (data.adv) $el.append(generateVariantWord(data.adv, data.adv_topic_id, '副词'));
+        if (data.est) $el.append(generateVariantWord(data.est, data.est_topic_id, '现在分词'));                
+        if (data.done) $el.append(generateVariantWord(data.done, data.done_topic_id, '过去式'));
+        if (data.past) $el.append(generateVariantWord(data.past, data.past_topic_id, '过去分词'));
+        if (data.third) $el.append(generateVariantWord(data.third, data.thrid_topic_id, '第三人称单数'));
+        if (data.er) $el.append(generateVariantWord(data.er, data.er_topic_id, '比较级'));
+
+        $el.appendTo($parent);
+    }
+
+    function generateVariantWord(word, topicId, title) {
+        let $el = $(`
+            <span style="color: #6a6d71;">${title}</span> &nbsp;&nbsp;
+            <a href="#" data-topic-id=${topicId}>${word}</a>
+            <br>
+        `);
+
+        $($el[1]).on('click',refreshWordDetail);
+
+        return $el;
+    }
+
+    function generateAntonyms(data, $parent) {
+        if (!data.length) return;
+
+        let $el = $(`
+            <div class="section">
+                <p class="section-title">反义词</p>
+                <p>
+                ${
+                    data.map(antonym => 
+                        `<a href="#" data-topic-id="${antonym.syn_ant_topic_id}">${antonym.syn_ant}</a>`
+                    )
+                    .join('&nbsp;&nbsp;')
+                }
+                </p>
+            </div>
+        `);
+
+        $parent.append($el);
+        $parent.find('a').on('click', refreshWordDetail);
+    }
+
+    function generateSynonyms(data, $parent) {
+        if (!data.length) return;
+
+        let $el = $(`
+            <div class="section">
+                <p class="section-title">近义词</p>
+                <p>
+                ${
+                    data.map(synonym => 
+                        `<a href="#" data-topic-id="${synonym.syn_ant_topic_id}">${synonym.syn_ant}</a>`
+                    )
+                    .join('&nbsp;&nbsp;')
+                }
+                </p>
+            </div>
+        `);
+
+        $parent.append($el);
+        $parent.find('a').on('click', refreshWordDetail);
+    }
+
+    function generateSimilarWords(data, $parent) {
+        if (!data || !data.length) return;
+
+        let $el = $(`
+            <div class="section">
+                <p class="section-title">形近词</p>
+                <p>
+                ${
+                    data.map(similarWord => 
+                        `<a href="#" data-topic-id="${similarWord.topic_id}">${similarWord.word}</a>`
+                    )
+                    .join('&nbsp;&nbsp;')
+                }
+                </p>
+            </div>
+        `);
+
+        $parent.append($el);
+        $parent.find('a').on('click', refreshWordDetail);
+    }
+
+    function refreshWordDetail(e) {
+        e.preventDefault && e.preventDefault();
+
+        $doc.trigger(events.WORD_DETAIL, [this]);
+    }
+
     window.generateWordDetail = generateWordDetail;
-} (this));
+} (this, document, jQuery));

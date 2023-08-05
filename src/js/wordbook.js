@@ -10,6 +10,7 @@
         $doc.on(events.AUTHED, (e) => loadWordbookTable(false));        
         $doc.on(events.BOOKS_LOADED, generateWordbooks);
         $doc.on(events.UNAUTHED, clearStorageWords);
+        $doc.on(events.WORD_DETAIL, refreshWordDetail);
         $('#wordbookSelect').on('change', (e) => loadWordbookTable(false));
         $('#wordbookRefreshButton').on('click', (e) => loadWordbookTable(true));
     }
@@ -71,7 +72,7 @@
                         <source src="${audioSrc}">
                     </audio>
                     <span style="font-size: x-small; color: #a1a5ab;">收藏时间：${formatDate(data.created_at)}</span>
-                    <a name="detailLink" href="#" style="float: right; color: #606266;">详情 > </a> <br>
+                    <a name="detailLink" href="#" data-topic-id="${data.topic_id}" style="float: right; color: #606266;">详情 > </a> <br>
                     <span class="searchMeans" title="${data.mean}">${data.mean}</span>
                 </td>
             </tr> 
@@ -82,15 +83,9 @@
             removeWord.bind(this)(data.topic_id);
         });
         $el.find('span[name="accentIcon"]').on('click', () => $el.find('audio')[0].play());
-        $el.find('a[name="detailLink"]').on('click', (e) => {  
+        $el.find('a[name="detailLink"]').on('click', function(e) {  
             e.preventDefault();
-            
-            getWordDetail(data.topic_id)
-                .then(data => {
-                    let $modal = $('#wordDetailModal').modal('show');
-                    generateWordDetail(data, $modal.find('.modal-body'), true);
-                    $modal.find('#starIcon').hide();
-                });
+            $doc.trigger(events.WORD_DETAIL, [this]);                    
         });
     }
 
@@ -148,6 +143,17 @@
 
     function clearStorageWords() {
         WordbookStorage.clear();
+    }
+
+    function refreshWordDetail(e, triggerEl) {
+        let topicId = $(triggerEl).data('topic-id');
+
+        getWordDetail(topicId)
+            .then(data => {
+                let $modal = $('#wordDetailModal').modal('show');
+                generateWordDetail(data, $modal.find('.modal-body'), true, false);
+                $modal.find('#starIcon').hide();
+            });
     }
 
     window.wordbookModule = {init};

@@ -20,5 +20,10 @@
      */
     const BOOKS_LOADED = 'bcz.booksLoaded';
 
-    window.events = {AUTHED, UNAUTHED, BOOKS_LOADED};
+    /**
+     * 加载单词详情
+     */
+    const WORD_DETAIL = 'bcz.wordDetail';
+
+    window.events = {AUTHED, UNAUTHED, BOOKS_LOADED, WORD_DETAIL};
 } (this));

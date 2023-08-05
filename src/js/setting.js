@@ -1,20 +1,29 @@
-;(function(window, document, $) {
+; (function (window, document, $) {
     'use strict';
 
     const $doc = $(document);
-    const {getBooks} = window.apiModule;
+    const { getBooks } = window.apiModule;
+    const defaultWordDetailSettings = {
+        variantDisplay: false,
+        sentenceDisplay: true,
+        shortPhrasesDisplay: false,
+        synonymsDisplay: false,
+        antonymsDisplay: false,
+        similarWordsDisplay: false,
+        englishParaphraseDisplay: false,
+    };
 
     function loadWordbook() {
         return getBooks().then(data => {
-            let html = data.user_books.map(book => 
+            let html = data.user_books.map(book =>
                 `<option value="${book.user_book_id}">${book.book_name}(已收录 ${book.word_num} 词)</option>`
             )
-            .join('');
+                .join('');
 
             $('#collectWordbookSelect').html(html);
             $doc.trigger(events.BOOKS_LOADED, [data]);
         })
-        .catch(e => console.error('加载单词本失败', e));
+            .catch(e => console.error('加载单词本失败', e));
     }
 
     function loadSettings() {
@@ -22,12 +31,12 @@
             .then(bookId => $('#collectWordbookSelect').val(bookId || 0));
         storageModule.get('popoverStyle')
             .then(popoverStyle => {
-                if (!popoverStyle) return;                
+                if (!popoverStyle) return;
                 $('input[name="popoverStyle"]').filter(`[value=${popoverStyle}]`).prop("checked", true)
             });
         storageModule.get('triggerMode')
             .then(triggerMode => {
-                if (!triggerMode) return;                
+                if (!triggerMode) return;
                 $('input[name="triggerMode"]').filter(`[value=${triggerMode}]`).prop("checked", true)
             });
         storageModule.get('theme')
@@ -39,6 +48,27 @@
             .then(host => $('#hostInput').val(host || apiModule.defaultHost));
         storageModule.get('port')
             .then(port => $('#portInput').val(port || apiModule.defaultPort));
+        storageModule.get('wordDetail')
+            .then(wordDetailSettings => {
+                let settings = wordDetailSettings ?
+                    Object.assign(defaultWordDetailSettings, wordDetailSettings) :
+                    defaultWordDetailSettings;
+
+                if (settings.variantDisplay)
+                    $('#showVariantCheck').prop('checked', true);
+                if (settings.sentenceDisplay)
+                    $('#showSentenceCheck').prop('checked', true);
+                if (settings.shortPhrasesDisplay)
+                    $('#showShortPhrasesCheck').prop('checked', true);
+                if (settings.synonymsDisplay)
+                    $('#showSynonymsCheck').prop('checked', true);
+                if (settings.antonymsDisplay)
+                    $('#showAntonymsCheck').prop('checked', true);
+                if (settings.similarWordsDisplay)
+                    $('#showSimilarWordsCheck').prop('checked', true);
+                if (settings.englishParaphraseDisplay)
+                    $('#showEnglishParaphraseCheck').prop('checked', true);
+            });
     }
 
     function reset() {
@@ -46,6 +76,13 @@
         $('input[name="popoverStyle"]').first().prop("checked", true);
         $('input[name="triggerMode"]').first().prop("checked", true);
         $('input[name="theme"]').first().prop("checked", true);
+        $('#showVariantCheck').prop('checked', false);
+        $('#showSentenceCheck').prop('checked', true);
+        $('#showShortPhrasesCheck').prop('checked', false);
+        $('#showSynonymsCheck').prop('checked', false);
+        $('#showAntonymsCheck').prop('checked', false);
+        $('#showSimilarWordsCheck').prop('checked', false);
+        $('#showEnglishParaphraseCheck').prop('checked', false);
         $('#hostInput').val(apiModule.defaultHost);
         $('#portInput').val(apiModule.defaultPort);
     }
@@ -57,6 +94,13 @@
         let theme = $('input[name="theme"]:checked').val();
         let host = $('#hostInput').val();
         let port = $('#portInput').val();
+        let variantDisplay = $('#showVariantCheck').prop('checked');
+        let sentenceDisplay = $('#showSentenceCheck').prop('checked');
+        let shortPhrasesDisplay = $('#showShortPhrasesCheck').prop('checked');
+        let synonymsDisplay = $('#showSynonymsCheck').prop('checked');
+        let antonymsDisplay = $('#showAntonymsCheck').prop('checked');
+        let similarWordsDisplay = $('#showSimilarWordsCheck').prop('checked');
+        let englishParaphraseDisplay = $('#showEnglishParaphraseCheck').prop('checked');
 
         storageModule.set('bookId', bookId);
         storageModule.set('popoverStyle', popoverStyle);
@@ -64,6 +108,15 @@
         storageModule.set('theme', theme);
         storageModule.set('host', host);
         storageModule.set('port', port);
+        storageModule.set('wordDetail', {
+            variantDisplay,
+            sentenceDisplay,
+            shortPhrasesDisplay,
+            synonymsDisplay,
+            antonymsDisplay,
+            similarWordsDisplay,
+            englishParaphraseDisplay,
+        });
     }
 
     function clearStorageBookId() {
@@ -87,5 +140,5 @@
         });
     }
 
-    window.settingModule = {init};
-} (this, document, jQuery));
+    window.settingModule = { init };
+}(this, document, jQuery));

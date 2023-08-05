@@ -1,6 +1,7 @@
-;(function(window, $) {
+;(function(window, document, $) {
     'use strict';
 
+    const $doc = $(document);
     const {searchWord, getWordDetail} = window.apiModule;
 
     function search() {
@@ -27,7 +28,7 @@
 
     function generateWordRow(data, $parent, index) {
         let $el = $(`
-            <tr style="cursor: pointer;" tabIndex="${++index}">
+            <tr style="cursor: pointer;" tabIndex="${++index}" data-topic-id="${data.topic_id}">
                 <td>
                     <span class="searchWord">${data.word}</span> &nbsp;&nbsp;
                     <span class="searchAccent">${data.accent}</span>
@@ -37,11 +38,11 @@
         `);
 
         $el.appendTo($parent);
-        $el.on('click', () => detail(data.topic_id));
-        $el.on('keypress', (e) => {
-            if (e.keyCode == 13) {
-                detail(data.topic_id)
-            }
+        $el.on('click', function(e) {
+            $doc.trigger(events.WORD_DETAIL, [this]);
+        });
+        $el.on('keypress', function(e) {
+            if (e.keyCode == 13) $doc.trigger(events.WORD_DETAIL, [this]);        
         });
     }
 
@@ -55,7 +56,9 @@
         $parent.empty().append($errorTipsRow);
     }
 
-    function detail(topicId) {
+    function refreshWordDetail(e, triggerEl) {
+        let topicId = $(triggerEl).data('topic-id');
+
         getWordDetail(topicId)
             .then((data) => {
                 $('#searchTable').css('display', 'none');
@@ -70,11 +73,10 @@
     function init() {
         $('#searchButton').on('click', search);
         $('#searchInput').focus().on('keypress', (e) => {
-            if (e.keyCode == 13) {
-                search();
-            }
+            if (e.keyCode == 13) search();
         });
+        $doc.on(events.WORD_DETAIL, refreshWordDetail);
     }
 
     window.onload = init;
-} (this, jQuery));
+} (this, document, jQuery));
