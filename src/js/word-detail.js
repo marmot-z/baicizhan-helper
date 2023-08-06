@@ -162,24 +162,30 @@
             );
         }
 
-        let highlightWords = sentence.sentence.split(/\s/)
+        let highlightWord = sentence.sentence.split(/\s/)
                 .map(s => {
                     let regex = /[\w-]+/;
 
-                    return !regex.test(s) ? '' : s.match(regex)[0];
+                    if (regex.test(s)) {
+                        let term = s.match(regex)[0];
+                        let distance = levenshtein(term, word);
+                        let highlightable = term.length < 7 ? distance <= 3 : distance <= 5;
+
+                        if (highlightable) {
+                            return [distance, term];
+                        }
+                    }
+
+                    return null;
                 })
-                .filter(s => {
-                    if (!s) return false;
+                .filter(pair => pair !== null)
+                .reduce((a, b) => a[0] < b[0] ? a : b);
 
-                    let distance = levenshtein(s, word);
-                    return s.length < 7 ? distance <= 2 : distance <=3;
-                });
-
-        if (highlightWords.length === 0) {
+        if (!highlightWord) {
             return sentence.sentence;
         }
         
-        let replaceRegex = new RegExp(`${highlightWords.join('|')}`, 'g');
+        let replaceRegex = new RegExp(`\\b${highlightWord[1]}\\b`, 'g');
 
         return sentence.sentence.replace(replaceRegex, (match) => {
             return `<span style="color: #007bff;">${match}</span>`;
@@ -252,8 +258,8 @@
         if (data.pl) $el.append(generateVariantWord(data.pl, data.pl_topic_id, '复数'));
         if (data.adv) $el.append(generateVariantWord(data.adv, data.adv_topic_id, '副词'));
         if (data.est) $el.append(generateVariantWord(data.est, data.est_topic_id, '现在分词'));                
-        if (data.done) $el.append(generateVariantWord(data.done, data.done_topic_id, '过去式'));
-        if (data.past) $el.append(generateVariantWord(data.past, data.past_topic_id, '过去分词'));
+        if (data.done) $el.append(generateVariantWord(data.done, data.done_topic_id, '过去分词'));
+        if (data.past) $el.append(generateVariantWord(data.past, data.past_topic_id, '过去式'));
         if (data.third) $el.append(generateVariantWord(data.third, data.thrid_topic_id, '第三人称单数'));
         if (data.er) $el.append(generateVariantWord(data.er, data.er_topic_id, '比较级'));
 

@@ -129,24 +129,30 @@
             );
         }
 
-        let highlightWords = sentence.sentence.split(/\s/)
+        let highlightWord = sentence.sentence.split(/\s/)
                 .map(s => {
                     let regex = /[\w-]+/;
 
-                    return !regex.test(s) ? '' : s.match(regex)[0];
+                    if (regex.test(s)) {
+                        let term = s.match(regex)[0];
+                        let distance = levenshtein(term, word);
+                        let highlightable = term.length < 7 ? distance <= 3 : distance <= 5;
+
+                        if (highlightable) {
+                            return [distance, term];
+                        }
+                    }
+
+                    return null;
                 })
-                .filter(s => {
-                    if (!s) return false;
+                .filter(pair => pair !== null)
+                .reduce((a, b) => a[0] < b[0] ? a : b);
 
-                    let distance = levenshtein(s, word);
-                    return s.length < 7 ? distance <= 2 : distance <=3;
-                });
-
-        if (highlightWords.length === 0) {
+        if (!highlightWord) {
             return sentence.sentence;
         }
         
-        let replaceRegex = new RegExp(`${highlightWords.join('|')}`, 'g');
+        let replaceRegex = new RegExp(`\\b${highlightWord[1]}\\b`, 'g');
 
         return sentence.sentence.replace(replaceRegex, (match) => {
             return `<span style="color: #007bff;">${match}</span>`;
