@@ -17,7 +17,8 @@
     }
 
     async function loadWordbookTable(focus) {
-        let bookId = $('#wordbookSelect').val() || 0;
+        let bookId = $('#wordbookSelect').val() || 
+                        await storageModule.get('bookId') || 0;
 
         try {
             let wordbookData = focus ?
@@ -148,9 +149,12 @@
         $tbody.empty().append($el);
     }
 
-    function generateWordbooks(e, data) {
+    async function generateWordbooks(e, data) {
+        let selectedBookId = await storageModule.get('bookId');
         let html = data.user_books.map(book => 
-            `<option value="${book.user_book_id}">${book.book_name}(已收录 ${book.word_num} 词)</option>`
+            `<option value="${book.user_book_id}" ${book.user_book_id == selectedBookId ? 'selected' : ''}>
+                ${book.book_name}(已收录 ${book.word_num} 词)
+            </option>`
         )
         .join('');
 
