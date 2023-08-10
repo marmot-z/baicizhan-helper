@@ -5,6 +5,22 @@
     const resourceDomain = 'https://7n.bczcdn.com';
     const {getBookWords, cancelCollectWord, getWordDetail} = window.apiModule;
     const {WordbookStorage} = window.wordbookStorageModule;
+    const sortFns = {
+        'collectTimeAscOrder': (a, b) => a.created_at - b.created_at,
+        'collectTimeDescOrder': (a, b) => b.created_at - a.created_at,
+        'firstLettersAscOrder': (a, b) => {
+            let aWord = a.word.toLowerCase();
+            let bWord = b.word.toLowerCase();
+
+            return aWord.charAt(0) > bWord.charAt(0) ? 1 : -1;
+        },
+        'firstLettersDescOrder': (a, b) => {
+            let aWord = a.word.toLowerCase();
+            let bWord = b.word.toLowerCase();
+
+            return bWord.charAt(0) > aWord.charAt(0) ? 1 : -1;
+        },
+    };
 
     function init() {
         $doc.on(events.AUTHED, (e) => loadWordbookTable(false));        
@@ -14,6 +30,7 @@
         $('#wordbookSelect').on('change', (e) => loadWordbookTable(false));
         $('#wordbookRefreshButton').on('click', (e) => loadWordbookTable(true));
         $('#maskMeanButton').on('click', maskWords);
+        $('#collectTimeDescOrderBtn,#collectTimeAscOrderBtn,#firstLettersAscOrderBtn,#firstLettersDescOrderBtn').on('click', refreshWordbookTable);
     }
 
     async function loadWordbookTable(focus) {
@@ -47,8 +64,10 @@
     function generateWordbookTable(data) {
         let $tbody = $('#wordbookContentTable > tbody').empty();
         let masked = $('#maskMeanButton').prop('checked');
+        let order = $('#orderBtns > .btn-outline-primary').data('order');
+        let sortFn = sortFns[order] || sortFns.collectTimeDescOrder;
 
-        data.sort((a, b) => b.created_at - a.created_at);
+        data.sort(sortFn);
         data.forEach((item, index) => generateWordRow(item, $tbody, index, masked));
     }
 
@@ -182,6 +201,21 @@
 
         $means.css('background', masked ? '#6a6d71' : 'none');
         $means.data('masked', masked);
+    }
+
+    async function refreshWordbookTable(e) {
+        e.preventDefault();
+
+        let $this = $(this);
+
+        $this.parent()
+            .find('.btn-outline-primary')
+            .removeClass('btn-outline-primary')
+            .addClass('btn-outline-secondary');
+        $this.removeClass('btn-outline-secondary')
+            .addClass('btn-outline-primary');
+            
+        loadWordbookTable(false);
     }
 
     window.wordbookModule = {init};
