@@ -68,3 +68,16 @@
     word-wrap: break-word;  
     word-break: break-all;
 }
+
+.word-row {
+    cursor: pointer;
+    font-weight: bolder;
+    color: #212529;
+}
+
+.word-row-hidden {
+    cursor: pointer;
+    font-weight: bolder;
+    color: #6a6d71;
+    background-color: #6a6d71;
+}

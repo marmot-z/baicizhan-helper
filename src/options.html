@@ -46,18 +46,22 @@
                                 <img style="width: 20px;" src="./assets/images/svgs/refresh.svg" />
                             </button>
                             <div class="col-sm-4 offset-sm-2">
-                                <input id="maskMeanButton" type="checkbox" checked>
-                                <label class="form-check-label" for="maskParaphraseButton">
-                                    遮挡释义
+                                <input id="maskEnglishButton" type="checkbox" tabIndex="-1">
+                                <label class="form-check-label" for="maskEnglishButton">
+                                    隐藏英文
                                 </label>
-                              </div>                          
+                                <input id="maskMeanButton" type="checkbox" tabIndex="-1" checked>
+                                <label class="form-check-label" for="maskMeanButton">
+                                    隐藏释义
+                                </label>                                
+                            </div>                          
                         </div>
 
                         <div id="orderBtns" style="margin-bottom: 5px;">
-                            <button id="collectTimeDescOrderBtn" data-order="collectTimeDescOrder" type="button" class="btn btn-outline-primary">时间倒序</button>
-                            <button id="collectTimeAscOrderBtn" data-order="collectTimeAscOrder" type="button" class="btn btn-outline-secondary">时间顺序</button>
-                            <button id="firstLettersAscOrderBtn" data-order="firstLettersAscOrder" type="button" class="btn btn-outline-secondary">首字母顺序</button>
-                            <button id="firstLettersDescOrderBtn" data-order="firstLettersDescOrder" type="button" class="btn btn-outline-secondary">首字母倒序</button>
+                            <button id="collectTimeDescOrderBtn" data-order="collectTimeDescOrder" type="button" class="btn btn-outline-primary" tabIndex="-1">时间倒序</button>
+                            <button id="collectTimeAscOrderBtn" data-order="collectTimeAscOrder" type="button" class="btn btn-outline-secondary" tabIndex="-1">时间顺序</button>
+                            <button id="firstLettersAscOrderBtn" data-order="firstLettersAscOrder" type="button" class="btn btn-outline-secondary" tabIndex="-1">首字母顺序</button>
+                            <button id="firstLettersDescOrderBtn" data-order="firstLettersDescOrder" type="button" class="btn btn-outline-secondary" tabIndex="-1">首字母倒序</button>
                         </div>
 
                         <table id="wordbookContentTable" class="table table-hover">

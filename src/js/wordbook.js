@@ -29,7 +29,8 @@
         $doc.on(events.WORD_DETAIL, refreshWordDetail);
         $('#wordbookSelect').on('change', (e) => loadWordbookTable(false));
         $('#wordbookRefreshButton').on('click', (e) => loadWordbookTable(true));
-        $('#maskMeanButton').on('click', maskWords);
+        $('#maskMeanButton').on('click', maskMeans);
+        $('#maskEnglishButton').on('click', maskEnglish);        
         $('#collectTimeDescOrderBtn,#collectTimeAscOrderBtn,#firstLettersAscOrderBtn,#firstLettersDescOrderBtn').on('click', refreshWordbookTable);
     }
 
@@ -63,15 +64,16 @@
 
     function generateWordbookTable(data) {
         let $tbody = $('#wordbookContentTable > tbody').empty();
-        let masked = $('#maskMeanButton').prop('checked');
+        let englishMasked = $('#maskEnglishButton').prop('checked');
+        let meansMasked = $('#maskMeanButton').prop('checked');
         let order = $('#orderBtns > .btn-outline-primary').data('order');
         let sortFn = sortFns[order] || sortFns.collectTimeDescOrder;
 
         data.sort(sortFn);
-        data.forEach((item, index) => generateWordRow(item, $tbody, index, masked));
+        data.forEach((item, index) => generateWordRow(item, $tbody, index, englishMasked, meansMasked));
     }
 
-    function generateWordRow(data, $parent, index, masked) {
+    function generateWordRow(data, $parent, index, englishMasked, meansMasked) {
         let audioSrc = data.audio_uk.startsWith('http') ?
                 data.audio_uk :
                 resourceDomain + data.audio_uk;                
@@ -83,7 +85,8 @@
                     </span>
                 </td>
                 <td>
-                    <span style="font-weight: bolder;">${data.word}</span> &nbsp;&nbsp;
+                    <span name="wordSpan" class="${englishMasked ? 'word-row-hidden' : 'word-row'}" 
+                        data-masked="${englishMasked}">${data.word}</span> &nbsp;&nbsp;
                     <span name="accentIcon" style="cursor: pointer;">
                         <img src="../svgs/volume-up.svg" />
                     </span>
@@ -92,7 +95,8 @@
                     </audio>
                     <span style="font-size: x-small; color: #a1a5ab;">收藏时间：${formatDate(data.created_at)}</span>
                     <a name="detailLink" href="#" data-topic-id="${data.topic_id}" tabIndex="-1" style="float: right; color: #606266;">详情 > </a> <br>
-                    <span class="searchMeans" data-masked="${masked}" style="background: ${masked ? '#6a6d71' : 'none'}">${data.mean}</span>
+                    <span name="searchMeansSpan" class="searchMeans" data-masked="${meansMasked}" 
+                        style="background: ${meansMasked ? '#6a6d71' : 'none'}">${data.mean}</span>
                 </td>
             </tr> 
         `);
@@ -114,14 +118,17 @@
                 e.preventDefault();
                 $doc.trigger(events.WORD_DETAIL, [this]);                    
             });
-        $el.find('.searchMeans')
+        $el.find('span[name="searchMeansSpan"]')
             .on('click', function(e) {
-                e.preventDefault();
-
-                let $this = $(this), masked = $this.data('masked');
-                
+                let $this = $(this), masked = $this.data('masked');            
                 $this.data('masked', !masked);
                 $this.css('background', !masked ? '#6a6d71' : 'none');
+            });
+        $el.find('span[name="wordSpan"]')
+            .on('click', function(e) {
+                let $this = $(this), masked = $this.data('masked');                
+                $this.data('masked', !masked);
+                $this.removeClass().addClass(masked ? 'word-row' : 'word-row-hidden');
             });
     }
 
@@ -195,11 +202,21 @@
             });
     }
 
-    function maskWords(e) {        
-        let $this = $(this), $means = $('#wordbookContentTable > tbody > tr .searchMeans');
+    function maskMeans(e) {        
+        let $this = $(this);
+        let $means = $('#wordbookContentTable > tbody > tr span[name="searchMeansSpan"]');
         let masked = $this.prop('checked');
 
         $means.css('background', masked ? '#6a6d71' : 'none');
+        $means.data('masked', masked);
+    }
+
+    function maskEnglish(e) {
+        let $this = $(this);
+        let $means = $('#wordbookContentTable > tbody > tr span[name="wordSpan"]');
+        let masked = $this.prop('checked');
+
+        $means.removeClass().addClass(masked ? 'word-row-hidden' : 'word-row');
         $means.data('masked', masked);
     }
 
