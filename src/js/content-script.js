@@ -78,7 +78,14 @@
         });
     }
 
-    async function selectWordHandler() {
+    async function selectWordHandler(e) {
+        e.preventDefault();
+
+        // if event not left click, omit 
+        if (e.which != 1) {
+            return;
+        }
+
         let selectedWord = window.getSelection().toString().trim();        
 
         if (popuped || selectedWord == '' || preWord === selectedWord) {            
