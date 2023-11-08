@@ -21,6 +21,7 @@
             return bWord.charAt(0) > aWord.charAt(0) ? 1 : -1;
         },
     };
+    let audioContext, audioBinaryData, currentAudioSrc;
 
     function init() {
         $doc.on(events.AUTHED, (e) => loadWordbookTable(false));        
@@ -90,9 +91,6 @@
                     <span name="accentIcon" style="cursor: pointer;">
                         <img src="../svgs/volume-up.svg" />
                     </span>
-                    <audio name="accentAudio" style="display: none;">
-                        <source src="${audioSrc}">
-                    </audio>
                     <span style="font-size: x-small; color: #a1a5ab;">收藏时间：${formatDate(data.created_at)}</span>
                     <a name="detailLink" href="#" data-topic-id="${data.topic_id}" tabIndex="-1" style="float: right; color: #606266;">详情 > </a> <br>
                     <span name="searchMeansSpan" class="searchMeans" data-masked="${meansMasked}" 
@@ -112,7 +110,9 @@
                 removeWord.bind(this)(data.topic_id);
             });
         $el.find('span[name="accentIcon"]')
-            .on('click', () => $el.find('audio')[0].play());
+            // use globl singleton audio tag to avoid exceeding audio count limits
+            // https://chromium-review.googlesource.com/c/chromium/src/+/2816118
+            .on('click', () => loadAndPlayAccent(audioSrc));
         $el.find('a[name="detailLink"]')
             .on('click', function(e) {  
                 e.preventDefault();
@@ -130,6 +130,37 @@
                 $this.data('masked', !masked);
                 $this.removeClass().addClass(masked ? 'word-row' : 'word-row-hidden');
             });
+    }
+
+    function loadAndPlayAccent(audioSrc) {    
+        if (currentAudioSrc != audioSrc) {        
+            fetch(audioSrc, {method: 'GET', mode: 'cors'})
+                    .then(resp => resp.arrayBuffer())
+                    .then(arrayBuffer => {
+                        currentAudioSrc = audioSrc;
+                        audioBinaryData = arrayBuffer;
+                        createAudioAndPlay(audioBinaryData.slice(0, audioBinaryData.byteLength))
+                    });
+        } else if (audioBinaryData) {
+            createAudioAndPlay(audioBinaryData.slice(0, audioBinaryData.byteLength));
+        }
+    }
+
+    function createAudioAndPlay(binaryData) {
+        let context = getAudioContext();
+        let source = context.createBufferSource();
+
+        context.decodeAudioData(binaryData, (buffer) => {
+            source.buffer = buffer
+            source.connect(context.destination);
+            source.start(0);
+        });
+    }
+
+    function getAudioContext() {
+        if (audioContext) return audioContext;
+
+        return audioContext = new (window.AudioContext || window.webkitAudioContext)();
     }
 
     function formatDate(timestamp) {
