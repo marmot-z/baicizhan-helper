@@ -12,9 +12,9 @@
             </div>
         </div>
     `;
-    const levenshtein = window.__baicizhanHelperModule__.levenshtein;
-    const cssMap = window.__baicizhanHelperModule__.webuiPopoverClassMap;
-    const replaceCss2style = window.__baicizhanHelperModule__.replaceCss2style.bind(cssMap);
+    const {EnglishStemmer, levenshtein, webuiPopoverClassMap} = window.__baicizhanHelperModule__;
+    const replaceCss2style = window.__baicizhanHelperModule__.replaceCss2style.bind(webuiPopoverClassMap);
+    const stemmer = new EnglishStemmer();
     let audioContext;
 
     function MyWebuiPopover(options) {
@@ -129,13 +129,14 @@
             );
         }
 
+        let stemWord = stemmer.stemWord(word);
         let highlightWord = sentence.sentence.split(/\s/)
                 .map(s => {
                     let regex = /[\w-]+/;
 
                     if (regex.test(s)) {
                         let term = s.match(regex)[0];
-                        let distance = levenshtein(term, word);
+                        let distance = levenshtein(term, stemWord);
                         let highlightable = term.length < 7 ? distance <= 3 : distance <= 5;
 
                         if (highlightable) {

@@ -2,9 +2,11 @@
     'use strict';
 
     const {collectWord, cancelCollectWord} = window.apiModule;
+    const {EnglishStemmer} = window.__baicizhanHelperModule__;
     const {levenshtein} = window.utilModule;
     const resourceDomain = 'https://7n.bczcdn.com';
     const $doc = $(document);
+    const stemmer = new EnglishStemmer();
     let collected = false;
 
     function generateWordDetail(data, $target, hasCollected, showIcon = true) {        
@@ -164,13 +166,14 @@
             );
         }
 
+        let stemWord = stemmer.stemWord(word);
         let highlightWord = sentence.sentence.split(/\s/)
                 .map(s => {
                     let regex = /[\w-]+/;
 
                     if (regex.test(s)) {
                         let term = s.match(regex)[0];
-                        let distance = levenshtein(term, word);
+                        let distance = levenshtein(term, stemWord);
                         let highlightable = term.length < 7 ? distance <= 3 : distance <= 5;
 
                         if (highlightable) {

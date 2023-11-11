@@ -2,13 +2,12 @@
     'use strict';
 
     const {MyWebuiPopover, Toast, EnglishStemmer} = window.__baicizhanHelperModule__;
-    const TRIGGER_MODE = {'SHOW_ICON': 'showIcon','DIRECT': 'direct','NEVER': 'never'},
-            POPOVER_STYLE = {'SIMPLE': 'simple', 'RICH': 'rich'},
-            THEME = {'LIGHT': 'light', 'DARK': 'dark', 'AUTO': 'auto'};
-    const defaultTriggerMode = TRIGGER_MODE.SHOW_ICON, 
-            defaultPopoverStyle = POPOVER_STYLE.SIMPLE,
-            defaultTheme = THEME.LIGHT;
-    let triggerMode, popoverStyle, theme, $popover, preWord, popuped = false;    
+    const TRIGGER_MODE = {'SHOW_ICON': 'showIcon','DIRECT': 'direct','NEVER': 'never'};
+    const POPOVER_STYLE = {'SIMPLE': 'simple', 'RICH': 'rich'};
+    const THEME = {'LIGHT': 'light', 'DARK': 'dark', 'AUTO': 'auto'};
+    const defaultTriggerMode = TRIGGER_MODE.SHOW_ICON; 
+    const defaultPopoverStyle = POPOVER_STYLE.SIMPLE;
+    const defaultTheme = THEME.LIGHT;    
     const stemmer = new EnglishStemmer();
     const $toastElement = new Toast();    
     const $supportElement = {
@@ -51,6 +50,7 @@
             this.$el.iconTips('destroy');
         }
     };
+    let triggerMode, popoverStyle, theme, $popover, preWord, popuped = false;
 
     function init() {
         loadSetting();
