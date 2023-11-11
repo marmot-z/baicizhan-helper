@@ -56,12 +56,12 @@
         let volumeIconHtml = `<img src="${svgPath}/volume-up.svg"/>`;
         let accentHtml = wordInfo.accent_usa != wordInfo.accent_uk ?
             `<p class="accent">
-                ${wordInfo.accent_uk} 
+                英&nbsp;${wordInfo.accent_uk} 
                 <span id="accentUkAudio" class="sound-size">${volumeIconHtml}</span>
-                ${wordInfo.accent_usa} 
+                美&nbsp;${wordInfo.accent_usa} 
                 <span id="accentUsaAudio" class="sound-size"">${volumeIconHtml}</span>` :
             `<p class="accent">
-                ${wordInfo.accent_uk}
+                英&nbsp;${wordInfo.accent_uk}
                 <span id="accentUkAudio" class="sound-size">${volumeIconHtml}</span>
             </p>`;
 

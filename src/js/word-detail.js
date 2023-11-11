@@ -66,6 +66,7 @@
 
     function generateAccent(data, $parent) {
         let html = `
+            <span class="badge bg-info" style="color: white;">英</span>
             <span>${data.accent_uk}</span>
             <span id="accentUkIcon" class="volume-up">
                 <img src="../svgs/volume-up.svg">
@@ -75,6 +76,7 @@
 
         if (data.accent_uk != data.accent_usa) {
             html += `
+                <span class="badge bg-info" style="color: white;">美</span>
                 <span>${data.accent_usa}</span>
                 <span id="accentUsaIcon" class="volume-up">
                     <img src="../svgs/volume-up.svg">
