@@ -77,6 +77,19 @@
         });
     }
 
+    function translate(phrase) {
+        return loadRequestOptions().then(([host, port, accessToken]) => {
+            const encodePrharse = encodeURIComponent(phrase);
+            const url = `http://${host}:${port}/translate?text=${encodePrharse}`;
+
+            return sendRequest({
+                url, 
+                method: 'GET',
+                headers: {'access_token': accessToken}
+            });
+        });
+    }
+
     function getWordDetail(topicId) {
         return loadRequestOptions().then(([host, port, accessToken]) => {
             const url = `http://${host}:${port}/word/${topicId}`;                      
@@ -218,7 +231,7 @@
     const exports = {
         getVerifyCode, loginWithPhone, getUserInfo, 
         getBooks, defaultHost, defaultPort, loginWithEmail,
-        searchWord, getWordDetail, collectWord,
+        searchWord, getWordDetail, collectWord, translate,
         cancelCollectWord, getBookWords, getWordInfo
     };
 

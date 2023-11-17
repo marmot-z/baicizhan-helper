@@ -40,7 +40,8 @@
                 "src/js/css.js",
                 "src/js/icon-tips.js",
                 "src/js/toast.js",
-                "src/js/my-webui-popover.js",
+                "src/js/phrase-webui-popover.js",
+                "src/js/word-webui-popover.js",
                 "src/js/content-script.js"
             ],
             "matches": ["<all_urls>"],

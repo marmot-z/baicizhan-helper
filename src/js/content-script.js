@@ -1,7 +1,7 @@
 ;(function(window, $) {
     'use strict';
 
-    const {MyWebuiPopover, Toast, EnglishStemmer} = window.__baicizhanHelperModule__;
+    const {WordWebuiPopover, PhraseWebuiPopover, Toast, EnglishStemmer} = window.__baicizhanHelperModule__;
     const TRIGGER_MODE = {'SHOW_ICON': 'showIcon','DIRECT': 'direct','NEVER': 'never'};
     const POPOVER_STYLE = {'SIMPLE': 'simple', 'RICH': 'rich'};
     const THEME = {'LIGHT': 'light', 'DARK': 'dark', 'AUTO': 'auto'};
@@ -86,28 +86,16 @@
             return;
         }
 
-        let selectedWord = window.getSelection().toString().trim();        
+        // TODO 增加是否可以使用 bing 翻译的判断
+        let selectedContent = window.getSelection().toString().trim();        
 
-        if (popuped || selectedWord == '' || preWord === selectedWord) {            
-            return;
-        }
-
-        if (!isChinese(selectedWord) && !isEnglish(selectedWord)) {
+        if (popuped || selectedContent == '' || selectedContent.length > 300) {            
             return;
         }
 
         prepopup();
 
-        (await canPopup()) && popup(selectedWord);
-    }
-
-    function isChinese(str) {
-        return str.split('').every(char => /\p{Script=Han}/u.test(char));
-    }
-
-    function isEnglish(str) {
-        let englishWordRegex = /^[a-zA-Z\\-\s']+$/;
-        return englishWordRegex.test(str);
+        (await canPopup()) && popup(selectedContent);
     }
 
     function prepopup() {
@@ -140,21 +128,59 @@
         });
     }    
 
-    function popup(word) {
+    function popup(content) {
         // 销毁上一个 $popover
         $popover && $popover.destory();
 
+        if (isChineseWord(content) || isEnglishWord(content)) {
+            popupWordWebuiPopover(content);
+        } else {
+            popupPhraseWebuiPopover(content);
+        }        
+    }
+
+    function isChineseWord(str) {
+        return str.split('').every(char => /\p{Script=Han}/u.test(char));
+    }
+
+    function isEnglishWord(str) {
+        let englishWordRegex = /^[a-zA-Z\\-]+$/;
+        return englishWordRegex.test(str);
+    }
+
+    function popupWordWebuiPopover(word) {
         // 词干提取，如：words -> word
         let stemWord = stemmer.stemWord(word);
 
         sendRequest({action: 'getWordInfo', args: stemWord}).then(response => {
             if (!response) return;
 
-            $popover = new MyWebuiPopover({
+            $popover = new WordWebuiPopover({
                 $el: $supportElement.$el,
                 wordInfo: response.dict,
                 popoverStyle,
                 theme,
+                onHide: () => popuped = false
+            });
+
+            window.setTimeout(() => {
+                popuped = true;
+                $popover.show()
+            }, 100);
+        })
+        .catch(e => {
+            console.error(e);
+            $supportElement.$el.trigger('baicizhanHelper:alert', ['查询失败，稍后再试']);
+        })
+    }
+
+    function popupPhraseWebuiPopover(phrase) {
+        sendRequest({action: 'translate', args: phrase}).then(response => {
+            if (!response) return;
+
+            $popover = new PhraseWebuiPopover({
+                $el: $supportElement.$el,
+                translation: response.translation,
                 onHide: () => popuped = false
             });
 

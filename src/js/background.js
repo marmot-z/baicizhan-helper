@@ -27,6 +27,7 @@
         return {
             getStorageInfo: global.storageModule.getStorageInfo,
             getWordInfo: global.apiModule.getWordInfo,
+            translate: global.apiModule.translate,
             cancelCollectWord: global.apiModule.cancelCollectWord,
             collectWord: global.apiModule.collectWord,
         };

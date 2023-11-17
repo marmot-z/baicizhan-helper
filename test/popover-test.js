@@ -306,3 +306,9 @@ function createIsolateStyleTextWithJQuery() {
 
 createIsolateStyleText();
 createIsolateStyleTextWithJQuery();
+
+$('#translate').webuiPopover({
+    content: '嗟乎！时运不齐39，命途多舛40。冯唐易老，李广难封41。屈贾谊于长沙，非无圣主42；窜梁鸿于海曲，岂乏明时43？所赖君子见机，达人知命44。老当益壮，宁移白首之心45？穷且益坚，不坠青云之志46。酌贪泉而觉爽，处涸辙以犹欢47。北海虽赊，扶摇可接48；东隅已逝，桑榆非晚49。孟尝高洁，空余报国之情50；阮籍猖狂，岂效穷途之哭51！',
+    placement: 'bottom',
+});
+$('#translate').webuiPopover('show');

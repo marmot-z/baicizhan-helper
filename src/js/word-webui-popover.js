@@ -17,7 +17,7 @@
     const stemmer = new EnglishStemmer();
     let audioContext;
 
-    function MyWebuiPopover(options) {
+    function WordWebuiPopover(options) {
         this.options = options;
         this.data = this.options.wordInfo;        
         this.$el = this.options.$el;            
@@ -160,7 +160,7 @@
         });
     }
 
-    Object.assign(MyWebuiPopover.prototype, {
+    Object.assign(WordWebuiPopover.prototype, {
         init: function($popover) {
             let titleShadow = $popover.find('.webui-popover-title').get(0).shadowRoot;
             let starIcon = titleShadow.querySelector('#starIcon');
@@ -291,5 +291,5 @@
         window.__baicizhanHelperModule__ = {};
     }
 
-    window.__baicizhanHelperModule__.MyWebuiPopover = MyWebuiPopover;
+    window.__baicizhanHelperModule__.WordWebuiPopover = WordWebuiPopover;
 } (this, jQuery));
