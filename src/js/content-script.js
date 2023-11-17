@@ -50,7 +50,7 @@
             this.$el.iconTips('destroy');
         }
     };
-    let triggerMode, popoverStyle, theme, $popover, preWord, popuped = false;
+    let triggerMode, popoverStyle, theme, $popover, bingTranslateEnable, popuped = false;
 
     function init() {
         loadSetting();
@@ -62,12 +62,13 @@
     function loadSetting() {
         sendRequest({
             action: 'getStorageInfo',
-            args: ['triggerMode', 'popoverStyle', 'theme']
+            args: ['triggerMode', 'popoverStyle', 'theme', 'bingTranslateEnable']
         })
-        .then(([_triggerMode, _popoverStyle, _theme]) => {
+        .then(([_triggerMode, _popoverStyle, _theme, _bingTranslateEnable]) => {
             triggerMode = _triggerMode || defaultTriggerMode;
             popoverStyle = _popoverStyle || defaultPopoverStyle;
             theme = _theme || defaultTheme;
+            bingTranslateEnable = _bingTranslateEnable || false;
 
             if (theme == THEME.AUTO) {
                 let isSystemDarkTheme = window.matchMedia && 
@@ -89,7 +90,15 @@
         // TODO 增加是否可以使用 bing 翻译的判断
         let selectedContent = window.getSelection().toString().trim();        
 
-        if (popuped || selectedContent == '' || selectedContent.length > 300) {            
+        if (popuped || selectedContent == '') {            
+            return;
+        }
+
+        if (!bingTranslateEnable) {
+            if (!isChineseWord(selectedContent) && !isEnglishWord(selectedContent)) {
+                return;
+            }
+        } else if (selectedContent.length > 300) {
             return;
         }
 
@@ -134,7 +143,7 @@
 
         if (isChineseWord(content) || isEnglishWord(content)) {
             popupWordWebuiPopover(content);
-        } else {
+        } else if (bingTranslateEnable) {
             popupPhraseWebuiPopover(content);
         }        
     }

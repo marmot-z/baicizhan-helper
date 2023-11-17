@@ -39,6 +39,8 @@
                 if (!triggerMode) return;
                 $('input[name="triggerMode"]').filter(`[value=${triggerMode}]`).prop("checked", true)
             });
+        storageModule.get('bingTranslateEnable')
+            .then(bingTranslateEnable => $('#bingTransalteCheck').prop('checked', !!bingTranslateEnable));   
         storageModule.get('theme')
             .then(theme => {
                 if (!theme) return;
@@ -76,6 +78,7 @@
         $('input[name="popoverStyle"]').first().prop("checked", true);
         $('input[name="triggerMode"]').first().prop("checked", true);
         $('input[name="theme"]').first().prop("checked", true);
+        $('#bingTransalteCheck').prop("checked", false);
         $('#showVariantCheck').prop('checked', false);
         $('#showSentenceCheck').prop('checked', true);
         $('#showShortPhrasesCheck').prop('checked', false);
@@ -91,6 +94,7 @@
         let bookId = $('#collectWordbookSelect').val();
         let popoverStyle = $('input[name="popoverStyle"]:checked').val();
         let triggerMode = $('input[name="triggerMode"]:checked').val();
+        let bingTranslateEnable = $('#bingTransalteCheck').prop('checked');
         let theme = $('input[name="theme"]:checked').val();
         let host = $('#hostInput').val();
         let port = $('#portInput').val();
@@ -105,6 +109,7 @@
         storageModule.set('bookId', bookId);
         storageModule.set('popoverStyle', popoverStyle);
         storageModule.set('triggerMode', triggerMode);
+        storageModule.set('bingTranslateEnable', bingTranslateEnable);
         storageModule.set('theme', theme);
         storageModule.set('host', host);
         storageModule.set('port', port);
