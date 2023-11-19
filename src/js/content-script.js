@@ -185,7 +185,9 @@
 
     function popupPhraseWebuiPopover(phrase) {
         sendRequest({action: 'translate', args: phrase}).then(response => {
-            if (!response) return;
+            if (!response) {
+                throw new Error('翻译失败，返回结果为空');
+            }
 
             $popover = new PhraseWebuiPopover({
                 $el: $supportElement.$el,
@@ -200,7 +202,7 @@
         })
         .catch(e => {
             console.error(e);
-            $supportElement.$el.trigger('baicizhanHelper:alert', ['查询失败，稍后再试']);
+            $supportElement.$el.trigger('baicizhanHelper:alert', ['翻译失败，稍后再试']);
         })
     }
 
