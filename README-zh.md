@@ -21,6 +21,9 @@
 ## 声明
 本项目仅用于个人练习，你可以使用此软件，但不得使用此软件从事任何形式的商业活动以及二次开发
 
+## 相关项目
+- [bing-translate-api-java](https://github.com/marmot-z/bing-translate-api-java)
+
 ## 赞助商
 本项目由 [jetBrains](https://www.jetbrains.com/community/opensource/#support) 赞助。    
 <img src="./images/jb_beam.png" alt="sponsor" width="200"/>

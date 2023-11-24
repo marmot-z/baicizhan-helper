@@ -21,6 +21,9 @@ Alternatively, you can download the latest [release version](https://github.com/
 ## Disclaimer
 This project is intended for personal practice. You are welcome to use this software, but you are not allowed to use it for any commercial purposes or secondary development.
 
+## Related projects
+- [bing-translate-api-java](https://github.com/marmot-z/bing-translate-api-java)
+
 ## Sponsor
 This project is sponsored by [jetBrains](https://www.jetbrains.com/community/opensource/#support).  
 <img src="./images/jb_beam.png" alt="sponsor" width="200"/>
