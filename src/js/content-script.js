@@ -149,7 +149,7 @@
     }
 
     function isChineseWord(str) {
-        return str.length <= 10 && 
+        return str.length <= 8 && 
             str.split('').every(char => /\p{Script=Han}/u.test(char));
     }
 
