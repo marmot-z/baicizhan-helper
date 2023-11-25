@@ -179,6 +179,7 @@
         })
         .catch(e => {
             console.error(e);
+            $supportElement.$el.css('display', 'none');
             $supportElement.$el.trigger('baicizhanHelper:alert', ['查询失败，稍后再试']);
         })
     }
@@ -202,6 +203,7 @@
         })
         .catch(e => {
             console.error(e);
+            $supportElement.$el.css('display', 'none');
             $supportElement.$el.trigger('baicizhanHelper:alert', ['翻译失败，稍后再试']);
         })
     }
