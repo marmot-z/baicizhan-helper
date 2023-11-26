@@ -9,7 +9,7 @@
     const stemmer = new EnglishStemmer();
     let collected = false;
 
-    function generateWordDetail(data, $target, hasCollected, showIcon = true) {        
+    function generateWordDetail(data, $target, hasCollected, showIcon = true) {    
         $target.empty().css('display', 'block');
         collected = hasCollected || false;
         
@@ -42,8 +42,11 @@
         generateMeansTable(data.chn_means, $section);
 
         $section.appendTo($parent);
-        $section.find('#starIcon').on('click', function() {
+        $section.find('#starIcon').on('click', function(e) {
             favoriteWord.bind(this)(data)
+        });
+        $doc.on('keydown', null, 'ctrl+shift+s', function(e) {
+            favoriteWord.bind($section.find('#starIcon')[0])(data)
         });
     }
 

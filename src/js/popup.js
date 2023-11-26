@@ -5,6 +5,7 @@
     const {searchWord, getWordDetail} = window.apiModule;
 
     function search() {
+        $doc.off('keydown');
         let content = $('#searchInput').val().trim();
         
         if (!content) return;
