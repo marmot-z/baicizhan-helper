@@ -11,6 +11,7 @@ cp -vR src                     \
     src/assets/images/icon.png \
     src/assets/images/svgs     \
     manifest.json              \
+    images                     \
     dist
 
 # 打包压缩 dist 文件夹
