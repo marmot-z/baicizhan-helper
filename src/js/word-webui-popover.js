@@ -190,6 +190,9 @@
             }
 
             this.inited = true;
+            // 隐藏辅助元素，防止元素遮挡选中文本，
+            // 造成文本不可选中，不可右键查询
+            this.$el.css('display', 'none');
         },
         show: function() {
             this.$el.webuiPopover('show');

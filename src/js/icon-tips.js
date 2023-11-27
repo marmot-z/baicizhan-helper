@@ -44,7 +44,6 @@
             }
 
             $body.append(this.$target = $target);
-
             $body.off('mouseup.iconTips')
                 .on('mouseup.iconTips', (e) => {
                     e.preventDefault();
@@ -52,6 +51,9 @@
                     // 点击其他地方时，隐藏该图标
                     e.target != this.$target.get(0) && this.isShow() && this.hide();                    
                 });
+            // 隐藏辅助元素，防止元素遮挡选中文本，
+            // 造成文本不可选中，不可右键查询
+            this.$el.css('display', 'none');
         };
 
         IconTips.prototype.calcutePosition = function() {

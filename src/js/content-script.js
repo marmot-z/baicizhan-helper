@@ -87,7 +87,6 @@
             return;
         }
 
-        // TODO 增加是否可以使用 bing 翻译的判断
         let selectedContent = window.getSelection().toString().trim();        
 
         if (popuped || selectedContent == '') {            
