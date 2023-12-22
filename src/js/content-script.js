@@ -52,15 +52,20 @@
     };
     let triggerMode, popoverStyle, theme, $popover, bingTranslateEnable, popuped = false;
 
-    function init() {
-        loadSetting();
+    async function init() {
+        await loadSetting();
+
+        if (triggerMode == TRIGGER_MODE.NEVER) {
+            return;
+        }
+
         $toastElement.init();
         $supportElement.init();
         window.addEventListener('mouseup', selectWordHandler);
     }
 
-    function loadSetting() {
-        sendRequest({
+    async function loadSetting() {
+        return sendRequest({
             action: 'getStorageInfo',
             args: ['triggerMode', 'popoverStyle', 'theme', 'bingTranslateEnable']
         })
