@@ -163,10 +163,7 @@
     }
 
     function popupWordWebuiPopover(word) {
-        // 词干提取，如：words -> word
-        let stemWord = stemmer.stemWord(word);
-
-        sendRequest({action: 'getWordInfo', args: stemWord}).then(response => {
+        sendRequest({action: 'getWordInfo', args: word}).then(response => {
             if (!response) return;
 
             $popover = new WordWebuiPopover({
