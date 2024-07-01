@@ -79,15 +79,39 @@
 
     function translate(phrase) {
         return loadRequestOptions().then(([host, port, accessToken]) => {
-            const encodePrharse = encodeURIComponent(phrase);
-            const url = `http://${host}:${port}/translate?text=${encodePrharse}`;
+            const url = `http://${host}:${port}/translate`;
 
-            return sendRequest({
-                url, 
-                method: 'GET',
-                headers: {'access_token': accessToken}
-            });
+            return fetch(url, {
+                method: 'POST',
+                mode: 'cors',
+                headers: {
+                    'access_token': accessToken,
+                    'content-type': 'application/json',
+                },
+                body: JSON.stringify({
+                    q: phrase,
+                    source: "auto",
+                    target: isEnglishPhrase(phrase) ? 'zh' : 'en',
+                    format: 'text',
+                }),
+            })
+            .then(response => response.json())
+            .catch(e => reject(e));
         });
+    }
+
+    function isEnglishPhrase(phrase) {
+        let len = 0, characterSize = 0;
+
+        for (let c of Array.from(phrase)) {
+            if (c == ' ') continue;
+
+            len++;
+
+            if (c >= 'A' && c <= 'z') characterSize++;
+        }
+
+        return characterSize / len > 0.7;
     }
 
     function getWordDetail(topicId) {
@@ -217,7 +241,8 @@
             return fetch(options.url, {
                         method: options.method,
                         mode: 'cors',
-                        headers: options.headers
+                        headers: options.headers,
+                        body: options.body ? JSON.stringify(options.body) : undefined
                     })
                     .then(response => response.json())
                     .then(responseJson => responseJson.code == 200 ? 

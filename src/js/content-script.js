@@ -50,7 +50,7 @@
             this.$el.iconTips('destroy');
         }
     };
-    let triggerMode, popoverStyle, theme, $popover, bingTranslateEnable, popuped = false;
+    let triggerMode, popoverStyle, theme, $popover, popuped = false;
 
     async function init() {
         await loadSetting();
@@ -67,13 +67,12 @@
     async function loadSetting() {
         return sendRequest({
             action: 'getStorageInfo',
-            args: ['triggerMode', 'popoverStyle', 'theme', 'bingTranslateEnable']
+            args: ['triggerMode', 'popoverStyle', 'theme']
         })
-        .then(([_triggerMode, _popoverStyle, _theme, _bingTranslateEnable]) => {
+        .then(([_triggerMode, _popoverStyle, _theme]) => {
             triggerMode = _triggerMode || defaultTriggerMode;
             popoverStyle = _popoverStyle || defaultPopoverStyle;
             theme = _theme || defaultTheme;
-            bingTranslateEnable = _bingTranslateEnable || false;
 
             if (theme == THEME.AUTO) {
                 let isSystemDarkTheme = window.matchMedia && 
@@ -98,11 +97,7 @@
             return;
         }
 
-        if (!bingTranslateEnable) {
-            if (!isChineseWord(selectedContent) && !isEnglishWord(selectedContent)) {
-                return;
-            }
-        } else if (selectedContent.length > 300) {
+        if (selectedContent.length > 300) {
             return;
         }
 
@@ -147,7 +142,7 @@
 
         if (isChineseWord(content) || isEnglishWord(content)) {
             popupWordWebuiPopover(content);
-        } else if (bingTranslateEnable) {
+        } else {
             popupPhraseWebuiPopover(content);
         }        
     }
@@ -182,7 +177,7 @@
         .catch(e => {
             console.error(e);
             $supportElement.$el.css('display', 'none');
-            $supportElement.$el.trigger('baicizhanHelper:alert', ['查询失败，稍后再试']);
+            $supportElement.$el.trigger('baicizhanHelper:alert', [e.message || '查询失败，稍后再试']);
         })
     }
 
@@ -194,7 +189,7 @@
 
             $popover = new PhraseWebuiPopover({
                 $el: $supportElement.$el,
-                translation: response.translation,
+                translation: response.translatedText,
                 onHide: () => popuped = false
             });
 
