@@ -48,6 +48,8 @@
             .then(host => $('#hostInput').val(host || apiModule.defaultHost));
         storageModule.get('port')
             .then(port => $('#portInput').val(port || apiModule.defaultPort));
+        storageModule.get('collectShortcutkey')
+            .then(shortcutKey => $('#collectShortcutKeyInput').val(shortcutKey));
         storageModule.get('wordDetail')
             .then(wordDetailSettings => {
                 let settings = wordDetailSettings ?
@@ -84,6 +86,7 @@
         $('#showAntonymsCheck').prop('checked', false);
         $('#showSimilarWordsCheck').prop('checked', false);
         $('#showEnglishParaphraseCheck').prop('checked', false);
+        $('#collectShortcutKeyInput').val('');
         $('#hostInput').val(apiModule.defaultHost);
         $('#portInput').val(apiModule.defaultPort);
     }
@@ -102,6 +105,7 @@
         let antonymsDisplay = $('#showAntonymsCheck').prop('checked');
         let similarWordsDisplay = $('#showSimilarWordsCheck').prop('checked');
         let englishParaphraseDisplay = $('#showEnglishParaphraseCheck').prop('checked');
+        let collectShortcutkey = $('#collectShortcutKeyInput').val().trim();
 
         storageModule.set('bookId', bookId);
         storageModule.set('popoverStyle', popoverStyle);
@@ -109,6 +113,7 @@
         storageModule.set('theme', theme);
         storageModule.set('host', host);
         storageModule.set('port', port);
+        storageModule.set('collectShortcutkey', collectShortcutkey);
         storageModule.set('wordDetail', {
             variantDisplay,
             sentenceDisplay,
@@ -128,6 +133,28 @@
         $doc.on(events.AUTHED, () => loadWordbook().finally(loadSettings));
         $doc.on(events.UNAUTHED, clearStorageBookId);
 
+        let pressing = false;
+        let pressedMap = {};
+
+        // 收藏/取消收藏快捷键录制
+        $('#collectShortcutKeyInput').on('keydown', function(e) {
+            if (!pressing) {
+                pressedMap = {};
+            }
+
+            pressing = true;
+            pressedMap[e.key] = true;
+        });
+        $('#collectShortcutKeyInput').on('keyup', function(e) {
+            pressedMap[e.key] = false;
+            let allKeyUp = Object.values(pressedMap).every(down => !down);
+            
+            if (allKeyUp) {
+                pressing = false;
+                let shortcutKey = Object.keys(pressedMap).join('+');
+                $(this).val(shortcutKey);
+            }
+        });
         $('#resetButton').on('click', e => {
             e.preventDefault();
             e.stopPropagation();

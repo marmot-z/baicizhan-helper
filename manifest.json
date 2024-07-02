@@ -32,7 +32,8 @@
                 "src/assets/webui-popover-1.2.17/jquery.webui-popover.min.css"
             ],
             "js": [
-                "src/assets/jquery-3.6.0/jquery-3.6.0.min.js",             
+                "src/assets/jquery-3.6.0/jquery-3.6.0.min.js", 
+                "src/assets/jquery-3.6.0/jquery.hotkeys.js",            
                 "src/assets/webui-popover-1.2.17/jquery.webui-popover.min.js",
                 "src/js/base-stemmer.js",
                 "src/js/english-stemmer.js",

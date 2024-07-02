@@ -50,7 +50,7 @@
             this.$el.iconTips('destroy');
         }
     };
-    let triggerMode, popoverStyle, theme, $popover, popuped = false;
+    let triggerMode, popoverStyle, theme, $popover, collectShortcutkey, popuped = false;
 
     async function init() {
         await loadSetting();
@@ -67,12 +67,13 @@
     async function loadSetting() {
         return sendRequest({
             action: 'getStorageInfo',
-            args: ['triggerMode', 'popoverStyle', 'theme']
+            args: ['triggerMode', 'popoverStyle', 'theme', 'collectShortcutkey']
         })
-        .then(([_triggerMode, _popoverStyle, _theme]) => {
+        .then(([_triggerMode, _popoverStyle, _theme, _collectShortcutkey]) => {
             triggerMode = _triggerMode || defaultTriggerMode;
             popoverStyle = _popoverStyle || defaultPopoverStyle;
             theme = _theme || defaultTheme;
+            collectShortcutkey = _collectShortcutkey;
 
             if (theme == THEME.AUTO) {
                 let isSystemDarkTheme = window.matchMedia && 
@@ -166,6 +167,7 @@
                 wordInfo: response.dict,
                 popoverStyle,
                 theme,
+                collectShortcutkey,
                 onHide: () => popuped = false
             });
 

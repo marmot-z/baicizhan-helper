@@ -1,4 +1,4 @@
-;(function(window, $) {
+;(function(window, document, $) {
     'use strict';
 
     const resourceDomain = 'https://7n.bczcdn.com';
@@ -168,6 +168,13 @@
             let contentShadow = $popover.find('.webui-popover-content').get(0).shadowRoot;
             let sentenceAudio = contentShadow.querySelector('#sentenceAudio');
 
+            // 收藏快捷键事件注册
+            if (this.options.collectShortcutkey && this.options.collectShortcutkey.trim()) {
+                $(document).off('keydown')
+                    .on('keydown', null, this.options.collectShortcutkey.toLowerCase(), 
+                            collectWord(starIcon, this.$el, this.data, this.data.word_basic_info.__collected__));
+            }
+
             if (accentUsaAudio) {
                 accentUsaAudio.addEventListener('click', 
                     loadAudio(resourceDomain + this.data.word_basic_info.accent_usa_audio_uri));
@@ -294,4 +301,4 @@
     }
 
     window.__baicizhanHelperModule__.WordWebuiPopover = WordWebuiPopover;
-} (this, jQuery));
+} (this, document, jQuery));

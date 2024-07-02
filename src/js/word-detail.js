@@ -13,9 +13,9 @@
         $target.empty().css('display', 'block');
         collected = hasCollected || false;
         
-        storageModule.get('wordDetail')
-            .then(wordDetailSettings => {
-                generateWordInfo(data.dict, $target, showIcon);
+        storageModule.get(['wordDetail', 'collectShortcutkey'])
+            .then(([wordDetailSettings, collectShortcutkey]) => {
+                generateWordInfo(data.dict, $target, showIcon, collectShortcutkey);
                 if (wordDetailSettings.variantDisplay) generateVariant(data.dict.variant_info, $target);
                 if (wordDetailSettings.sentenceDisplay) generateSentence(data.dict.sentences, data.dict.word_basic_info.word, $target);
                 if (wordDetailSettings.shortPhrasesDisplay) generateShortPhrases(data.dict.short_phrases, $target);                 
@@ -26,7 +26,7 @@
             });             
     }
 
-    function generateWordInfo(data, $parent, showIcon) {        
+    function generateWordInfo(data, $parent, showIcon, collectShortcutkey) {        
         let starIconSvg = collected ? 'star-fill.svg' : 'star.svg'; 
         let $section = $(`
             <div class="section">
@@ -45,9 +45,12 @@
         $section.find('#starIcon').on('click', function(e) {
             favoriteWord.bind(this)(data)
         });
-        $doc.on('keydown', null, 'ctrl+shift+s', function(e) {
-            favoriteWord.bind($section.find('#starIcon')[0])(data)
-        });
+        if (collectShortcutkey && collectShortcutkey.trim()) {
+            $doc.off('keydown')
+                .on('keydown', null, collectShortcutkey.toLowerCase(), function(e) {
+                    favoriteWord.bind($section.find('#starIcon')[0])(data)
+                });
+        }
     }
 
     function favoriteWord(data) {

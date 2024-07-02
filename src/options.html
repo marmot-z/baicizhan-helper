@@ -78,144 +78,139 @@
         </div>
         <div class="tab-pane fade" id="settingTabContent" role="tabpanel" aria-labelledby="settingTab">
             <div class="container" style="margin-top: 40px;">
-                <div class="row">
-                    <div class="col-sm-2"></div>
-                    <form id="settingForm">
-                        <div class="form-group row">
-                            <label for="collectWordbookSelect" class="col-sm-3 col-form-label">单词本</label>
-                            <select class="form-control col-sm-4" id="collectWordbookSelect"></select>
-                            &nbsp;
+                <form id="settingForm" class="col-sm-8 offset-sm-2">
+                    <div class="form-group row align-items-center">
+                        <label for="collectWordbookSelect" class="col-sm-3 col-form-label">单词本</label>
+                        <div class="col-sm-9">
+                            <select class="form-control" id="collectWordbookSelect"></select>                            
                             <small class="form-text text-muted">
                                 选中单词本用于后续单词收藏
                             </small>
                         </div>
-                        <div class="form-group row">
-                            <label class="col-sm-3 col-form-label">弹窗样式</label>
-                            <div class="col-sm-9">
-                                <div class="form-check form-check-inline">
-                                    <input class="form-check-input" type="radio" name="popoverStyle"
-                                        id="simleStyleRadio" value="simple" checked>
-                                    <label class="form-check-label" for="simleStyle">精简模式</label>
-                                </div>
-                                <div class="form-check form-check-inline">
-                                    <input class="form-check-input" type="radio" name="popoverStyle" id="richStyleRadio"
-                                        value="rich">
-                                    <label class="form-check-label" for="richStyle">图文模式</label>
-                                </div>
+                    </div>
+                    <div class="form-group row align-items-center">
+                        <label class="col-sm-3 col-form-label">弹窗样式</label>
+                        <div class="col-sm-9">
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="popoverStyle"
+                                    id="simleStyleRadio" value="simple" checked>
+                                <label class="form-check-label" for="simleStyle">精简模式</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="popoverStyle" id="richStyleRadio"
+                                    value="rich">
+                                <label class="form-check-label" for="richStyle">图文模式</label>
                             </div>
                         </div>
-                        <div class="form-group row">
-                            <label class="col-sm-3 col-form-label">翻译时机</label>
-                            <div class="col-sm-9">
-                                <div class="form-check">
-                                    <input class="form-check-input" type="radio" name="triggerMode" id="showIconRadio"
-                                        value="showIcon" checked>
-                                    <label class="form-check-label" for="showIconRadio">显示图标，点击翻译</label>
-                                </div>
-                                <div class="form-check">
-                                    <input class="form-check-input" type="radio" name="triggerMode" id="directRadio"
-                                        value="direct">
-                                    <label class="form-check-label" for="directRadio">直接翻译</label>
-                                </div>
-                                <div class="form-check">
-                                    <input class="form-check-input" type="radio" name="triggerMode" id="neverRadio"
-                                        value="never">
-                                    <label class="form-check-label" for="neverRadio">永不翻译</label>
-                                </div>
+                    </div>
+                    <div class="form-group row">
+                        <label class="col-sm-3 col-form-label">翻译时机</label>
+                        <div class="col-sm-9">
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="triggerMode" id="showIconRadio"
+                                    value="showIcon" checked>
+                                <label class="form-check-label" for="showIconRadio">显示图标，点击翻译</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="triggerMode" id="directRadio"
+                                    value="direct">
+                                <label class="form-check-label" for="directRadio">直接翻译</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="triggerMode" id="neverRadio"
+                                    value="never">
+                                <label class="form-check-label" for="neverRadio">永不翻译</label>
                             </div>
                         </div>
-                        <div class="form-group row">
-                            <label class="col-sm-3 col-form-label">单词详情内容</label>
-                            <div class="col-sm-9">
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" id="showVariantCheck">
-                                    <label class="form-check-label" for="showVariantCheck">
-                                        单词变形
-                                    </label>
-                                </div>
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" id="showSentenceCheck" checked disabled>
-                                    <label class="form-check-label" for="showSentenceCheck">
-                                        图文例句
-                                    </label>
-                                </div>
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" id="showShortPhrasesCheck">
-                                    <label class="form-check-label" for="showShortPhrasesCheck">
-                                        短语
-                                    </label>
-                                </div>
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" id="showSynonymsCheck">
-                                    <label class="form-check-label" for="showSynonymsCheck">
-                                        近义词
-                                    </label>
-                                </div>
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" id="showAntonymsCheck">
-                                    <label class="form-check-label" for="showAntonymsCheck">
-                                        反义词
-                                    </label>
-                                </div>
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" id="showSimilarWordsCheck">
-                                    <label class="form-check-label" for="showSimilarWordsCheck">
-                                        形近词
-                                    </label>
-                                </div>
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" id="showEnglishParaphraseCheck">
-                                    <label class="form-check-label" for="showEnglishParaphraseCheck">
-                                        英文释义
-                                    </label>
-                                </div>
+                    </div>
+                    <div class="form-group row">
+                        <label class="col-sm-3 col-form-label">单词详情内容</label>
+                        <div class="col-sm-9">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="showVariantCheck">
+                                <label class="form-check-label" for="showVariantCheck">
+                                    单词变形
+                                </label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="showSentenceCheck" checked disabled>
+                                <label class="form-check-label" for="showSentenceCheck">
+                                    图文例句
+                                </label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="showShortPhrasesCheck">
+                                <label class="form-check-label" for="showShortPhrasesCheck">
+                                    短语
+                                </label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="showSynonymsCheck">
+                                <label class="form-check-label" for="showSynonymsCheck">
+                                    近义词
+                                </label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="showAntonymsCheck">
+                                <label class="form-check-label" for="showAntonymsCheck">
+                                    反义词
+                                </label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="showSimilarWordsCheck">
+                                <label class="form-check-label" for="showSimilarWordsCheck">
+                                    形近词
+                                </label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="showEnglishParaphraseCheck">
+                                <label class="form-check-label" for="showEnglishParaphraseCheck">
+                                    英文释义
+                                </label>
                             </div>
                         </div>
-                        <div class="form-group row" style="display: none;">
-                            <label class="col-sm-3 col-form-label">代理服务器</label>
-                            <div class="col-sm-9 row">
-                                <div class="col-sm-8">
-                                    <div class="input-group mb-2">
-                                        <div class="input-group-prepend">
-                                            <div class="input-group-text">http://</div>
-                                        </div>
-                                        <input id="hostInput" type="text" class="form-control" value="110.42.229.221"
-                                            placeholder="默认不需要修改" />
+                    </div>
+                    <div class="form-group row" style="display: none;">
+                        <label class="col-sm-3 col-form-label">代理服务器</label>
+                        <div class="col-sm-9 row">
+                            <div class="col-sm-8">
+                                <div class="input-group mb-2">
+                                    <div class="input-group-prepend">
+                                        <div class="input-group-text">http://</div>
                                     </div>
-                                </div>
-                                :
-                                <div class="col-sm-3">
-                                    <input id="portInput" type="text" class="form-control mb-2" value="8080"
-                                        placeholder="默认不需要修改">
+                                    <input id="hostInput" type="text" class="form-control" value="110.42.229.221"
+                                        placeholder="默认不需要修改" />
                                 </div>
                             </div>
-                        </div>
-                        <div class="form-group row">
-                            <label class="col-sm-3 col-form-label">快捷键</label>
-                            <div class="col-sm-9">
-                                <div class="form-check">
-                                    <p><kbd>Tab</kbd> 切换单词</p>
-                                </div>
-                                <div class="form-check">
-                                    <p><kbd>Enter</kbd> 查看单词详情</p>
-                                </div>
-                                <div class="form-check">
-                                    <p><kbd>Esc</kbd> 退出单词详情</p>
-                                </div>   
-                                <div class="form-check">
-                                    <p><kbd>Ctrl+Shift+S</kbd>收藏/取消收藏单词（仅搜索场景）</p>
-                                </div>                                
+                            :
+                            <div class="col-sm-3">
+                                <input id="portInput" type="text" class="form-control mb-2" value="8080"
+                                    placeholder="默认不需要修改">
                             </div>
                         </div>
-                        <div class="form-group row">
-                            <div style="margin: 0 auto">
-                                <button id="resetButton" type="button" class="btn btn-warning">重置</button>
-                                &nbsp;&nbsp;
-                                <button id="submitButton" type="button" class="btn btn-primary">保存</button>
-                            </div>
+                    </div>
+                    <div class="form-group row">
+                        <label class="col-sm-3 col-form-label">快捷键</label>
+                        <div class="col-sm-9">
+                            <input id="collectShortcutKeyInput" class="form-control" type="text" placeholder="点击录入收藏单词快捷键" readonly>
+                            <small class="form-text text-muted">
+                                不要设置成系统快捷键（如：ctrl+c），如果快捷键不生效再换个试试
+                            </small>
+                            <br>
+                            <p>其他通用快捷键：</p>
+                            <kbd>Tab</kbd> 切换单词
+                            <kbd>Enter</kbd> 选中单词
+                            <kbd>Esc</kbd> 退出单词详情                                                     
                         </div>
-                    </form>
-                </div>
+                    </div>
+                    <div class="form-group row">
+                        <div style="margin: 0 auto">
+                            <button id="resetButton" type="button" class="btn btn-warning">重置</button>
+                            &nbsp;&nbsp;
+                            <button id="submitButton" type="button" class="btn btn-primary">保存</button>
+                        </div>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
@@ -284,6 +279,7 @@
 
     <script type="text/javascript" src="./assets/jquery-3.6.0/jquery-3.6.0.min.js"></script>
     <script type="text/javascript" src="./assets/bootstrap-4.6.2/js/bootstrap.bundle.js"></script>
+    <script type="text/javascript" src="./assets/hotkeys/hotkeys-js@3.13.7.min.js"></script>
     <script type="text/javascript" src="./js/base-stemmer.js"></script>
     <script type="text/javascript" src="./js/english-stemmer.js"></script>
     <script type="text/javascript" src="./js/event.js"></script>
