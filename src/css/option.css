@@ -81,3 +81,17 @@
     color: #6a6d71;
     background-color: #6a6d71;
 }
+
+.qr-code {
+    position: fixed; 
+    right: 10px; 
+    top: 200px; 
+    width: 90px; 
+    height: 90px;
+}
+
+.qr-code img {
+    display: block;
+    width: 100%;
+    height: 100%;
+}
