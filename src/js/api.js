@@ -114,9 +114,9 @@
         return characterSize / len > 0.7;
     }
 
-    function getWordDetail(topicId) {
+    function getWordDetail(topicId, withDict = true, withMedia = false, withSimilarWords = false) {
         return loadRequestOptions().then(([host, port, accessToken]) => {
-            const url = `http://${host}:${port}/word/${topicId}`;                      
+            const url = `http://${host}:${port}/word/${topicId}?withDict=${withDict}&withMedia=${withMedia}&withSimilarWords=${withSimilarWords}`;                      
 
             return sendRequest({
                 url, 
@@ -223,6 +223,18 @@
         });
     }
 
+    function getCalendarDailyInfo(date) {
+        return loadRequestOptions().then(([host, port, accessToken]) => {
+            const url = `http://${host}:${port}/calendarDailyInfo?date=${date}&pageOffset=0&pageSize=200`;
+
+            return sendRequest({
+                url,
+                method: 'GET',
+                headers: {'access_token': accessToken}
+            });
+        });
+    }
+
     function getWordbookId() {
         return storageModule.get('bookId').then(bookId => bookId || 0);
     }
@@ -257,7 +269,7 @@
         getVerifyCode, loginWithPhone, getUserInfo, 
         getBooks, defaultHost, defaultPort, loginWithEmail,
         searchWord, getWordDetail, collectWord, translate,
-        cancelCollectWord, getBookWords, getWordInfo
+        cancelCollectWord, getBookWords, getWordInfo, getCalendarDailyInfo
     };
 
     global.apiModule = exports;

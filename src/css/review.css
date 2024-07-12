@@ -1,0 +1,115 @@
+.reviewer-container {
+    width: 400px;
+    height: 560px;
+    scroll-behavior: unset;
+    overflow: hidden;
+    background-color: rgb(248 248 248);
+}
+
+.head {
+    height: 4%;
+    padding-left: 5px;
+    padding-top: 5px;
+    font-size: 15px;
+    color: #888787;
+}
+
+.body {
+    flex-direction: column; 
+    height: 40%; 
+    padding: 0 20px;
+}
+
+.body > .sentence {
+    cursor: pointer;
+    color: rgb(54 57 77);
+    font-size: medium;
+}
+
+.body > .word {
+    font-size: x-large; 
+    color: rgb(54 57 77); 
+    cursor: pointer;
+}
+
+.body > .accent {
+    font-size: medium; 
+    color: rgb(159 165 177);
+}
+
+/* 容器的基础样式 */
+.image-container {
+    position: relative;
+    width: 185px; /* 根据需要调整大小 */
+    margin-left: 10px;
+    margin-top: 10px;
+}
+
+/* 图片的样式 */
+.image-container img {
+    width: 185px;
+    cursor: pointer;
+}
+
+.image-container img:hover {
+    border: 1px solid #007bff;
+}
+
+/* 覆盖文字的样式 */
+.overlay-text {
+    position: absolute;
+    top: 90%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: white;
+    font-size: 14px;
+    background-color: rgb(0 0 0 / 50%);
+    border-radius: 5px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+    max-width: 160px;
+}
+
+.overlay-sign {
+    position: absolute;
+    top: 10%;
+    left: 90%;
+    transform: translate(-50%, -50%);
+    font-size: 14px;
+}
+
+.text-options {
+    position: relative;
+    margin: 10px 5px 5px 0px;
+    border-radius: 3px;
+    background-color: white;
+    height: 60px;
+    justify-items: center;
+    align-content: center;
+    padding: 0 20px;
+    color: rgb(105 113 119);
+    box-shadow: 1px 1px 1px rgba(0, 0, 0, 0.5);
+    cursor: pointer;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+}
+
+.text-options:hover {
+    border: 1px solid #007bff;
+}
+
+.text-options-sign {
+    position: absolute;
+    top: 50%;
+    left: 2%;
+    transform: translate(-50%, -50%);
+    font-size: 14px;
+}
+
+.word-brief-info {
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+}
