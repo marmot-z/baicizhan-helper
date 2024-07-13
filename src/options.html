@@ -5,7 +5,6 @@
     <meta charset="UTF-8">
     <link rel="stylesheet" type="text/css" href="./assets/bootstrap-4.6.2/css/bootstrap.css" />
     <link rel="stylesheet" type="text/css" href="./assets/webui-popover-1.2.17/jquery.webui-popover.min.css" />
-    <link rel="stylesheet" type="text/css" href="./assets/clockpicker/bootstrap-clockpicker.min.css" />
     <link rel="stylesheet" type="text/css" href="./css/option.css" />
     <title>baicizhan-helper</title>
 </head>
@@ -220,6 +219,14 @@
                             <kbd>Esc</kbd> 退出单词详情                                                     
                         </div>
                     </div>
+                    <div id="versionTips" class="form-group row" style="display: none;">
+                        <div class="alert alert-warning" style="width: 100%;" role="alert">
+                            有新的版本插件发布了（当前版本：<strong></strong>），请进行更新！
+                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>                        
+                    </div>
                     <div class="form-group row">
                         <div style="margin: 0 auto">
                             <button id="resetButton" type="button" class="btn btn-warning">重置</button>
@@ -307,7 +314,6 @@
 
     <script type="text/javascript" src="./assets/jquery-3.6.0/jquery-3.6.0.min.js"></script>
     <script type="text/javascript" src="./assets/bootstrap-4.6.2/js/bootstrap.bundle.js"></script>
-    <script type="text/javascript" src="./assets/clockpicker/bootstrap-clockpicker.min.js"></script>
     <script type="text/javascript" src="./assets/webui-popover-1.2.17/jquery.webui-popover.js"></script>
     <script type="text/javascript" src="./js/base-stemmer.js"></script>
     <script type="text/javascript" src="./js/english-stemmer.js"></script>

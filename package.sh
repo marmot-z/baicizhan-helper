@@ -22,7 +22,7 @@ cp -vR src                     \
 version=$(jq -r '.version' manifest.json)
 echo "
 
-window.__baicizhanHelper__={};
+if (!window.__baicizhanHelper__) window.__baicizhanHelper__ = {};
 window.__baicizhanHelper__.version='$version';" >> dist/src/js/options.js
 
 # 打包压缩 dist 文件夹

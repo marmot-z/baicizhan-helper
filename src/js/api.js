@@ -235,6 +235,17 @@
         });
     }
 
+    function getLatestVersion() {
+        return loadRequestOptions().then(([host, port, accessToken]) => {
+            const url = `http://${host}:${port}/latestVersion`;
+
+            return sendRequest({
+                url,
+                method: 'GET'
+            });
+        });
+    }
+
     function getWordbookId() {
         return storageModule.get('bookId').then(bookId => bookId || 0);
     }
@@ -269,7 +280,8 @@
         getVerifyCode, loginWithPhone, getUserInfo, 
         getBooks, defaultHost, defaultPort, loginWithEmail,
         searchWord, getWordDetail, collectWord, translate,
-        cancelCollectWord, getBookWords, getWordInfo, getCalendarDailyInfo
+        cancelCollectWord, getBookWords, getWordInfo, 
+        getCalendarDailyInfo, getLatestVersion
     };
 
     global.apiModule = exports;
