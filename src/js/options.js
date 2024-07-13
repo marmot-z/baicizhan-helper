@@ -16,7 +16,7 @@
     }
 
     async function checkUpgrade() {
-        let latestVersion = apiModule.getLatestVersion();
+        let latestVersion = await apiModule.getLatestVersion();
         let currentVersion = window.__baicizhanHelper__.version;
         let hasNewVersion = latestVersion > currentVersion;
 
