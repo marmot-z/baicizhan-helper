@@ -1,6 +1,9 @@
 ;(function (window, $) {
 
     const resourceDomain = 'https://7n.bczcdn.com';
+    const {levenshtein} = window.utilModule;
+    const {EnglishStemmer} = window.__baicizhanHelperModule__;
+    const stemmer = new EnglishStemmer();
     let $el;
 
     class Reviewer {
@@ -244,17 +247,57 @@
 
         _renderSentence() {
             let sentence = this.wordInfo.dict.sentences[0];
+            let word = this.wordInfo.dict.word_basic_info.word;
             let $body = $(`
                 <div id="reviewerBodyDiv" class="row d-flex justify-content-center align-items-center body">
-                    <p class="sentence">${sentence.sentence}</p>
-                    <audio id="sentenceAudio" style="display: none;">
+                    <p class="sentence">${this._highlight(sentence, word)}</p>
+                    <audio id="reviewSentenceAudio" style="display: none;">
                         <source src="${resourceDomain + sentence.audio_uri}">
                     </audio>                    
                 </div>
             `);
-            $body.find('.sentence').on('click', (e) => $('#sentenceAudio')[0].play());
+            $body.find('.sentence').on('click', (e) => $('#reviewSentenceAudio')[0].play());
             $el.find('#reviewerBodyDiv').remove();
             $el.append($body);
+        }
+
+        _highlight(sentence, word) {
+            if (sentence.highlight_phrase) {
+                return sentence.sentence.replace(
+                    sentence.highlight_phrase, 
+                    `<span style="color: #007bff;">${sentence.highlight_phrase}</span>`
+                );
+            }
+    
+            let stemWord = stemmer.stemWord(word);
+            let highlightWord = sentence.sentence.split(/\s/)
+                    .map(s => {
+                        let regex = /[\w-]+/;
+    
+                        if (regex.test(s)) {
+                            let term = s.match(regex)[0];
+                            let distance = levenshtein(term, stemWord);
+                            let highlightable = term.length < 7 ? distance <= 3 : distance <= 5;
+    
+                            if (highlightable) {
+                                return [distance, term];
+                            }
+                        }
+    
+                        return null;
+                    })
+                    .filter(pair => pair !== null)
+                    .reduce((a, b) => a[0] < b[0] ? a : b);
+    
+            if (!highlightWord) {
+                return sentence.sentence;
+            }
+            
+            let replaceRegex = new RegExp(`\\b${highlightWord[1]}\\b`, 'g');
+    
+            return sentence.sentence.replace(replaceRegex, (match) => {
+                return `<span style="color: #007bff;">${match}</span>`;
+            });
         }
 
         _renderWord() {
@@ -265,12 +308,12 @@
                     <p class="accent">
                         ${accents.join(',')}
                     </p>     
-                    <audio id="accentUkAudio" style="display: none;">
+                    <audio id="reviewAccentUkAudio" style="display: none;">
                         <source src="${resourceDomain + this.wordInfo.dict.word_basic_info.accent_uk_audio_uri}">
                     </audio>
                 </div>
             `);
-            $body.find('.word, .accent').on('click', (e) => $('#accentUkAudio')[0].play());
+            $body.find('.word, .accent').on('click', (e) => $('#reviewAccentUkAudio')[0].play());
             $el.find('#reviewerBodyDiv').remove();
             $el.append($body);
         }
@@ -366,8 +409,8 @@
         }
     }
 
-    window.onload = () => {
-        $el = $('#reviewerDiv');
+    window.initReview = () => {
+        $el = $('#reviewDiv');
         new Reviewer().start();
     };
 }) (this, jQuery);

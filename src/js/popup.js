@@ -72,11 +72,39 @@
     }
 
     function init() {
+        initNav();
+        initSearch();  
+        initReview();
+    }
+
+    function initSearch() {
         $('#searchButton').on('click', search);
         $('#searchInput').focus().on('keypress', (e) => {
             if (e.keyCode == 13) search();
         });
         $doc.on(events.WORD_DETAIL, refreshWordDetail);
+    }
+
+    function initNav() {
+        let $reviewNav = $('#reviewNav');
+        let $searchNav = $('#searchNav');
+        let $searchDiv = $('#searchDiv');
+        let $reviewDiv = $('#reviewDiv');
+
+        $reviewNav.on('click', (e) => {
+            e.preventDefault();
+            $reviewNav.addClass('disabled');  
+            $searchNav.removeClass('disabled');
+            $searchDiv.hide();
+            $reviewDiv.show();
+        });
+        $('#searchNav').on('click', (e) => {
+            e.preventDefault();
+            $searchNav.addClass('disabled');  
+            $reviewNav.removeClass('disabled');
+            $reviewDiv.hide();
+            $searchDiv.show();       
+        }); 
     }
 
     window.onload = init;

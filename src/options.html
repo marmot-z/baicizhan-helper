@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <link rel="stylesheet" type="text/css" href="./assets/bootstrap-4.6.2/css/bootstrap.css" />
     <link rel="stylesheet" type="text/css" href="./assets/webui-popover-1.2.17/jquery.webui-popover.min.css" />
+    <link rel="stylesheet" type="text/css" href="./assets/clockpicker/bootstrap-clockpicker.min.css" />
     <link rel="stylesheet" type="text/css" href="./css/option.css" />
     <title>baicizhan-helper</title>
 </head>
@@ -191,6 +192,21 @@
                         </div>
                     </div>
                     <div class="form-group row">
+                        <label class="col-sm-3 col-form-label">复习单词</label>
+                        <div class="col-sm-9">
+                            <div class="row" style="display: flex; justify-content: flex-start; align-content: center; align-items: center;">
+                                定时复习 &nbsp;
+                                <div class="custom-control custom-switch">
+                                    <input type="checkbox" class="custom-control-input" name="enableReviewCheck" id="enableReviewCheck">                                
+                                    <label class="custom-control-label" for="enableReviewCheck"></label>                                
+                                </div>           
+                                <input class="form-control" id="single-input" value="10:00" style="width: 100px;">                                
+                                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                <button id="reviewNowBtn" type="button" class="btn btn-outline-primary">现在复习</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group row">
                         <label class="col-sm-3 col-form-label">快捷键</label>
                         <div class="col-sm-9">
                             <input id="collectShortcutKeyInput" class="form-control" type="text" placeholder="点击录入收藏单词快捷键" readonly>
@@ -291,6 +307,7 @@
 
     <script type="text/javascript" src="./assets/jquery-3.6.0/jquery-3.6.0.min.js"></script>
     <script type="text/javascript" src="./assets/bootstrap-4.6.2/js/bootstrap.bundle.js"></script>
+    <script type="text/javascript" src="./assets/clockpicker/bootstrap-clockpicker.min.js"></script>
     <script type="text/javascript" src="./assets/webui-popover-1.2.17/jquery.webui-popover.js"></script>
     <script type="text/javascript" src="./js/base-stemmer.js"></script>
     <script type="text/javascript" src="./js/english-stemmer.js"></script>

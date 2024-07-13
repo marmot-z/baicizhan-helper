@@ -24,7 +24,7 @@
             "48": "icon.png",
             "128": "icon.png"
         },
-        "default_popup": "src/review.html"
+        "default_popup": "src/popup.html"
     },
     "content_scripts": [
         {

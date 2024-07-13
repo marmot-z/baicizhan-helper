@@ -21,6 +21,13 @@
         wordbookModule.init();
         initWechatQrCode();
         
+        $('#single-input').clockpicker({
+            placement: 'bottom',
+            align: 'left',
+            autoclose: true,
+            'default': 'now'
+        });
+
         let accessToken = await storageModule.get('accessToken');
         let event = accessToken ? events.AUTHED : events.UNAUTHED;
 

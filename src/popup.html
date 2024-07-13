@@ -5,10 +5,19 @@
     <meta charset="UTF-8">
     <link rel="stylesheet" type="text/css" href="./assets/bootstrap-4.6.2/css/bootstrap.css" />
     <link rel="stylesheet" type="text/css" href="./css/popup.css" />
+    <link rel="stylesheet" type="text/css" href="./css/review.css" />
 </head>
 
 <body>
-    <div class="container popup-body">
+    <ul class="nav justify-content-center">
+        <li class="nav-item">
+            <a id="searchNav" class="nav-link disabled" href="#">搜索单词</a>
+        </li>
+        <li class="nav-item">
+            <a id="reviewNav" class="nav-link" href="#">复习单词</a>
+        </li>
+    </ul>
+    <div id="searchDiv" class="container popup-body">
         <div class="input-group mb-3">
             <input id="searchInput" type="text" class="form-control" tabindex="0" placeholder="请输入要查询的中文或英文">
             <span id="searchButton" class="input-group-text" id="basic-addon2">
@@ -21,19 +30,23 @@
         </table>
 
         <div id="detailDiv" style="display: none;"></div>
+    </div>
+    <div id="reviewDiv" class="container reviewer-container" style="display: none;">
+    </div>
 
-        <script type="text/javascript" src="./assets/jquery-3.6.0/jquery-3.6.0.min.js"></script>
-        <script type="text/javascript" src="./assets/bootstrap-4.6.2/js/bootstrap.bundle.js"></script>
-        <script type="text/javascript" src="./assets/jquery-3.6.0/jquery.hotkeys.js"></script>
-        <script type="text/javascript" src="./js/base-stemmer.js"></script>
-        <script type="text/javascript" src="./js/english-stemmer.js"></script>
-        <script type="text/javascript" src="./js/event.js"></script>
-        <script type="text/javascript" src="./js/util.js"></script>
-        <script type="text/javascript" src="./js/storage.js"></script>
-        <script type="text/javascript" src="./js/wordbook-storage.js"></script>
-        <script type="text/javascript" src="./js/api.js"></script>
-        <script type="text/javascript" src="./js/word-detail.js"></script>
-        <script type="text/javascript" src="./js/popup.js"></script>
+    <script type="text/javascript" src="./assets/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+    <script type="text/javascript" src="./assets/bootstrap-4.6.2/js/bootstrap.bundle.js"></script>
+    <script type="text/javascript" src="./assets/jquery-3.6.0/jquery.hotkeys.js"></script>
+    <script type="text/javascript" src="./js/base-stemmer.js"></script>
+    <script type="text/javascript" src="./js/english-stemmer.js"></script>
+    <script type="text/javascript" src="./js/event.js"></script>
+    <script type="text/javascript" src="./js/util.js"></script>
+    <script type="text/javascript" src="./js/storage.js"></script>
+    <script type="text/javascript" src="./js/wordbook-storage.js"></script>
+    <script type="text/javascript" src="./js/api.js"></script>
+    <script type="text/javascript" src="./js/word-detail.js"></script>
+    <script type="text/javascript" src="./js/popup.js"></script>
+    <script type="text/javascript" src="./js/review.js"></script>
 </body>
 
 </html>
