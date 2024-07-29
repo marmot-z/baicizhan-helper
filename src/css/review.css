@@ -26,6 +26,12 @@
     font-size: medium;
 }
 
+.body > .transSentence {
+    cursor: pointer;
+    color: #888787;
+    font-size: medium;
+}
+
 .body > .word {
     font-size: x-large; 
     color: rgb(54 57 77); 

@@ -12,7 +12,7 @@
         // 单词列表
         words;
         // 当前进行的环节
-        section;
+        iterator;
     
         async start() {
             await this._fetchCalendarDailyInfo();   
@@ -21,7 +21,7 @@
     
         _doStart() {            
             this.state = 'pending';
-            this.section = new ReviewSection(this.words, this.updateView.bind(this));
+            this.iterator = new ReviewIterator(this.words, this.updateView.bind(this));
             this._initProgress();
             this.updateView();
         }
@@ -68,12 +68,12 @@
         _updateReviewView() {
             this._updateProgress();
 
-            if (!this.section.hasNext()) {
+            if (!this.iterator.hasNext()) {
                 this.state = 'ending';
                 return this.updateView();
             }
             
-            this.section.next();
+            this.iterator.next();
         }
 
         _initProgress() {
@@ -88,7 +88,7 @@
         }
 
         _updateProgress() {
-            $el.find('#progressP').html(`当前进度：${this.section.getProgress()}%`);
+            $el.find('#progressP').html(`当前进度：${this.iterator.getProgress()}%`);
         }
     
         _notReadyView() {
@@ -130,7 +130,7 @@
         }
     }
     
-    class ReviewSection {
+    class ReviewIterator {
         // 当前复习的单词
         currentWord;
         // 单词列表
@@ -232,20 +232,18 @@
                 return this.onReview('pass');
             }
 
-            if (this.type === 'sentenceImages') {
-                this._renderSentence();
-            } else {
-                this._renderWord();
-            }
-            
+            let showMeans = this.type !== 'sentenceImages';
+
             if (this.type === 'wordMeans') {
-                this._renderTextOptions();
+                this._renderWord();
+                this._renderTextOptions();                        
             } else {
-                this._renderImageOptions();
+                this._renderSentence(showMeans);
+                this._renderImageOptions(showMeans);
             }
         }
 
-        _renderSentence() {
+        _renderSentence(showMeans) {
             let sentence = this.wordInfo.dict.sentences[0];
             let word = this.wordInfo.dict.word_basic_info.word;
             let $body = $(`
@@ -253,7 +251,8 @@
                     <p class="sentence">${this._highlight(sentence, word)}</p>
                     <audio id="reviewSentenceAudio" style="display: none;">
                         <source src="${resourceDomain + sentence.audio_uri}">
-                    </audio>                    
+                    </audio>
+                    <p class="transSentence" style="display: ${showMeans ? 'block' : 'none'}">${sentence.sentence_trans}</p>            
                 </div>
             `);
             $body.find('.sentence').on('click', (e) => $('#reviewSentenceAudio')[0].play());
@@ -318,7 +317,7 @@
             $el.append($body);
         }
 
-        _renderImageOptions() {
+        _renderImageOptions(showMeans) {
             let randomIndex = Math.floor(Math.random() * 4);
             let words = this.wordInfo.similarWords.toSpliced(randomIndex, 0, this.wordInfo);
             let $optionsDiv = $(`<div id="optionsDiv"></div>`);
@@ -339,7 +338,9 @@
                 let $option = $(`
                     <div class="image-container">
                         <img src="${resourceDomain}${words[i].dict.sentences[0].img_uri}">
-                        <div class="overlay-text">${meanStr}</div>
+                        <div class="overlay-text" style="display: ${showMeans ? 'block' : 'none'}">
+                            <span title="${meanStr}" alt="${meanStr}">${meanStr}</span>
+                        </div>
                     </div>
                 `);
 
@@ -348,14 +349,17 @@
                     this.$correctOption = $option;
                     $option.on('click', () => {
                         this.$correctOption.append(`<div class="overlay-sign">✅</div>`);
-                        $optionsDiv.find('.image-containern').off('click');
+                        $optionsDiv.find('.image-container').off('click');
                         window.setTimeout(() => this.onReview('pass'), 500);
                     });
                 } else {
                     $option.on('click', () => {
+                        if (!showMeans) {
+                            $('#reviewerBodyDiv').find('.transSentence').show();
+                        }
                         this.$correctOption.append(`<div class="overlay-sign">✅</div>`);
                         $option.append(`<div class="overlay-sign">❌</div>`);
-                        $optionsDiv.find('.image-containern').off('click');
+                        $optionsDiv.find('.image-container').off('click');
                         window.setTimeout(() => this.onReview('fail'), 3000);
                     });
                 }
