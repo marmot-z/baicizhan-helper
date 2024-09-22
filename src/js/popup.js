@@ -43,7 +43,7 @@
             $doc.trigger(events.WORD_DETAIL, [this]);
         });
         $el.on('keypress', function(e) {
-            if (e.keyCode == 13) $doc.trigger(events.WORD_DETAIL, [this]);        
+            if (e.keyCode === 13) $doc.trigger(events.WORD_DETAIL, [this]);
         });
     }
 
@@ -73,8 +73,7 @@
 
     function init() {
         initNav();
-        initSearch();  
-        initReview();
+        initSearch();
     }
 
     function initSearch() {

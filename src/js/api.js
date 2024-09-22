@@ -104,7 +104,7 @@
         let len = 0, characterSize = 0;
 
         for (let c of Array.from(phrase)) {
-            if (c == ' ') continue;
+            if (c === ' ') continue;
 
             len++;
 
@@ -246,6 +246,81 @@
         });
     }
 
+    function getSelectBookPlanInfo() {
+        return loadRequestOptions().then(([host, port, accessToken]) => {
+            const url = `http://${host}:${port}/selectBookPlanInfo`;
+
+            return sendRequest({
+                url,
+                method: 'GET',
+                headers: {'access_token': accessToken}
+            });
+        });
+    }
+
+    function getAllBookInfo() {
+        return loadRequestOptions().then(([host, port, accessToken]) => {
+            const url = `http://${host}:${port}/booksInfo`;
+
+            return sendRequest({
+                url,
+                method: 'GET',
+                headers: {'access_token': accessToken}
+            });
+        });
+    }
+
+    function getRoadmaps(bookId) {
+        return loadRequestOptions().then(([host, port, accessToken]) => {
+            const url = `http://${host}:${port}/roadmap?bookId=${bookId}`;
+
+            return sendRequest({
+                url,
+                method: 'GET',
+                headers: {'access_token': accessToken}
+            });
+        });
+    }
+
+    function getLearnedWords(bookId) {
+        return loadRequestOptions().then(([host, port, accessToken]) => {
+            const url = `http://${host}:${port}/learnedWords?bookId=${bookId}`;
+
+            return sendRequest({
+                url,
+                method: 'GET',
+                headers: {'access_token': accessToken}
+            });
+        });
+    }
+
+    function updateDoneData(words) {
+        let records = words.map(w => {
+            return  {
+                word_topic_id: w.topicId,
+                done_times: w.doneTimes,
+                wrong_times: w.wrongTimes,
+            };
+        })
+
+        return loadRequestOptions().then(([host, port, accessToken]) => {
+            const url = `http://${host}:${port}/updateDoneData`;
+
+            return sendRequest({
+                url,
+                method: 'POST',
+                headers: {
+                    'access_token': accessToken,
+                    'content-type': 'application/json',
+                },
+                body: {
+                    doneRecords: records,
+                    wordLevelId: words[0]?.wordLevelId
+                }
+            });
+        });
+    }
+
     function getWordbookId() {
         return storageModule.get('bookId').then(bookId => bookId || 0);
     }
@@ -268,7 +343,7 @@
                         body: options.body ? JSON.stringify(options.body) : undefined
                     })
                     .then(response => response.json())
-                    .then(responseJson => responseJson.code == 200 ? 
+                    .then(responseJson => responseJson.code === 200 ?
                             resolve(responseJson.data) : 
                             reject(new Error(responseJson.message))
                     )
@@ -281,7 +356,8 @@
         getBooks, defaultHost, defaultPort, loginWithEmail,
         searchWord, getWordDetail, collectWord, translate,
         cancelCollectWord, getBookWords, getWordInfo, 
-        getCalendarDailyInfo, getLatestVersion
+        getCalendarDailyInfo, getLatestVersion, getSelectBookPlanInfo,
+        getAllBookInfo, getRoadmaps, getLearnedWords, updateDoneData
     };
 
     global.apiModule = exports;

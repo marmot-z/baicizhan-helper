@@ -25,5 +25,15 @@
      */
     const WORD_DETAIL = 'bcz.wordDetail';
 
-    window.events = {AUTHED, UNAUTHED, BOOKS_LOADED, WORD_DETAIL};
+    /**
+     * 开启背单词
+     */
+    const ENABLE_STUDY = 'bcz.enableStudy';
+
+    /**
+     * 关闭背单词
+     */
+    const DISABLE_STUDY = 'bcz.disableStudy';
+
+    window.events = {AUTHED, UNAUTHED, BOOKS_LOADED, WORD_DETAIL, ENABLE_STUDY, DISABLE_STUDY};
 } (this));

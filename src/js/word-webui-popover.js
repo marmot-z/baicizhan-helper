@@ -183,6 +183,7 @@
             if (accentUkAudio) {
                 accentUkAudio.addEventListener('click', 
                     loadAudio(resourceDomain + this.data.word_basic_info.accent_uk_audio_uri));
+                accentUkAudio.click();
             }
 
             if (sentenceAudio) {

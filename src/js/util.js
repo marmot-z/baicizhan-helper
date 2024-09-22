@@ -1,6 +1,9 @@
 ;(function(window) {
     'use strict';
 
+    const {EnglishStemmer} = window.__baicizhanHelperModule__;
+    const stemmer = new EnglishStemmer();
+
     /**
      * calculate levenshtein edit distance
      * 
@@ -103,8 +106,52 @@
         return h;
     }
 
+    function getHighlightWord(sentence, word) {
+        let stemWord = stemmer.stemWord(word);
+
+        return sentence.split(/\s/)
+            .map(s => {
+                let regex = /[\w-]+/;
+
+                if (regex.test(s)) {
+                    let term = s.match(regex)[0];
+                    let distance = levenshtein(term, stemWord);
+                    let highlightable = term.length < 7 ? distance <= 3 : distance <= 5;
+
+                    if (highlightable) {
+                        return [distance, term];
+                    }
+                }
+
+                return null;
+            })
+            .filter(pair => pair !== null)
+            .reduce((a, b) => a[0] < b[0] ? a : b, [Number.MAX_SAFE_INTEGER, '']);
+    }
+
+    function highlightSentence(sentence, word) {
+        if (sentence.highlight_phrase) {
+            return sentence.sentence.replace(
+                sentence.highlight_phrase,
+                `<span style="color: #007bff;">${sentence.highlight_phrase}</span>`
+            );
+        }
+
+        let highlightWord = getHighlightWord(sentence.sentence, word);
+
+        if (!highlightWord) {
+            return sentence.sentence;
+        }
+
+        let replaceRegex = new RegExp(`\\b${highlightWord[1]}\\b`, 'g');
+
+        return sentence.sentence.replace(replaceRegex, (match) => {
+            return `<span style="color: #007bff;">${match}</span>`;
+        });
+    }
+
     if (!window.utilModule) {
-        window.utilModule = {levenshtein};
+        window.utilModule = {levenshtein, getHighlightWord, highlightSentence};
     }
 
     if (!window.__baicizhanHelperModule__) {
@@ -112,4 +159,6 @@
     }
 
     window.__baicizhanHelperModule__.levenshtein = levenshtein;
+    window.__baicizhanHelperModule__.getHighlightWord = getHighlightWord;
+    window.__baicizhanHelperModule__.highlightSentence = highlightSentence;
 } (this));

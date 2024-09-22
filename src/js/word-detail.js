@@ -2,36 +2,49 @@
     'use strict';
 
     const {collectWord, cancelCollectWord} = window.apiModule;
-    const {EnglishStemmer} = window.__baicizhanHelperModule__;
-    const {levenshtein} = window.utilModule;
+    const {highlightSentence} = window.utilModule;
     const resourceDomain = 'https://7n.bczcdn.com';
     const $doc = $(document);
-    const stemmer = new EnglishStemmer();
     let collected = false;
 
-    function generateWordDetail(data, $target, hasCollected, showIcon = true) {    
+    function generateWordDetail(data, $target, hasCollected, collectEnable = true) {
         $target.empty().css('display', 'block');
         collected = hasCollected || false;
         
         storageModule.get(['wordDetail', 'collectShortcutkey'])
             .then(([wordDetailSettings, collectShortcutkey]) => {
-                generateWordInfo(data.dict, $target, showIcon, collectShortcutkey);
-                if (wordDetailSettings.variantDisplay) generateVariant(data.dict.variant_info, $target);
+                generateWordInfo(data.dict, $target, collectEnable, collectShortcutkey);
+                if (wordDetailSettings.variantDisplay) generateVariant(data.dict.variant_info, $target, true);
                 if (wordDetailSettings.sentenceDisplay) generateSentence(data.dict.sentences, data.dict.word_basic_info.word, $target);
                 if (wordDetailSettings.shortPhrasesDisplay) generateShortPhrases(data.dict.short_phrases, $target);                 
-                if (wordDetailSettings.synonymsDisplay) generateSynonyms(data.dict.synonyms, $target);
-                if (wordDetailSettings.antonymsDisplay) generateAntonyms(data.dict.antonyms, $target);
-                if (wordDetailSettings.similarWordsDisplay) generateSimilarWords(data.similar_words, $target);
-                if (wordDetailSettings.englishParaphraseDisplay) generateEnglishParaphrase(data.dict.en_means, $target); 
+                if (wordDetailSettings.synonymsDisplay) generateSynonyms(data.dict.synonyms, $target, true);
+                if (wordDetailSettings.antonymsDisplay) generateAntonyms(data.dict.antonyms, $target, true);
+                if (wordDetailSettings.similarWordsDisplay) generateSimilarWords(data.similar_words, $target, true);
+                if (wordDetailSettings.englishParaphraseDisplay) generateEnglishParaphrase(data.dict.en_means, $target);
+
+                $('#accentUkAudio')[0].play();
             });             
     }
 
-    function generateWordInfo(data, $parent, showIcon, collectShortcutkey) {        
+    function generateStudyWordDetail(data, $target) {
+        generateWordInfo(data.dict, $target, false, '');
+        generateVariant(data.dict.variant_info, $target);
+        generateSentence(data.dict.sentences, data.dict.word_basic_info.word, $target);
+        generateShortPhrases(data.dict.short_phrases, $target);
+        generateSynonyms(data.dict.synonyms, $target);
+        generateAntonyms(data.dict.antonyms, $target);
+        generateSimilarWords(data.similar_words, $target);
+        generateEnglishParaphrase(data.dict.en_means, $target);
+
+        $('#accentUkAudio')[0].play();
+    }
+
+    function generateWordInfo(data, $parent, collectEnable, collectShortcutkey) {
         let starIconSvg = collected ? 'star-fill.svg' : 'star.svg'; 
         let $section = $(`
             <div class="section">
                 <span class="word">${data.word_basic_info.word}</span>
-                <span id="starIcon" class="star" style="display: ${showIcon ? 'block' : 'none'}">
+                <span id="starIcon" class="star" style="display: ${collectEnable ? 'block' : 'none'}">
                     <img src="../svgs/${starIconSvg}">
                 </span>
                 <br>                
@@ -45,7 +58,8 @@
         $section.find('#starIcon').on('click', function(e) {
             favoriteWord.bind(this)(data)
         });
-        if (collectShortcutkey && collectShortcutkey.trim()) {
+
+        if (collectEnable && collectShortcutkey && collectShortcutkey.trim()) {
             $doc.off('keydown')
                 .on('keydown', null, collectShortcutkey.toLowerCase(), function(e) {
                     favoriteWord.bind($section.find('#starIcon')[0])(data)
@@ -82,7 +96,7 @@
             <audio id="accentUkAudio" style="display: none;"><source src="${resourceDomain + data.accent_uk_audio_uri}"></audio>
         `;
 
-        if (data.accent_uk != data.accent_usa) {
+        if (data.accent_uk !== data.accent_usa) {
             html += `
                 <span class="badge bg-info" style="color: white;">美</span>
                 <span>${data.accent_usa}</span>
@@ -147,7 +161,7 @@
     }
 
     function refreshSentence(sentence, word, $parent) {
-        let sentenceHtml = highlight(sentence, word);
+        let sentenceHtml = highlightSentence(sentence, word);
         let $el = $(`
             <span>${sentenceHtml}</span>
             <span id="phreaseAccentIcon" class="volume-up">
@@ -162,45 +176,6 @@
         $parent.empty().append($el);
         $parent.find('#phreaseAccentIcon')
                 .on('click', () => $('#phraseAudio')[0].play());
-    }
-
-    function highlight(sentence, word) {
-        if (sentence.highlight_phrase) {
-            return sentence.sentence.replace(
-                sentence.highlight_phrase, 
-                `<span style="color: #007bff;">${sentence.highlight_phrase}</span>`
-            );
-        }
-
-        let stemWord = stemmer.stemWord(word);
-        let highlightWord = sentence.sentence.split(/\s/)
-                .map(s => {
-                    let regex = /[\w-]+/;
-
-                    if (regex.test(s)) {
-                        let term = s.match(regex)[0];
-                        let distance = levenshtein(term, stemWord);
-                        let highlightable = term.length < 7 ? distance <= 3 : distance <= 5;
-
-                        if (highlightable) {
-                            return [distance, term];
-                        }
-                    }
-
-                    return null;
-                })
-                .filter(pair => pair !== null)
-                .reduce((a, b) => a[0] < b[0] ? a : b);
-
-        if (!highlightWord) {
-            return sentence.sentence;
-        }
-        
-        let replaceRegex = new RegExp(`\\b${highlightWord[1]}\\b`, 'g');
-
-        return sentence.sentence.replace(replaceRegex, (match) => {
-            return `<span style="color: #007bff;">${match}</span>`;
-        });
     }
 
     function generateEnglishParaphrase(data, $parent) {
@@ -254,7 +229,7 @@
         $el.appendTo($parent);
     }
 
-    function generateVariant(data, $parent) {
+    function generateVariant(data, $parent, redirectable) {
         if (!data) return;
 
         let $el = $(`
@@ -263,33 +238,34 @@
             </div>
         `);
 
-        if (data.noun) $el.append(generateVariantWord(data.noun, data.noun_topic_id, '名词'));
-        if (data.verb) $el.append(generateVariantWord(data.verb, data.verb_topic_id, '动词'));  
-        if (data.adj) $el.append(generateVariantWord(data.adj, data.adj_topic_id, '形容词'));
-        if (data.pl) $el.append(generateVariantWord(data.pl, data.pl_topic_id, '复数'));
-        if (data.adv) $el.append(generateVariantWord(data.adv, data.adv_topic_id, '副词'));
-        if (data.est) $el.append(generateVariantWord(data.est, data.est_topic_id, '现在分词'));                
-        if (data.done) $el.append(generateVariantWord(data.done, data.done_topic_id, '过去分词'));
-        if (data.past) $el.append(generateVariantWord(data.past, data.past_topic_id, '过去式'));
-        if (data.third) $el.append(generateVariantWord(data.third, data.thrid_topic_id, '第三人称单数'));
-        if (data.er) $el.append(generateVariantWord(data.er, data.er_topic_id, '比较级'));
+        if (data.noun) $el.append(generateVariantWord(data.noun, data.noun_topic_id, '名词', redirectable));
+        if (data.verb) $el.append(generateVariantWord(data.verb, data.verb_topic_id, '动词', redirectable));
+        if (data.adj) $el.append(generateVariantWord(data.adj, data.adj_topic_id, '形容词', redirectable));
+        if (data.pl) $el.append(generateVariantWord(data.pl, data.pl_topic_id, '复数', redirectable));
+        if (data.adv) $el.append(generateVariantWord(data.adv, data.adv_topic_id, '副词', redirectable));
+        if (data.est) $el.append(generateVariantWord(data.est, data.est_topic_id, '现在分词', redirectable));
+        if (data.done) $el.append(generateVariantWord(data.done, data.done_topic_id, '过去分词', redirectable));
+        if (data.past) $el.append(generateVariantWord(data.past, data.past_topic_id, '过去式', redirectable));
+        if (data.third) $el.append(generateVariantWord(data.third, data.thrid_topic_id, '第三人称单数', redirectable));
+        if (data.er) $el.append(generateVariantWord(data.er, data.er_topic_id, '比较级', redirectable));
 
         $el.appendTo($parent);
     }
 
-    function generateVariantWord(word, topicId, title) {
+    function generateVariantWord(word, topicId, title, redirectable = false) {
         let $el = $(`
             <span style="color: #6a6d71;">${title}</span> &nbsp;&nbsp;
             <a href="#" tabIndex="-1" data-topic-id=${topicId}>${word}</a>
             <br>
         `);
 
-        $($el[1]).on('click',refreshWordDetail);
+        $($el[1]).on('click', (e) =>
+            redirectable ? refreshWordDetail(e) : e.preventDefault());
 
         return $el;
     }
 
-    function generateAntonyms(data, $parent) {
+    function generateAntonyms(data, $parent, redirectable = false) {
         if (!data.length) return;
 
         let $el = $(`
@@ -307,10 +283,11 @@
         `);
 
         $parent.append($el);
-        $parent.find('a').on('click', refreshWordDetail);
+        $parent.find('a').on('click', (e) =>
+            redirectable ? refreshWordDetail(e) : e.preventDefault());
     }
 
-    function generateSynonyms(data, $parent) {
+    function generateSynonyms(data, $parent, redirectable = false) {
         if (!data.length) return;
 
         let $el = $(`
@@ -328,10 +305,11 @@
         `);
 
         $parent.append($el);
-        $parent.find('a').on('click', refreshWordDetail);
+        $parent.find('a').on('click', (e) =>
+            redirectable ? refreshWordDetail(e) : e.preventDefault());
     }
 
-    function generateSimilarWords(data, $parent) {
+    function generateSimilarWords(data, $parent, redirectable = false) {
         if (!data || !data.length) return;
 
         let $el = $(`
@@ -349,7 +327,8 @@
         `);
 
         $parent.append($el);
-        $parent.find('a').on('click', refreshWordDetail);
+        $parent.find('a').on('click', (e) =>
+            redirectable ? refreshWordDetail(e) : e.preventDefault());
     }
 
     function refreshWordDetail(e) {
@@ -359,4 +338,5 @@
     }
 
     window.generateWordDetail = generateWordDetail;
+    window.generateStudyWordDetail = generateStudyWordDetail;
 } (this, document, jQuery));

@@ -50,6 +50,12 @@
             .then(port => $('#portInput').val(port || apiModule.defaultPort));
         storageModule.get('collectShortcutkey')
             .then(shortcutKey => $('#collectShortcutKeyInput').val(shortcutKey));
+        storageModule.get('enableStudy')
+            .then(enableStudy => {
+                let enable = !!enableStudy;
+                $('#enableStudyInput').prop('checked', enable);
+                enable && $doc.trigger(events.ENABLE_STUDY);
+            });
         storageModule.get('wordDetail')
             .then(wordDetailSettings => {
                 let settings = wordDetailSettings ?
@@ -87,6 +93,7 @@
         $('#showSimilarWordsCheck').prop('checked', false);
         $('#showEnglishParaphraseCheck').prop('checked', false);
         $('#collectShortcutKeyInput').val('');
+        $('#enableStudyInput').prop('checked', false);
         $('#hostInput').val(apiModule.defaultHost);
         $('#portInput').val(apiModule.defaultPort);
     }
@@ -106,6 +113,7 @@
         let similarWordsDisplay = $('#showSimilarWordsCheck').prop('checked');
         let englishParaphraseDisplay = $('#showEnglishParaphraseCheck').prop('checked');
         let collectShortcutkey = $('#collectShortcutKeyInput').val().trim();
+        let enableStudy = $('#enableStudyInput').prop('checked');
 
         storageModule.set('bookId', bookId);
         storageModule.set('popoverStyle', popoverStyle);
@@ -114,6 +122,7 @@
         storageModule.set('host', host);
         storageModule.set('port', port);
         storageModule.set('collectShortcutkey', collectShortcutkey);
+        storageModule.set('enableStudy', enableStudy);
         storageModule.set('wordDetail', {
             variantDisplay,
             sentenceDisplay,
@@ -125,14 +134,12 @@
         });
     }
 
-    function clearStorageBookId() {
-        storageModule.remove(['bookId']);
+    function clearStorage() {
+        storageModule.remove(
+            ['accessToken', 'bookId', 'bookPlanInfo', 'bookWords', 'learnedWords', 'loadLearnedWordsTimestamp']);
     }
 
-    function init() {
-        $doc.on(events.AUTHED, () => loadWordbook().finally(loadSettings));
-        $doc.on(events.UNAUTHED, clearStorageBookId);
-
+    function recordShortcutKey() {
         let pressing = false;
         let pressedMap = {};
 
@@ -148,13 +155,25 @@
         $('#collectShortcutKeyInput').on('keyup', function(e) {
             pressedMap[e.key] = false;
             let allKeyUp = Object.values(pressedMap).every(down => !down);
-            
+
             if (allKeyUp) {
                 pressing = false;
                 let shortcutKey = Object.keys(pressedMap).join('+');
                 $(this).val(shortcutKey);
             }
         });
+    }
+
+    function init() {
+        $doc.on(events.AUTHED, () => loadWordbook().finally(loadSettings));
+        $doc.on(events.UNAUTHED, clearStorage);
+        recordShortcutKey();
+
+        $('#enableStudyInput').on('click', e => {
+            let event = $('#enableStudyInput').prop('checked') ? events.ENABLE_STUDY : events.DISABLE_STUDY;
+            $doc.trigger(event);
+        });
+
         $('#resetButton').on('click', e => {
             e.preventDefault();
             e.stopPropagation();
