@@ -281,7 +281,15 @@
         });
     }
 
-    window.onload = () => {
+    window.onload = async () => {
+        let enable = !!await storageModule.get('enableStudy');
+
+        if (!enable) {
+            alert('暂未开启「背单词」功能，请前往选项页设置中开启「背单词」功能');
+            window.close();
+            return;
+        }
+
         new Study($('#studyDiv')).start();
         initEventListener();
     }
