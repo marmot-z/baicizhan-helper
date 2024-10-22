@@ -16,7 +16,8 @@ For relevant introductions and usage, please refer to the following two videos:
 
 ## Installation
 [![https://chrome.google.com/webstore/detail/%E7%99%BE%E8%AF%8D%E6%96%A9%E5%8A%A9%E6%89%8B/ofdejofffdjcmlbclhhfeaefodgffbnm](./images/tryitnow.png)](https://chrome.google.com/webstore/detail/%E7%99%BE%E8%AF%8D%E6%96%A9%E5%8A%A9%E6%89%8B/ofdejofffdjcmlbclhhfeaefodgffbnm)
-<a href="https://microsoftedge.microsoft.com/addons/detail/%E6%96%B0%E7%99%BE%E8%AF%8D%E6%96%A9%E5%8A%A9%E6%89%8B/igoongmgkfmdmlnabfphphifbmckjjea">
+
+<a href="https://microsoftedge.microsoft.com/addons/detail/%E7%99%BE%E8%AF%8D%E6%96%A9%E5%8A%A9%E6%89%8B/ibfhkheckdidljgkaigigmempdpkjjpb">
 <img src="./images/edge-logo.png" height="116"/>
 </a>
 
