@@ -1,4 +1,4 @@
-# 百词斩助手  
+# 百词斩助手
 中文 | [English](./README.md)    
 
 本应用是类似于谷歌翻译插件的一款浏览器插件，其支持划词翻译，并且可以与百词斩 APP 协同操作。当前支持的功能如下：
@@ -6,6 +6,7 @@
 - 收藏/取消收藏单词（并实时同步到百词斩 APP 中）
 - 搜索单词，显示详情信息
 - 查看单词本中的单词
+- 背单词
 - ...
 
 ## 如何使用
@@ -16,6 +17,10 @@
 ## 安装
 [![https://chrome.google.com/webstore/detail/%E7%99%BE%E8%AF%8D%E6%96%A9%E5%8A%A9%E6%89%8B/ofdejofffdjcmlbclhhfeaefodgffbnm](./images/tryitnow.png)](https://chrome.google.com/webstore/detail/%E7%99%BE%E8%AF%8D%E6%96%A9%E5%8A%A9%E6%89%8B/ofdejofffdjcmlbclhhfeaefodgffbnm)
 
+<a href="https://microsoftedge.microsoft.com/addons/detail/%E6%96%B0%E7%99%BE%E8%AF%8D%E6%96%A9%E5%8A%A9%E6%89%8B/igoongmgkfmdmlnabfphphifbmckjjea">
+<img src="./images/edge-logo.png" height="116"/>
+</a>
+
 或者下载最新[发行版本](https://github.com/marmot-z/baicizhan-helper/releases/latest)使用开发者模式安装
 
 ## 声明
@@ -24,9 +29,6 @@
 ## 相关项目
 - [bing-translate-api-java](https://github.com/marmot-z/bing-translate-api-java)
 
-## 赞助商
-本项目由 [jetBrains](https://www.jetbrains.com/community/opensource/#support) 赞助。    
-<img src="./images/jb_beam.png" alt="sponsor" width="200"/>
 
 ## LICENSE
 本项目基于 Apache-2 licence 开发    

@@ -6,6 +6,7 @@ This application is a browser extension similar to the Google Translate plugin. 
 - Bookmarking/Unbookmarking words (with real-time synchronization to the Baicizhan APP)
 - Word search and display of detailed information
 - Viewing words in the wordbook
+- memorize words (with real-time synchronization to the Baicizhan APP)
 - ...
 
 ## How to Use
@@ -15,6 +16,9 @@ For relevant introductions and usage, please refer to the following two videos:
 
 ## Installation
 [![https://chrome.google.com/webstore/detail/%E7%99%BE%E8%AF%8D%E6%96%A9%E5%8A%A9%E6%89%8B/ofdejofffdjcmlbclhhfeaefodgffbnm](./images/tryitnow.png)](https://chrome.google.com/webstore/detail/%E7%99%BE%E8%AF%8D%E6%96%A9%E5%8A%A9%E6%89%8B/ofdejofffdjcmlbclhhfeaefodgffbnm)
+<a href="https://microsoftedge.microsoft.com/addons/detail/%E6%96%B0%E7%99%BE%E8%AF%8D%E6%96%A9%E5%8A%A9%E6%89%8B/igoongmgkfmdmlnabfphphifbmckjjea">
+<img src="./images/edge-logo.png" height="116"/>
+</a>
 
 Alternatively, you can download the latest [release version](https://github.com/marmot-z/baicizhan-helper/releases/latest) and install it in developer mode.
 
@@ -23,10 +27,6 @@ This project is intended for personal practice. You are welcome to use this soft
 
 ## Related projects
 - [bing-translate-api-java](https://github.com/marmot-z/bing-translate-api-java)
-
-## Sponsor
-This project is sponsored by [jetBrains](https://www.jetbrains.com/community/opensource/#support).  
-<img src="./images/jb_beam.png" alt="sponsor" width="200"/>
 
 ## LICENSE
 This project is developed under the Apache-2 license.
