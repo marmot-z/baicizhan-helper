@@ -22,12 +22,14 @@
         },
     };
     let audioContext, audioBinaryData, currentAudioSrc;
+    let currentWordDetailIndex = -1;
 
     function init() {
         $doc.on(events.AUTHED, (e) => loadWordbookTable(false));        
         $doc.on(events.BOOKS_LOADED, generateWordbooks);
         $doc.on(events.UNAUTHED, clearStorageWords);
         $doc.on(events.WORD_DETAIL, refreshWordDetail);
+        $doc.on('keydown', bindShortcutEvent);
         $('#wordbookSelect').on('change', (e) => loadWordbookTable(false));
         $('#wordbookRefreshButton').on('click', (e) => loadWordbookTable(true));
         $('#maskMeanButton').on('click', maskMeans);
@@ -110,7 +112,7 @@
                 removeWord.bind(this)(data.topic_id);
             });
         $el.find('span[name="accentIcon"]')
-            // use globl singleton audio tag to avoid exceeding audio count limits
+            // use global singleton audio tag to avoid exceeding audio count limits
             // https://chromium-review.googlesource.com/c/chromium/src/+/2816118
             .on('click', () => loadAndPlayAccent(audioSrc));
         $el.find('a[name="detailLink"]')
@@ -223,13 +225,17 @@
     }
 
     function refreshWordDetail(e, triggerEl) {
-        let topicId = $(triggerEl).data('topic-id');
+        if (!triggerEl) return;
+
+        let $triggerEl = $(triggerEl);
+        let topicId = $triggerEl.data('topic-id');
+        currentWordDetailIndex = parseInt($triggerEl.parent().parent().attr('tabindex'));
 
         getWordDetail(topicId)
             .then(data => {
-                let $modal = $('#wordDetailModal').modal('show');
-                generateWordDetail(data, $modal.find('.modal-body'), true, false);
-                $modal.find('#starIcon').hide();
+                let $modal = $('#wordDetailModal').modal('show')
+                                .on('hide.bs.modal', (e) => currentWordDetailIndex = -1);
+                generateWordDetail(data, $modal.find('.modal-body'), true, true);
             });
     }
 
@@ -264,6 +270,18 @@
             .addClass('btn-outline-primary');
             
         loadWordbookTable(false);
+    }
+
+    function bindShortcutEvent(e) {
+        if (e.code === 'ArrowRight' && currentWordDetailIndex !== -1) {
+            e.preventDefault();
+            $doc.trigger(events.WORD_DETAIL, $(`tr[tabindex=${currentWordDetailIndex + 1}] > td > a`)[0]);
+        }
+
+        if (e.code === 'ArrowLeft' &&  currentWordDetailIndex !== -1) {
+            e.preventDefault();
+            $doc.trigger(events.WORD_DETAIL, $(`tr[tabindex=${currentWordDetailIndex - 1}] > td > a`)[0]);
+        }
     }
 
     window.wordbookModule = {init};
