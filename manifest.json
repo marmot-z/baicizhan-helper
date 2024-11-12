@@ -45,7 +45,7 @@
                 "src/js/word-webui-popover.js",
                 "src/js/content-script.js"
             ],
-            "matches": ["<all_urls>"],
+            "matches": ["<all_urls>", "file:///*"],
             "run_at": "document_start"
         }
     ],
@@ -57,7 +57,7 @@
                 "svgs/star-fill.svg",
                 "svgs/volume-up.svg"
             ],
-            "matches": ["<all_urls>"]
+            "matches": ["<all_urls>", "file:///*"]
         }
     ]
   }
