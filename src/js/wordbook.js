@@ -29,7 +29,7 @@
         $doc.on(events.BOOKS_LOADED, generateWordbooks);
         $doc.on(events.UNAUTHED, clearStorageWords);
         $doc.on(events.WORD_DETAIL, refreshWordDetail);
-        $doc.on('keydown', bindShortcutEvent);
+        $doc.on('keydown', bindShortcutKey);
         $('#wordbookSelect').on('change', (e) => loadWordbookTable(false));
         $('#wordbookRefreshButton').on('click', (e) => loadWordbookTable(true));
         $('#maskMeanButton').on('click', maskMeans);
@@ -272,7 +272,7 @@
         loadWordbookTable(false);
     }
 
-    function bindShortcutEvent(e) {
+    function bindShortcutKey(e) {
         if (e.code === 'ArrowRight' && currentWordDetailIndex !== -1) {
             e.preventDefault();
             $doc.trigger(events.WORD_DETAIL, $(`tr[tabindex=${currentWordDetailIndex + 1}] > td > a`)[0]);
