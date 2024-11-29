@@ -136,7 +136,7 @@
                             <div class="form-check">
                                 <input class="form-check-input" type="checkbox" id="showSentenceCheck" checked disabled>
                                 <label class="form-check-label" for="showSentenceCheck">
-                                    图文例句
+                                    图例句
                                 </label>
                             </div>
                             <div class="form-check">
@@ -244,6 +244,76 @@
                             <button id="submitButton" type="button" class="btn btn-primary">保存</button>
                         </div>
                     </div>
+                    <div class="form-group row">
+                        <label class="col-sm-3 col-form-label">Anki 设置</label>
+                        <div class="col-sm-9">
+                            <div class="card">
+                                <div class="card-body">
+                                    <div class="form-group">
+                                        <div class="custom-control custom-switch">
+                                            <input type="checkbox" class="custom-control-input" id="enableAnkiExport" checked>
+                                            <label class="custom-control-label" for="enableAnkiExport">收藏时自动导出到 Anki</label>
+                                        </div>
+                                    </div>
+                                    <div id="ankiSettingsDetails" class="anki-settings-details">
+                                        <div class="form-group">
+                                            <label>选择牌组</label>
+                                            <select id="ankiDeck" class="form-control">
+                                                <option value="">加载中...</option>
+                                            </select>
+                                            <small class="form-text text-muted">选择要导出到的 Anki 牌组</small>
+                                        </div>
+                                        <div class="form-group">
+                                            <label>导出内容</label>
+                                            <div class="form-check">
+                                                <input type="checkbox" class="form-check-input" id="exportPhonetic" checked>
+                                                <label class="form-check-label">音标</label>
+                                            </div>
+                                            <div class="form-check">
+                                                <input type="checkbox" class="form-check-input" id="exportAudio" checked>
+                                                <label class="form-check-label">发音</label>
+                                            </div>
+                                            <div class="form-check">
+                                                <input type="checkbox" class="form-check-input" id="exportMeaning" checked>
+                                                <label class="form-check-label">中文释义</label>
+                                            </div>
+                                            <div class="form-check">
+                                                <input type="checkbox" class="form-check-input" id="exportSentence" checked>
+                                                <label class="form-check-label">例句</label>
+                                            </div>
+                                            <div class="form-check">
+                                                <input type="checkbox" class="form-check-input" id="exportImage" checked>
+                                                <label class="form-check-label">图片</label>
+                                            </div>
+                                            <div class="form-check">
+                                                <input type="checkbox" class="form-check-input" id="exportVariants" checked>
+                                                <label class="form-check-label">单词变形</label>
+                                            </div>
+                                            <div class="form-check">
+                                                <input type="checkbox" class="form-check-input" id="exportPhrases" checked>
+                                                <label class="form-check-label">短语</label>
+                                            </div>
+                                            <div class="form-check">
+                                                <input type="checkbox" class="form-check-input" id="exportSynonyms" checked>
+                                                <label class="form-check-label">近义词</label>
+                                            </div>
+                                            <div class="form-check">
+                                                <input type="checkbox" class="form-check-input" id="exportAntonyms" checked>
+                                                <label class="form-check-label">反义词</label>
+                                            </div>
+                                            <div class="form-check">
+                                                <input type="checkbox" class="form-check-input" id="exportEnMeans" checked>
+                                                <label class="form-check-label">英文释义</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div id="ankiStatus" class="alert alert-info" style="display: none;">
+                                        正在连接 Anki...
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </form>
             </div>
         </div>
@@ -327,6 +397,8 @@
     <script type="text/javascript" src="./js/wordbook.js"></script>
     <script type="text/javascript" src="js/study/study-setting.js"></script>
     <script type="text/javascript" src="./js/options.js"></script>
+    <script type="text/javascript" src="./js/services/anki-service.js"></script>
+    <script type="text/javascript" src="./js/options-anki.js"></script>
 </body>
 
 </html>

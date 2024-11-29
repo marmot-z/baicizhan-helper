@@ -1,6 +1,11 @@
 ;(function(window, $) {
     'use strict';
 
+    // 确保在使用前初始化全局模块
+    if (!window.__baicizhanHelperModule__) {
+        window.__baicizhanHelperModule__ = {};
+    }
+
     const {WordWebuiPopover, PhraseWebuiPopover, Toast, EnglishStemmer} = window.__baicizhanHelperModule__;
     const TRIGGER_MODE = {'SHOW_ICON': 'showIcon','DIRECT': 'direct','NEVER': 'never'};
     const POPOVER_STYLE = {'SIMPLE': 'simple', 'RICH': 'rich'};
@@ -10,6 +15,8 @@
     const defaultTheme = THEME.LIGHT;    
     const stemmer = new EnglishStemmer();
     const $toastElement = new Toast();    
+    let triggerMode, popoverStyle, theme, $popover, collectShortcutkey, popuped = false;
+
     const $supportElement = {
         init: function() {
             this.$el = $(`<div id="__baicizhanHelperSupportDiv__" style="position: absolute;"></div>`);
@@ -23,65 +30,87 @@
             this.$el.css('display', 'none');
         },
         updatePosition() {
-            let rect = window.getSelection().getRangeAt(0).getBoundingClientRect();
-
-            this.$el.css('top',    rect.top + window.scrollY)
-                    .css('left',   rect.left + window.scrollX)
-                    .css('height', rect.height)
-                    .css('width',  rect.width);
+            try {
+                let rect = window.getSelection().getRangeAt(0).getBoundingClientRect();
+                this.$el.css('top',    rect.top + window.scrollY)
+                        .css('left',   rect.left + window.scrollX)
+                        .css('height', rect.height)
+                        .css('width',  rect.width);
+            } catch (error) {
+                console.error('Error updating position:', error);
+            }
         },
         createIconTips: function(onClick, onHide) {
-            let iconSrc = `chrome-extension://${chrome.runtime.id}/icon.png`;
-
-            this.$el.iconTips({
-                imgSrc: iconSrc,
-                onClick: () => {                    
-                    this.destoryIconTips();
-                    onClick();
-                },
-                onHide: () => {                    
-                    this.destoryIconTips();
-                    postpopup();
-                    onHide();
-                }
-            });
+            try {
+                let iconSrc = `chrome-extension://${chrome.runtime.id}/icon.png`;
+                this.$el.iconTips({
+                    imgSrc: iconSrc,
+                    onClick: () => {                    
+                        this.destoryIconTips();
+                        onClick();
+                    },
+                    onHide: () => {                    
+                        this.destoryIconTips();
+                        postpopup();
+                        onHide();
+                    }
+                });
+            } catch (error) {
+                console.error('Error creating icon tips:', error);
+            }
         },
         destoryIconTips: function() {
-            this.$el.iconTips('destroy');
+            try {
+                this.$el.iconTips('destroy');
+            } catch (error) {
+                console.error('Error destroying icon tips:', error);
+            }
         }
     };
-    let triggerMode, popoverStyle, theme, $popover, collectShortcutkey, popuped = false;
 
     async function init() {
-        await loadSetting();
+        try {
+            await loadSetting();
 
-        if (triggerMode == TRIGGER_MODE.NEVER) {
-            return;
+            if (triggerMode == TRIGGER_MODE.NEVER) {
+                return;
+            }
+
+            $toastElement.init();
+            $supportElement.init();
+            window.addEventListener('mouseup', selectWordHandler);
+        } catch (error) {
+            console.error('Error initializing:', error);
         }
-
-        $toastElement.init();
-        $supportElement.init();
-        window.addEventListener('mouseup', selectWordHandler);
     }
 
     async function loadSetting() {
-        return sendRequest({
-            action: 'getStorageInfo',
-            args: ['triggerMode', 'popoverStyle', 'theme', 'collectShortcutkey']
-        })
-        .then(([_triggerMode, _popoverStyle, _theme, _collectShortcutkey]) => {
-            triggerMode = _triggerMode || defaultTriggerMode;
-            popoverStyle = _popoverStyle || defaultPopoverStyle;
-            theme = _theme || defaultTheme;
-            collectShortcutkey = _collectShortcutkey;
+        try {
+            const response = await sendRequest({
+                action: 'getStorageInfo',
+                args: ['triggerMode', 'popoverStyle', 'theme', 'collectShortcutkey']
+            });
 
-            if (theme == THEME.AUTO) {
-                let isSystemDarkTheme = window.matchMedia && 
-                        window.matchMedia('(prefers-color-scheme: dark)').matches;
+            if (response) {
+                const [_triggerMode, _popoverStyle, _theme, _collectShortcutkey] = response;
+                triggerMode = _triggerMode || defaultTriggerMode;
+                popoverStyle = _popoverStyle || defaultPopoverStyle;
+                theme = _theme || defaultTheme;
+                collectShortcutkey = _collectShortcutkey;
 
-                theme = isSystemDarkTheme ? THEME.DARK : THEME.LIGHT;
+                if (theme == THEME.AUTO) {
+                    let isSystemDarkTheme = window.matchMedia && 
+                            window.matchMedia('(prefers-color-scheme: dark)').matches;
+                    theme = isSystemDarkTheme ? THEME.DARK : THEME.LIGHT;
+                }
             }
-        });
+        } catch (error) {
+            console.error('Error loading settings:', error);
+            // 使用默认设置
+            triggerMode = defaultTriggerMode;
+            popoverStyle = defaultPopoverStyle;
+            theme = defaultTheme;
+        }
     }
 
     async function selectWordHandler(e) {
@@ -209,16 +238,29 @@
 
     function sendRequest(option) {
         return new Promise((resolve, reject) => {
-            chrome.runtime.sendMessage(option, (result) => {
-                // 以 [Error]: 开头代表请求报错
-                if (typeof result === 'string' && result.startsWith('[Error]:')) {
-                    return reject(new Error(result.substring(8)));
-                }
-
-                resolve(result);
-            });
+            try {
+                chrome.runtime.sendMessage(option, (result) => {
+                    if (chrome.runtime.lastError) {
+                        reject(new Error(chrome.runtime.lastError.message));
+                        return;
+                    }
+                    if (typeof result === 'string' && result.startsWith('[Error]:')) {
+                        reject(new Error(result.substring(8)));
+                        return;
+                    }
+                    resolve(result);
+                });
+            } catch (error) {
+                reject(error);
+            }
         });
     }
 
-    document.addEventListener('DOMContentLoaded', init);
-} (this, jQuery)); 
+    // 在页面加载完成后初始化
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', init);
+    } else {
+        init();
+    }
+
+})(window, jQuery); 

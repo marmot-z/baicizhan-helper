@@ -3,6 +3,7 @@
 
     const $doc = $(document);
     const {searchWord, getWordDetail} = window.apiModule;
+    const ankiService = new AnkiService();
 
     function search() {
         $doc.off('keydown');
@@ -104,6 +105,42 @@
             $reviewDiv.hide();
             $searchDiv.show();       
         }); 
+    }
+
+    async function exportToAnki(word) {
+        try {
+            // First check if Anki is running and accessible
+            await ankiService.invoke('version');
+            
+            // Create deck if it doesn't exist
+            await ankiService.createDeck('English Vocabulary');
+            
+            const wordData = await getWordDetails(word); // Your existing function to get word details
+            
+            // Add note to Anki
+            await ankiService.addNote(
+                wordData.word,
+                wordData.phonetic,
+                wordData.meaning,
+                wordData.image,
+                wordData.sentence
+            );
+
+            // Show success message
+            showMessage('Successfully exported to Anki!');
+        } catch (error) {
+            showMessage('Failed to export to Anki. Make sure Anki is running with AnkiConnect installed.');
+            console.error('Anki export error:', error);
+        }
+    }
+
+    function addAnkiExportButton(wordElement) {
+        const exportBtn = document.createElement('button');
+        exportBtn.className = 'anki-export-btn';
+        exportBtn.innerHTML = '<i class="fas fa-file-export"></i>';
+        exportBtn.title = 'Export to Anki';
+        exportBtn.onclick = () => exportToAnki(wordElement.textContent);
+        wordElement.appendChild(exportBtn);
     }
 
     window.onload = init;

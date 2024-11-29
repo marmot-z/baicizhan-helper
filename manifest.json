@@ -11,6 +11,10 @@
     "permissions": [
         "storage"
     ],
+    "host_permissions": [
+        "http://127.0.0.1:8765/*",
+        "http://localhost:8765/*"
+    ],
     "icons": {
         "16": "icon.png",
         "32": "icon.png",
@@ -39,6 +43,8 @@
                 "src/js/english-stemmer.js",
                 "src/js/util.js",
                 "src/js/css.js",
+                "src/js/storage.js",
+                "src/js/services/anki-service.js",
                 "src/js/icon-tips.js",
                 "src/js/toast.js",
                 "src/js/phrase-webui-popover.js",
@@ -60,4 +66,4 @@
             "matches": ["<all_urls>", "file:///*"]
         }
     ]
-  }
+}
