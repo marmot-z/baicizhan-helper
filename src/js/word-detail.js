@@ -13,15 +13,31 @@
         
         storageModule.get(['wordDetail', 'collectShortcutkey'])
             .then(([wordDetailSettings, collectShortcutkey]) => {
-                generateWordInfo(data.dict, $target, collectEnable, collectShortcutkey);
-                if (wordDetailSettings.variantDisplay) generateVariant(data.dict.variant_info, $target, true);
-                if (wordDetailSettings.sentenceDisplay) generateSentence(data.dict.sentences, data.dict.word_basic_info.word, $target);
-                if (wordDetailSettings.shortPhrasesDisplay) generateShortPhrases(data.dict.short_phrases, $target);                 
-                if (wordDetailSettings.synonymsDisplay) generateSynonyms(data.dict.synonyms, $target, true);
-                if (wordDetailSettings.antonymsDisplay) generateAntonyms(data.dict.antonyms, $target, true);
-                if (wordDetailSettings.similarWordsDisplay) generateSimilarWords(data.similar_words, $target, true);
-                if (wordDetailSettings.englishParaphraseDisplay) generateEnglishParaphrase(data.dict.en_means, $target);
+                const settings = wordDetailSettings || {
+                    variantDisplay: false,
+                    sentenceDisplay: true,
+                    shortPhrasesDisplay: false,
+                    synonymsDisplay: false,
+                    antonymsDisplay: false,
+                    similarWordsDisplay: false,
+                    englishParaphraseDisplay: false
+                };
 
+                generateWordInfo(data.dict, $target, collectEnable, collectShortcutkey);
+                if (settings.variantDisplay) generateVariant(data.dict.variant_info, $target, true);
+                if (settings.sentenceDisplay) generateSentence(data.dict.sentences, data.dict.word_basic_info.word, $target);
+                if (settings.shortPhrasesDisplay) generateShortPhrases(data.dict.short_phrases, $target);                 
+                if (settings.synonymsDisplay) generateSynonyms(data.dict.synonyms, $target, true);
+                if (settings.antonymsDisplay) generateAntonyms(data.dict.antonyms, $target, true);
+                if (settings.similarWordsDisplay) generateSimilarWords(data.similar_words, $target, true);
+                if (settings.englishParaphraseDisplay) generateEnglishParaphrase(data.dict.en_means, $target);
+
+                $('#accentUkAudio')[0].play();
+            })
+            .catch(error => {
+                console.error('Error loading word detail settings:', error);
+                generateWordInfo(data.dict, $target, collectEnable, '');
+                generateSentence(data.dict.sentences, data.dict.word_basic_info.word, $target);
                 $('#accentUkAudio')[0].play();
             });             
     }
@@ -55,6 +71,7 @@
         generateMeansTable(data.chn_means, $section);
 
         $section.appendTo($parent);
+        
         $section.find('#starIcon').on('click', function(e) {
             favoriteWord.bind(this)(data)
         });
@@ -67,23 +84,120 @@
         }
     }
 
-    function favoriteWord(data) {
+    async function exportToAnki(data) {
+        try {
+            const ankiService = new AnkiService();
+            
+            // 准备数据
+            const wordData = {
+                word: data.word_basic_info.word,
+                phonetic: data.word_basic_info.accent_uk,
+                meaning: data.chn_means.map(m => ({
+                    type: m.mean_type,
+                    mean: m.mean
+                })),
+                image: data.sentences?.[0]?.img_uri ? 
+                       'https://7n.bczcdn.com' + data.sentences[0].img_uri : '',
+                sentence: data.sentences?.[0]?.sentence || '',
+                sentenceTrans: data.sentences?.[0]?.sentence_trans || '',
+                audioUrl: 'https://7n.bczcdn.com' + data.word_basic_info.accent_uk_audio_uri,
+                // 添加额外信息
+                variants: data.variant_info || null,
+                shortPhrases: data.short_phrases || [],
+                synonyms: data.synonyms || [],
+                antonyms: data.antonyms || [],
+                enMeans: data.en_means || []
+            };
+
+            console.log('Prepared word data:', wordData);
+            
+            // 添加笔记
+            await ankiService.addNote(
+                wordData.word,
+                wordData.phonetic,
+                wordData.meaning,
+                wordData.image,
+                wordData.sentence,
+                wordData.sentenceTrans,
+                wordData.audioUrl,
+                wordData.variants,
+                wordData.shortPhrases,
+                wordData.synonyms,
+                wordData.antonyms,
+                wordData.enMeans
+            );
+            showMessage('成功导出到Anki!');
+        } catch (error) {
+            showMessage('导出失败：' + error.message);
+            console.error('Export error:', error);
+        }
+    }
+
+    function showMessage(message) {
+        const $msg = $(`<div class="message">${message}</div>`);
+        $('body').append($msg);
+        
+        setTimeout(() => {
+            $msg.remove();
+        }, 3000);
+    }
+
+    async function favoriteWord(data) {
         let fn = !collected ? collectWord : cancelCollectWord;
         let args = !collected ? data : data.word_basic_info.topic_id;
         let tips = !collected ? '收藏' : '取消收藏';
 
-        fn(args).then(response => {
+        try {
+            const response = await fn(args);
             if (response) {
                 collected = !collected;
                 let starIconSvg = collected ? 'star-fill.svg' : 'star.svg';                
-
                 $(this).html(`<img src="../svgs/${starIconSvg}">`);
+
+                // 如果是收藏操作，检查是否启用了 Anki 导出
+                if (collected) {
+                    try {
+                        const settings = await chrome.storage.local.get(['ankiSettings']);
+                        const ankiSettings = settings?.ankiSettings || { enabled: false };  // 默认为 false
+
+                        if (ankiSettings.enabled) {
+                            const ankiService = new AnkiService();
+                            await ankiService.addNote(
+                                data.word_basic_info.word,
+                                data.word_basic_info.accent_uk,
+                                data.chn_means.map(m => ({
+                                    type: m.mean_type,
+                                    mean: m.mean
+                                })),
+                                data.sentences?.[0]?.img_uri ? 
+                                    'https://7n.bczcdn.com' + data.sentences[0].img_uri : '',
+                                data.sentences?.[0]?.sentence || '',
+                                data.sentences?.[0]?.sentence_trans || '',
+                                'https://7n.bczcdn.com' + data.word_basic_info.accent_uk_audio_uri,
+                                data.variant_info || null,
+                                data.short_phrases || [],
+                                data.synonyms || [],
+                                data.antonyms || [],
+                                data.en_means || []
+                            );
+                            showMessage('已收藏并导出到Anki');
+                        } else {
+                            showMessage('已收藏');  // 当 Anki 导出功能关闭时只显示已收藏
+                        }
+                    } catch (error) {
+                        console.error('Export to Anki failed:', error);
+                        showMessage('已收藏，但导出到Anki失败：' + error.message);
+                    }
+                } else {
+                    showMessage('已取消收藏');
+                }
                 return;
             }
-
-            console.log(`${tips}失败`);
-        })
-        .catch(e => console.error(`${tips}异常`, e));
+            showMessage(`${tips}失败`);
+        } catch (e) {
+            console.error(`${tips}异常`, e);
+            showMessage(`${tips}失败：` + e.message);
+        }
     }
 
     function generateAccent(data, $parent) {

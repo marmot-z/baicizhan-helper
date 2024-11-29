@@ -255,32 +255,70 @@
     function collectWord(el, $supportEl, data, initCollected) {
         let collected = initCollected;
 
-        return (e) => {
+        return async (e) => {
             e.preventDefault();
 
             let action = collected ? 'cancelCollectWord' : 'collectWord';
             let arg = collected ? data.word_basic_info.topic_id : data;
             let tips = collected ? '取消收藏' : '收藏';
 
-            sendRequest({
-                action,
-                args: arg
-            })
-            .then(response => {                                        
+            try {
+                const response = await sendRequest({
+                    action,
+                    args: arg
+                });
+
                 if (response) {
                     collected = !collected;
                     let svgPath = `chrome-extension://${chrome.runtime.id}/svgs`;
                     let starIconSvgPath = collected ? `${svgPath}/star-fill.svg` : `${svgPath}/star.svg`;
 
                     $(el).html(`<img src="${starIconSvgPath}"/>`);
-                    $supportEl.trigger('baicizhanHelper:alert', [`${tips}成功`]);
+
+                    // 如果是收藏操作，检查是否启用了 Anki 导出
+                    if (collected) {
+                        try {
+                            const settings = await chrome.storage.local.get(['ankiSettings']);
+                            const ankiSettings = settings?.ankiSettings || { enabled: false };
+
+                            if (ankiSettings.enabled) {
+                                const ankiService = new window.AnkiService();
+                                await ankiService.addNote(
+                                    data.word_basic_info.word,
+                                    data.word_basic_info.accent_uk,
+                                    data.chn_means.map(m => ({
+                                        type: m.mean_type,
+                                        mean: m.mean
+                                    })),
+                                    data.sentences?.[0]?.img_uri ? 
+                                        'https://7n.bczcdn.com' + data.sentences[0].img_uri : '',
+                                    data.sentences?.[0]?.sentence || '',
+                                    data.sentences?.[0]?.sentence_trans || '',
+                                    'https://7n.bczcdn.com' + data.word_basic_info.accent_uk_audio_uri,
+                                    data.variant_info || null,
+                                    data.short_phrases || [],
+                                    data.synonyms || [],
+                                    data.antonyms || [],
+                                    data.en_means || []
+                                );
+                                $supportEl.trigger('baicizhanHelper:alert', ['已收藏并导出到Anki']);
+                            } else {
+                                $supportEl.trigger('baicizhanHelper:alert', ['已收藏']);
+                            }
+                        } catch (error) {
+                            console.error('Export to Anki failed:', error);
+                            $supportEl.trigger('baicizhanHelper:alert', ['已收藏，但导出到Anki失败：' + error.message]);
+                        }
+                    } else {
+                        $supportEl.trigger('baicizhanHelper:alert', ['已取消收藏']);
+                    }
                 } else {
                     $supportEl.trigger('baicizhanHelper:alert', [`${tips}失败！`]);
                 }
-            })
-            .catch(e => {
-                $supportEl.trigger('baicizhanHelper:alert', [e.message]);
-            });
+            } catch (error) {
+                console.error(`${tips}异常:`, error);
+                $supportEl.trigger('baicizhanHelper:alert', [error.message]);
+            }
         };
     }
 
