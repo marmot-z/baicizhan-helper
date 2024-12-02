@@ -577,23 +577,86 @@
         }
 
         async canAddNote(word, phonetic, meaning) {
-            const note = {
-                deckName: "English Vocabulary",
-                modelName: "Basic",
-                fields: {
-                    Front: `${word}\n${phonetic}`,
-                    Back: meaning
-                }
-            };
+            try {
+                const settings = await chrome.storage.local.get(['ankiSettings']);
+                const ankiSettings = settings.ankiSettings || {
+                    deckName: 'English Vocabulary'
+                };
 
-            const result = await this.invoke('canAddNotes', {
-                notes: [note]
-            });
-            return result[0];
+                const note = {
+                    deckName: ankiSettings.deckName,
+                    modelName: "BaiCiZhan Basic",
+                    fields: {
+                        Front: `<div class="word">${word}</div>
+                               <div class="phonetic">${phonetic}</div>`,
+                        Back: meaning,
+                        Audio: '',
+                        Image: ''
+                    },
+                    options: {
+                        allowDuplicate: false,
+                        duplicateScope: "deck"
+                    },
+                    tags: ["BaiCiZhan"]
+                };
+
+                const decks = await this.invoke('deckNames');
+                if (!decks.includes(ankiSettings.deckName)) {
+                    await this.createDeck(ankiSettings.deckName);
+                }
+
+                const models = await this.invoke('modelNames');
+                if (!models.includes('BaiCiZhan Basic')) {
+                    await this.createBasicModel();
+                }
+
+                const result = await this.invoke('canAddNotes', {
+                    notes: [note]
+                });
+
+                return result[0];
+            } catch (error) {
+                throw error;
+            }
         }
 
         async getModelNames() {
             return this.invoke('modelNames');
+        }
+
+        // 添加一个测试方法
+        async testAddNote(word, phonetic, meaning) {
+            try {
+                const settings = await chrome.storage.local.get(['ankiSettings']);
+                const ankiSettings = settings.ankiSettings || {
+                    deckName: 'English Vocabulary'
+                };
+
+                const note = {
+                    deckName: ankiSettings.deckName,
+                    modelName: "BaiCiZhan Basic",
+                    fields: {
+                        Front: `<div class="word">${word}</div>
+                               <div class="phonetic">${phonetic}</div>`,
+                        Back: meaning,
+                        Audio: '',
+                        Image: ''
+                    },
+                    options: {
+                        allowDuplicate: false,
+                        duplicateScope: "deck"
+                    },
+                    tags: ["BaiCiZhan"]
+                };
+
+                console.log('Testing note:', note);
+                const result = await this.invoke('addNote', { note });
+                console.log('Test result:', result);
+                return result;
+            } catch (error) {
+                console.error('Test error:', error);
+                throw error;
+            }
         }
     }
 
