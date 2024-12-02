@@ -49,10 +49,12 @@
                 "src/js/toast.js",
                 "src/js/phrase-webui-popover.js",
                 "src/js/word-webui-popover.js",
-                "src/js/content-script.js"
+                "src/js/content-script.js",
+                "src/js/wordbook-storage.js",
+                "src/js/content-highlight.js"
             ],
             "matches": ["<all_urls>", "file:///*"],
-            "run_at": "document_start"
+            "run_at": "document_end"
         }
     ],
     "web_accessible_resources": [
