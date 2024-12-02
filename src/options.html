@@ -80,7 +80,7 @@
         <div class="tab-pane fade" id="settingTabContent" role="tabpanel" aria-labelledby="settingTab">
             <div class="container" style="margin-top: 40px;">
                 <form id="settingForm" class="col-sm-8 offset-sm-2">
-                    <div class="form-group row align-items-center">
+                    <div class="form-group row">
                         <label for="collectWordbookSelect" class="col-sm-3 col-form-label">单词本</label>
                         <div class="col-sm-9">
                             <select class="form-control" id="collectWordbookSelect"></select>                            
@@ -89,7 +89,8 @@
                             </small>
                         </div>
                     </div>
-                    <div class="form-group row align-items-center">
+
+                    <div class="form-group row">
                         <label class="col-sm-3 col-form-label">弹窗样式</label>
                         <div class="col-sm-9">
                             <div class="form-check form-check-inline">
@@ -104,6 +105,7 @@
                             </div>
                         </div>
                     </div>
+
                     <div class="form-group row">
                         <label class="col-sm-3 col-form-label">翻译时机</label>
                         <div class="col-sm-9">
@@ -124,6 +126,7 @@
                             </div>
                         </div>
                     </div>
+
                     <div class="form-group row">
                         <label class="col-sm-3 col-form-label">单词详情内容</label>
                         <div class="col-sm-9">
@@ -171,25 +174,6 @@
                             </div>
                         </div>
                     </div>
-                    <div class="form-group row" style="display: none;">
-                        <label class="col-sm-3 col-form-label">代理服务器</label>
-                        <div class="col-sm-9 row">
-                            <div class="col-sm-8">
-                                <div class="input-group mb-2">
-                                    <div class="input-group-prepend">
-                                        <div class="input-group-text">http://</div>
-                                    </div>
-                                    <input id="hostInput" type="text" class="form-control" value="110.42.229.221"
-                                        placeholder="默认不需要修改" />
-                                </div>
-                            </div>
-                            :
-                            <div class="col-sm-3">
-                                <input id="portInput" type="text" class="form-control mb-2" value="80"
-                                    placeholder="默认不需要修改">
-                            </div>
-                        </div>
-                    </div>
 
                     <div class="form-group row">
                         <label class="col-sm-3 col-form-label">背单词</label>
@@ -215,6 +199,7 @@
                             </div>
                         </div>
                     </div>
+
                     <div class="form-group row">
                         <label class="col-sm-3 col-form-label">快捷键</label>
                         <div class="col-sm-9">
@@ -229,14 +214,26 @@
                             <kbd>Esc</kbd> 退出单词详情                                                     
                         </div>
                     </div>
-                    <div id="versionTips" class="form-group row" style="display: none;">
-                        <div class="alert alert-warning" style="width: 100%;" role="alert">
-                            有新的版本插件发布了（当前版本：<strong></strong>），请进行更新！
-                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                                <span aria-hidden="true">&times;</span>
-                            </button>
-                        </div>                        
+
+                    <div class="form-group row">
+                        <label class="col-sm-3 col-form-label">网页高亮</label>
+                        <div class="col-sm-9">
+                            <div class="card">
+                                <div class="card-body">
+                                    <div class="custom-control custom-switch">
+                                        <input type="checkbox" class="custom-control-input" id="enablePageHighlight" checked>
+                                        <label class="custom-control-label" for="enablePageHighlight">
+                                            在网页中高亮显示已收藏的单词
+                                        </label>
+                                    </div>
+                                    <small class="form-text text-muted">
+                                        自动标记网页中出现的已收藏单词，鼠标移到单词上显示释义
+                                    </small>
+                                </div>
+                            </div>
+                        </div>
                     </div>
+
                     <div class="form-group row">
                         <label class="col-sm-3 col-form-label">Anki 设置</label>
                         <div class="col-sm-9">
@@ -325,6 +322,16 @@
                             </div>
                         </div>
                     </div>
+
+                    <div id="versionTips" class="form-group row" style="display: none;">
+                        <div class="alert alert-warning" style="width: 100%;" role="alert">
+                            有新的版本插件发布了（当前版本：<strong></strong>），请进行更新！
+                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>                        
+                    </div>
+
                     <div class="form-group row">
                         <div class="col-sm-9 offset-sm-3">
                             <div class="card">

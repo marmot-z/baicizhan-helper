@@ -197,7 +197,7 @@
     document.addEventListener('DOMContentLoaded', function() {
         // ... 其他初始化代码 ...
         
-        // Anki 导出相关
+        // Anki 导相关
         const enableAnkiExport = document.getElementById('enableAnkiExport');
         const autoExportToAnki = document.getElementById('autoExportToAnki');
         const exportToAnki = document.getElementById('exportToAnki');
@@ -254,5 +254,39 @@
         if (exportToAnki) {
             exportToAnki.addEventListener('click', exportAllToAnki);
         }
+
+        // 在 DOMContentLoaded 事件处理中修改
+        const enablePageHighlight = document.getElementById('enablePageHighlight');
+
+        // 加载设置
+        chrome.storage.local.get(['highlightSettings'], function(result) {
+            const settings = result.highlightSettings || { enabled: true };  // 默认为 true
+            enablePageHighlight.checked = settings.enabled;
+            
+            // 如果是首次加载，保存默认设置
+            if (!result.highlightSettings) {
+                chrome.storage.local.set({
+                    highlightSettings: { enabled: true }
+                });
+            }
+        });
+
+        // 保存设置
+        enablePageHighlight.addEventListener('change', function(e) {
+            const enabled = e.target.checked;
+            chrome.storage.local.set({
+                highlightSettings: { enabled }
+            });
+            
+            // 通知所有标签页刷新高亮状态
+            chrome.tabs.query({}, function(tabs) {
+                tabs.forEach(tab => {
+                    chrome.tabs.sendMessage(tab.id, {
+                        type: 'updateHighlightSettings',
+                        enabled: enabled
+                    }).catch(() => {});  // 忽略不支持的标签页错误
+                });
+            });
+        });
     });
 } (this, document, jQuery));
