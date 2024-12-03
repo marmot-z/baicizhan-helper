@@ -22,10 +22,142 @@
         studyModule.init();
         checkUpgrade();
 
+        // 批量导入功能初始化
+        initImportFeature();
+
         let accessToken = await storageModule.get('accessToken');
         let event = accessToken ? events.AUTHED : events.UNAUTHED;
 
         $doc.trigger(event);
+    }
+
+    // 添加初始化导入功能的函数
+    function initImportFeature() {
+        const importButton = document.getElementById('importWords');
+        const fileInput = document.getElementById('importFile');
+        const importProgress = document.getElementById('importProgress');
+        const progressBar = importProgress.querySelector('.progress-bar');
+        const importedCount = document.getElementById('importedCount');
+        const totalImportCount = document.getElementById('totalImportCount');
+
+        if (!importButton || !fileInput) {
+            console.error('导入功能初始化失败：找不到必要的DOM元素');
+            return;
+        }
+
+        console.log('初始化导入功能');
+
+        importButton.addEventListener('click', (e) => {
+            e.preventDefault();  // 阻止默认行为
+            e.stopPropagation();  // 阻止事件冒泡
+            console.log('点击导入按钮');
+            fileInput.click();
+        });
+
+        fileInput.addEventListener('change', async (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            try {
+                console.log('开始导入文件');
+                importButton.disabled = true;
+                const text = await file.text();
+                const words = text.split('\n')
+                    .map(word => word.trim())
+                    .map(word => word.replace(/\s+/g, ''))
+                    .filter(word => word && /^[a-zA-Z-]+$/.test(word));
+
+                console.log('解析到的单词:', words);
+
+                if (words.length === 0) {
+                    showMessage('没有找到有效的单词');
+                    return;
+                }
+
+                importProgress.style.display = 'block';
+                totalImportCount.textContent = words.length;
+                importedCount.textContent = '0';
+                progressBar.style.width = '0%';
+
+                let imported = 0;
+                let skipped = 0;
+                let failed = 0;
+
+                // 获取当前单词本ID
+                const bookId = $('#wordbookSelect').val() || await storageModule.get('bookId') || 0;
+                console.log('当前单词本ID:', bookId);
+                
+                // 获取已收藏的单词列表
+                const collectedWords = await window.wordbookStorageModule.WordbookStorage.load(bookId);
+                console.log('已收藏的单词数量:', collectedWords.length);
+                const collectedWordsSet = new Set(collectedWords.map(w => w.word.toLowerCase()));
+
+                for (const word of words) {
+                    try {
+                        console.log('处理单词:', word);
+                        // 检查是否已收藏
+                        if (collectedWordsSet.has(word.toLowerCase())) {
+                            console.log('单词已收藏，跳过:', word);
+                            skipped++;
+                            continue;
+                        }
+
+                        // 获取单词信息
+                        const wordInfo = await window.apiModule.getWordInfo(word);
+                        console.log('获取到的单词信息:', wordInfo);
+                        
+                        if (!wordInfo) {
+                            console.log('未找到单词信息:', word);
+                            failed++;
+                            continue;
+                        }
+
+                        // 收藏单词
+                        const result = await window.apiModule.collectWord(wordInfo.dict);
+                        console.log('收藏结果:', result);
+                        
+                        if (result) {
+                            imported++;
+                        } else {
+                            failed++;
+                        }
+
+                        // 更新进度
+                        const processed = imported + skipped + failed;
+                        importedCount.textContent = `${imported}${skipped > 0 ? ` (已跳过 ${skipped} 个)` : ''}`;
+                        progressBar.style.width = `${(processed / words.length) * 100}%`;
+
+                        // 每处理5个单词暂停一下，避免请求过快
+                        if (processed % 5 === 0) {
+                            await new Promise(resolve => setTimeout(resolve, 1000));
+                        }
+
+                    } catch (error) {
+                        console.error(`导入单词 ${word} 失败:`, error);
+                        failed++;
+                    }
+                }
+
+                console.log('导入完成统计:', { imported, skipped, failed });
+
+                const message = [];
+                if (imported > 0) message.push(`成功导入 ${imported} 个`);
+                if (skipped > 0) message.push(`跳过 ${skipped} 个已收藏的`);
+                if (failed > 0) message.push(`失败 ${failed} 个`);
+                
+                showMessage(`导入完成! ${message.join('，')}`);
+
+            } catch (error) {
+                console.error('导入过程出错:', error);
+                showMessage('导入失败: ' + error.message);
+            } finally {
+                importButton.disabled = false;
+                fileInput.value = ''; // 清空文件选择
+                setTimeout(() => {
+                    importProgress.style.display = 'none';
+                }, 3000);
+            }
+        });
     }
 
     window.onload = init;
@@ -197,7 +329,7 @@
     document.addEventListener('DOMContentLoaded', function() {
         // ... 其他初始化代码 ...
         
-        // Anki 导相关
+        // Anki 导出相关
         const enableAnkiExport = document.getElementById('enableAnkiExport');
         const autoExportToAnki = document.getElementById('autoExportToAnki');
         const exportToAnki = document.getElementById('exportToAnki');
