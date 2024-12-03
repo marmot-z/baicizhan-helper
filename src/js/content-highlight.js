@@ -10,6 +10,9 @@
             this.highlightDebounceTimer = null;
             this.processedNodes = new WeakSet();
             this.MAX_HIGHLIGHT_WORDS = 1000;  // 最大高亮单词数
+            this.isProcessing = false;
+            this.originalOverflow = null;  // 保存原始的 overflow 样式
+            this.debug = true;  // 开启调试模式
             
             // 添加消息监听
             chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
@@ -24,6 +27,13 @@
         }
 
         async init() {
+            // 检查是否已经有其他实例在运行
+            if (window._contentHighlighterRunning) {
+                console.log('Another ContentHighlighter instance is already running');
+                return;
+            }
+            window._contentHighlighterRunning = true;
+
             console.log('ContentHighlighter init started');
             
             // 首先检查是否启用了高亮功能
@@ -166,104 +176,130 @@
         }
 
         processHighlighting() {
-            // 创建一个包含所有单词的正则表达式
-            const words = Array.from(this.collectedWords).map(info => info.word);
-            const wordsRegex = new RegExp(`\\b(${words.join('|')})\\b`, 'gi');
-            
-            // 获取可见区域的范围
-            const viewportHeight = window.innerHeight;
-            const visibleRange = {
-                top: window.scrollY - 100, // 上下多处理100px的缓冲区
-                bottom: window.scrollY + viewportHeight + 100
-            };
+            if (this.isProcessing) return;
+            this.isProcessing = true;
 
-            // 获取所有文本节点
-            const walker = document.createTreeWalker(
-                document.body,
-                NodeFilter.SHOW_TEXT,
-                {
-                    acceptNode: (node) => {
-                        const parent = node.parentElement;
-                        if (!parent || this.processedNodes.has(node)) return NodeFilter.FILTER_REJECT;
-                        
-                        // 检查节点是否在可视区域内
-                        const rect = parent.getBoundingClientRect();
-                        const nodeTop = rect.top + window.scrollY;
-                        if (nodeTop > visibleRange.bottom || nodeTop + rect.height < visibleRange.top) {
-                            return NodeFilter.FILTER_REJECT;
+            try {
+                // 保存当前滚动位置
+                const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+                
+                // 创建一个包含所有单词的正则表达式
+                const words = Array.from(this.collectedWords).map(info => info.word);
+                const wordsRegex = new RegExp(`\\b(${words.join('|')})\\b`, 'gi');
+                
+                // 获取可见区域的范围
+                const viewportHeight = window.innerHeight;
+                const visibleRange = {
+                    top: window.scrollY - 100,
+                    bottom: window.scrollY + viewportHeight + 100
+                };
+
+                requestAnimationFrame(() => {
+                    const walker = document.createTreeWalker(
+                        document.body,
+                        NodeFilter.SHOW_TEXT,
+                        {
+                            acceptNode: (node) => {
+                                const parent = node.parentElement;
+                                if (!parent || this.processedNodes.has(node)) return NodeFilter.FILTER_REJECT;
+                                
+                                // 检查节点是否在可视区域内
+                                const rect = parent.getBoundingClientRect();
+                                const nodeTop = rect.top + window.scrollY;
+                                if (nodeTop > visibleRange.bottom || nodeTop + rect.height < visibleRange.top) {
+                                    return NodeFilter.FILTER_REJECT;
+                                }
+
+                                // 排除不需要处理的元素
+                                if (parent.tagName === 'SCRIPT' || 
+                                    parent.tagName === 'STYLE' || 
+                                    parent.tagName === 'NOSCRIPT' ||
+                                    parent.tagName === 'TEXTAREA' ||
+                                    parent.tagName === 'INPUT' ||
+                                    parent.tagName === 'PRE' ||
+                                    parent.tagName === 'CODE' ||
+                                    (parent.className && typeof parent.className === 'string' && 
+                                     (parent.className.includes('bcz-') || parent.className.includes('highlight')))) {
+                                    return NodeFilter.FILTER_REJECT;
+                                }
+                                
+                                return /[a-zA-Z]/.test(node.textContent) ? 
+                                       NodeFilter.FILTER_ACCEPT : 
+                                       NodeFilter.FILTER_REJECT;
+                            }
                         }
+                    );
 
-                        if (parent.tagName === 'SCRIPT' || 
-                            parent.tagName === 'STYLE' || 
-                            parent.tagName === 'NOSCRIPT' ||
-                            parent.tagName === 'TEXTAREA' ||
-                            parent.tagName === 'INPUT' ||
-                            (parent.className && typeof parent.className === 'string' && 
-                             (parent.className.includes('bcz-') || parent.className.includes('highlight')))) {
-                            return NodeFilter.FILTER_REJECT;
+                    const textNodes = [];
+                    let node;
+                    let processedCount = 0;
+                    const batchSize = 10;
+
+                    while (node = walker.nextNode()) {
+                        textNodes.push(node);
+                        if (textNodes.length >= batchSize) {
+                            this.processBatch(textNodes, wordsRegex);
+                            textNodes.length = 0;
+                            processedCount += batchSize;
+
+                            if (processedCount >= 100) {
+                                // 使用 setTimeout 来让出主线程
+                                setTimeout(() => {
+                                    this.isProcessing = false;
+                                    this.processHighlighting();
+                                }, 0);
+                                return;
+                            }
                         }
-                        
-                        return /[a-zA-Z]/.test(node.textContent) ? 
-                               NodeFilter.FILTER_ACCEPT : 
-                               NodeFilter.FILTER_REJECT;
                     }
-                }
-            );
 
-            const textNodes = [];
-            let node;
-            let processedCount = 0;
-            const batchSize = 10; // 每批处理的节点数
-
-            while (node = walker.nextNode()) {
-                textNodes.push(node);
-                if (textNodes.length >= batchSize) {
-                    this.processBatch(textNodes, wordsRegex);
-                    textNodes.length = 0;
-                    processedCount += batchSize;
-
-                    if (processedCount >= 100) { // 每处理100个节点
-                        // 安排下一批处理
-                        window.requestAnimationFrame(() => this.processHighlighting());
-                        return;
+                    if (textNodes.length > 0) {
+                        this.processBatch(textNodes, wordsRegex);
                     }
-                }
-            }
 
-            // 处理剩余的节点
-            if (textNodes.length > 0) {
-                this.processBatch(textNodes, wordsRegex);
+                    // 恢复滚动位置
+                    window.scrollTo(0, scrollTop);
+                    this.isProcessing = false;
+                });
+            } catch (error) {
+                console.error('Error in processHighlighting:', error);
+                this.isProcessing = false;
             }
         }
 
         processBatch(nodes, regex) {
-            nodes.forEach(textNode => {
-                const text = textNode.textContent;
-                if (!regex.test(text)) {
+            try {
+                nodes.forEach(textNode => {
+                    const text = textNode.textContent;
+                    if (!regex.test(text)) {
+                        this.processedNodes.add(textNode);
+                        return;
+                    }
+
+                    regex.lastIndex = 0; // 重置正则表达式
+                    let modified = false;
+                    const newText = text.replace(regex, match => {
+                        modified = true;
+                        const wordInfo = Array.from(this.collectedWords)
+                            .find(info => info.word.toLowerCase() === match.toLowerCase());
+                        return `<span class="bcz-highlighted-word" 
+                                     data-word="${wordInfo.word}"
+                                     data-mean="${wordInfo.mean}"
+                                     data-accent="${wordInfo.accent}"
+                                     style="border-bottom: 2px dashed #2196F3; cursor: pointer;">${match}</span>`;
+                    });
+
+                    if (modified) {
+                        const span = document.createElement('span');
+                        span.innerHTML = newText;
+                        textNode.parentNode.replaceChild(span, textNode);
+                    }
                     this.processedNodes.add(textNode);
-                    return;
-                }
-
-                regex.lastIndex = 0; // 重置正则表达式
-                let modified = false;
-                const newText = text.replace(regex, match => {
-                    modified = true;
-                    const wordInfo = Array.from(this.collectedWords)
-                        .find(info => info.word.toLowerCase() === match.toLowerCase());
-                    return `<span class="bcz-highlighted-word" 
-                                 data-word="${wordInfo.word}"
-                                 data-mean="${wordInfo.mean}"
-                                 data-accent="${wordInfo.accent}"
-                                 style="border-bottom: 2px dashed #2196F3; cursor: pointer;">${match}</span>`;
                 });
-
-                if (modified) {
-                    const span = document.createElement('span');
-                    span.innerHTML = newText;
-                    textNode.parentNode.replaceChild(span, textNode);
-                }
-                this.processedNodes.add(textNode);
-            });
+            } catch (error) {
+                console.error('Error in processBatch:', error);
+                this.isProcessing = false;
+            }
         }
 
         handleMouseOver(e) {
@@ -317,59 +353,85 @@
                 this.observer.disconnect();
             }
 
-            // 使用防抖处理 DOM 变化
+            let scrollTimeout;
             const debouncedHighlight = () => {
                 if (this.highlightDebounceTimer) {
                     clearTimeout(this.highlightDebounceTimer);
                 }
+                
+                // 确保不会在滚动过程中处理高亮
+                if (scrollTimeout) {
+                    clearTimeout(scrollTimeout);
+                }
+                
                 this.highlightDebounceTimer = setTimeout(() => {
-                    this.highlightWords();
+                    if (!this.isProcessing) {
+                        this.highlightWords();
+                    }
                 }, 500);
             };
+
+            // 优化滚动处理
+            window.addEventListener('scroll', () => {
+                if (scrollTimeout) {
+                    clearTimeout(scrollTimeout);
+                }
+                
+                scrollTimeout = setTimeout(() => {
+                    if (!this.isProcessing) {
+                        debouncedHighlight();
+                    }
+                }, 150);
+            }, { passive: true });
 
             this.observer = new MutationObserver((mutations) => {
                 let shouldHighlight = false;
                 for (const mutation of mutations) {
-                    if (mutation.addedNodes.length) {
+                    // 只处理内容变化，忽略属性变化
+                    if (mutation.type === 'childList' && mutation.addedNodes.length) {
                         shouldHighlight = true;
                         break;
                     }
                 }
-                if (shouldHighlight) {
+                if (shouldHighlight && !this.isProcessing) {
                     debouncedHighlight();
                 }
             });
 
             this.observer.observe(document.body, {
                 childList: true,
-                subtree: true
+                subtree: true,
+                characterData: false,  // 不监听文本变化
+                attributes: false      // 不监听属性变化
             });
-
-            // 监听滚动事件，处理新进入视图的内容
-            window.addEventListener('scroll', () => {
-                debouncedHighlight();
-            }, { passive: true });
         }
 
         // 添加移除高亮的方法
         removeHighlights() {
-            // 移除事件监听器
-            document.removeEventListener('mouseover', this.handleMouseOver.bind(this));
-            document.removeEventListener('mouseout', this.handleMouseOut.bind(this));
+            try {
+                // 移除事件监听器
+                document.removeEventListener('mouseover', this.handleMouseOver.bind(this));
+                document.removeEventListener('mouseout', this.handleMouseOut.bind(this));
 
-            const highlights = document.querySelectorAll('.bcz-highlighted-word');
-            highlights.forEach(el => {
-                const text = el.textContent;
-                el.parentNode.replaceChild(document.createTextNode(text), el);
-            });
-            
-            if (this.popover) {
-                this.popover.remove();
-                this.popover = null;
+                const highlights = document.querySelectorAll('.bcz-highlighted-word');
+                highlights.forEach(el => {
+                    const text = el.textContent;
+                    el.parentNode.replaceChild(document.createTextNode(text), el);
+                });
+                
+                if (this.popover) {
+                    this.popover.remove();
+                    this.popover = null;
+                }
+                
+                this.initialized = false;
+                this.processedNodes = new WeakSet();
+            } finally {
+                // 确保恢复原始的 overflow 样式
+                if (this.originalOverflow !== null) {
+                    document.body.style.overflow = this.originalOverflow;
+                }
             }
-            
-            this.initialized = false;
-            this.processedNodes = new WeakSet();
         }
 
         filterWords(words) {
@@ -431,6 +493,13 @@
             if (!isShort) score -= 0.2;
 
             return Math.max(0, score);
+        }
+
+        // 添加调试方法
+        _log(...args) {
+            if (this.debug) {
+                console.log('[ContentHighlighter]', ...args);
+            }
         }
     }
 
