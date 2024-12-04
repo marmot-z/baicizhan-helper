@@ -226,6 +226,38 @@
                                             在网页中高亮显示已收藏的单词
                                         </label>
                                     </div>
+                                    
+                                    <div id="highlightStyleSettings" class="mt-3" style="display: none">
+                                        <div class="form-group">
+                                            <label>高亮样式</label>
+                                            <select id="highlightStyle" class="form-control">
+                                                <option value="underline">下划线</option>
+                                                <option value="background">背景色</option>
+                                                <option value="dotted">虚线下划线</option>
+                                                <option value="wavy">波浪线</option>
+                                                <option value="dashed">短横线</option>
+                                            </select>
+                                        </div>
+                                        
+                                        <div class="form-group">
+                                            <label>高亮颜色</label>
+                                            <div class="d-flex align-items-center mb-2">
+                                                <input type="color" id="highlightColor" class="form-control" style="width: 100px;" value="#2196F3">
+                                                <div id="colorPreview" class="ml-3">
+                                                    <span class="preview-text" style="border-bottom: 2px solid #2196F3; padding: 0 2px;">预览效果</span>
+                                                </div>
+                                            </div>
+                                            <div class="preset-colors">
+                                                <button type="button" class="btn btn-sm color-preset" data-color="#2196F3" style="background-color: #2196F3;"></button>
+                                                <button type="button" class="btn btn-sm color-preset" data-color="#4CAF50" style="background-color: #4CAF50;"></button>
+                                                <button type="button" class="btn btn-sm color-preset" data-color="#FFC107" style="background-color: #FFC107;"></button>
+                                                <button type="button" class="btn btn-sm color-preset" data-color="#E91E63" style="background-color: #E91E63;"></button>
+                                                <button type="button" class="btn btn-sm color-preset" data-color="#9C27B0" style="background-color: #9C27B0;"></button>
+                                                <button type="button" class="btn btn-sm color-preset" data-color="#FF5722" style="background-color: #FF5722;"></button>
+                                            </div>
+                                        </div>
+                                    </div>
+
                                     <small class="form-text text-muted">
                                         自动标记网页中出现的已收藏单词，鼠标移到单词上显示释义
                                     </small>
@@ -451,6 +483,31 @@
     <script type="text/javascript" src="./js/options.js"></script>
     <script type="text/javascript" src="./js/services/anki-service.js"></script>
     <script type="text/javascript" src="./js/options-anki.js"></script>
+    <style>
+        .preset-colors {
+            display: flex;
+            gap: 8px;
+            margin-top: 8px;
+        }
+
+        .color-preset {
+            width: 32px;
+            height: 32px;
+            border-radius: 16px;
+            border: 2px solid #fff;
+            box-shadow: 0 0 0 1px #ddd;
+            padding: 0;
+            transition: transform 0.2s;
+        }
+
+        .color-preset:hover {
+            transform: scale(1.1);
+        }
+
+        .color-preset.active {
+            box-shadow: 0 0 0 2px #666;
+        }
+    </style>
 </body>
 
 </html>
