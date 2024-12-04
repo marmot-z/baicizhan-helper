@@ -12,6 +12,11 @@
         similarWordsDisplay: false,
         englishParaphraseDisplay: false,
     };
+    const defaultHighlightSettings = {
+        enabled: true,
+        style: 'underline',
+        color: '#2196F3'
+    };
 
     function loadWordbook() {
         return getBooks().then(data => {
@@ -77,6 +82,30 @@
                 if (settings.englishParaphraseDisplay)
                     $('#showEnglishParaphraseCheck').prop('checked', true);
             });
+
+        // 加载高亮设置
+        chrome.storage.local.get(['highlightSettings']).then(result => {
+            const settings = result.highlightSettings || defaultHighlightSettings;
+            
+            $('#enablePageHighlight').prop('checked', settings.enabled);
+            $('#highlightStyle').val(settings.style);
+            $('#highlightColor').val(settings.color);
+            
+            // 更新预设颜色按钮的激活状态
+            $('.color-preset').removeClass('active');
+            $(`.color-preset[data-color="${settings.color}"]`).addClass('active');
+            
+            // 根据启用状态显示/隐藏样式设置
+            $('#highlightStyleSettings').toggle(settings.enabled);
+            
+            // 更新预览效果
+            updateHighlightPreview();
+            
+            // 如果是第一次加载，保存默认设置
+            if (!result.highlightSettings) {
+                saveHighlightSettings();
+            }
+        });
     }
 
     function reset() {
@@ -96,6 +125,18 @@
         $('#enableStudyInput').prop('checked', false);
         $('#hostInput').val(apiModule.defaultHost);
         $('#portInput').val(apiModule.defaultPort);
+
+        // 重置高亮设置为默认值
+        $('#enablePageHighlight').prop('checked', defaultHighlightSettings.enabled);
+        $('#highlightStyle').val(defaultHighlightSettings.style);
+        $('#highlightColor').val(defaultHighlightSettings.color);
+        $('#highlightStyleSettings').toggle(defaultHighlightSettings.enabled);
+        
+        // 更新预设颜色按钮状态
+        $('.color-preset').removeClass('active');
+        $(`.color-preset[data-color="${defaultHighlightSettings.color}"]`).addClass('active');
+        
+        updateHighlightPreview();
     }
 
     function save() {
@@ -185,6 +226,86 @@
             save();
             alert('保存成功');
         });
+
+        // 添加高亮设置相关事件处理
+        $('#enablePageHighlight').on('change', function() {
+            const enabled = $(this).prop('checked');
+            $('#highlightStyleSettings').toggle(enabled);
+            saveHighlightSettings();
+        });
+        
+        $('#highlightStyle, #highlightColor').on('change', function() {
+            updateHighlightPreview();
+            saveHighlightSettings();
+        });
+
+        // 添加预设颜色按钮事件处理
+        $('.color-preset').on('click', function() {
+            const color = $(this).data('color');
+            $('#highlightColor').val(color);
+            
+            // 更新按钮激活状态
+            $('.color-preset').removeClass('active');
+            $(this).addClass('active');
+            
+            // 更新预览和保存设置
+            updateHighlightPreview();
+            saveHighlightSettings();
+        });
+    }
+
+    // 添加高亮设置保存函数
+    async function saveHighlightSettings() {
+        const settings = {
+            enabled: $('#enablePageHighlight').prop('checked'),
+            style: $('#highlightStyle').val(),
+            color: $('#highlightColor').val()
+        };
+        
+        // 保存到 storage
+        await chrome.storage.local.set({ highlightSettings: settings });
+        
+        // 通知所有标签页更新高亮设置
+        chrome.tabs.query({}, tabs => {
+            tabs.forEach(tab => {
+                chrome.tabs.sendMessage(tab.id, {
+                    type: 'updateHighlightSettings',
+                    ...settings
+                }).catch(() => {});
+            });
+        });
+    }
+
+    // 添加预览效果更新函数
+    function updateHighlightPreview() {
+        const style = $('#highlightStyle').val();
+        const color = $('#highlightColor').val();
+        const $preview = $('#colorPreview .preview-text');
+        
+        // 重置样式
+        $preview.attr('style', 'padding: 0 2px;');
+        
+        // 应用新样式
+        switch (style) {
+            case 'background':
+                $preview.css({
+                    'background-color': `${color}33`,
+                    'border-radius': '3px'
+                });
+                break;
+            case 'dotted':
+                $preview.css('border-bottom', `2px dotted ${color}`);
+                break;
+            case 'wavy':
+                $preview.css('text-decoration', `wavy underline ${color}`);
+                break;
+            case 'dashed':
+                $preview.css('border-bottom', `2px dashed ${color}`);
+                break;
+            case 'underline':
+            default:
+                $preview.css('border-bottom', `2px solid ${color}`);
+        }
     }
 
     window.settingModule = { init };

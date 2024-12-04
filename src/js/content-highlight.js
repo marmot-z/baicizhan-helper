@@ -13,11 +13,26 @@
             this.isProcessing = false;
             this.originalOverflow = null;  // 保存原始的 overflow 样式
             this.debug = true;  // 开启调试模式
+            this.highlightStyle = 'underline';  // 默认样式
+            this.highlightColor = '#2196F3';    // 默认颜色
+            
+            // 默认配置
+            this.defaultSettings = {
+                enabled: true,
+                style: 'underline',
+                color: '#2196F3'
+            };
+            
+            // 初始化设置
+            this.highlightStyle = this.defaultSettings.style;
+            this.highlightColor = this.defaultSettings.color;
             
             // 添加消息监听
             chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
                 if (message.type === 'updateHighlightSettings') {
                     if (message.enabled) {
+                        this.highlightStyle = message.style || 'underline';
+                        this.highlightColor = message.color || '#2196F3';
                         this.init();
                     } else {
                         this.removeHighlights();
@@ -36,15 +51,24 @@
 
             console.log('ContentHighlighter init started');
             
-            // 首先检查是否启用了高亮功能
-            const settings = await chrome.storage.local.get(['highlightSettings']);
-            console.log('Highlight settings:', settings);
+            // 获取设置，如果没有则使用默认值
+            const { highlightSettings } = await chrome.storage.local.get(['highlightSettings']);
+            console.log('Highlight settings:', highlightSettings);
             
-            if (!settings.highlightSettings?.enabled) {
-                console.log('Highlight feature is disabled');
-                return;
+            // 如果是第一次使用，初始化默认设置
+            if (!highlightSettings) {
+                await chrome.storage.local.set({ highlightSettings: this.defaultSettings });
+                this.highlightStyle = this.defaultSettings.style;
+                this.highlightColor = this.defaultSettings.color;
+            } else {
+                if (!highlightSettings.enabled) {
+                    console.log('Highlight feature is disabled');
+                    return;
+                }
+                this.highlightStyle = highlightSettings.style || this.defaultSettings.style;
+                this.highlightColor = highlightSettings.color || this.defaultSettings.color;
             }
-
+            
             // 等待 DOM 加载完成
             if (document.readyState === 'loading') {
                 console.log('Document still loading, waiting...');
@@ -289,10 +313,30 @@
                         const wordInfo = Array.from(this.collectedWords)
                             .find(info => info.word.toLowerCase() === match.toLowerCase());
                         
+                        // 根据样式类型生成不同的样式
+                        let style = '';
+                        switch (this.highlightStyle) {
+                            case 'background':
+                                style = `background-color: ${this.highlightColor}33; border-radius: 3px; padding: 0 2px;`;
+                                break;
+                            case 'dotted':
+                                style = `border-bottom: 2px dotted ${this.highlightColor};`;
+                                break;
+                            case 'wavy':
+                                style = `text-decoration: wavy underline ${this.highlightColor};`;
+                                break;
+                            case 'dashed':
+                                style = `border-bottom: 2px dashed ${this.highlightColor};`;
+                                break;
+                            case 'underline':
+                            default:
+                                style = `border-bottom: 2px solid ${this.highlightColor};`;
+                        }
+                        
                         return `<span class="bcz-highlighted-word" 
                                      data-word="${wordInfo.word}"
                                      data-mean="${wordInfo.mean}"
-                                     style="border-bottom: 2px dashed #2196F3; cursor: pointer;">${match}</span>`;
+                                     style="${style} cursor: pointer;">${match}</span>`;
                     });
 
                     if (modified) {
@@ -439,7 +483,7 @@
                     return;
                 }
 
-                // 设置隐藏动画
+                // 设置隐动画
                 this.popover.style.opacity = '0';
                 this.popover.style.transform = 'scale(0.95)';
 
