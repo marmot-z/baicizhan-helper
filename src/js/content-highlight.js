@@ -91,9 +91,8 @@
                         this.collectedWords.add({
                             word: word.word.toLowerCase(),
                             mean: Array.isArray(word.means) ? word.means.join('; ') : word.mean,
-                            accent: word.accent || '',
-                            frequency: word.frequency || 0,  // 添加频率信息
-                            lastUsed: word.created_at || Date.now()  // 添加最后使用时间
+                            frequency: word.frequency || 0,
+                            lastUsed: word.created_at || Date.now()
                         });
                     }
                 });
@@ -111,7 +110,7 @@
                 // 高亮单词
                 this.highlightWords();
                 
-                // 监听 DOM 变化，处理动态加载的内容
+                // 监听 DOM 变化
                 this.observeDOM();
 
                 this.initialized = true;
@@ -127,23 +126,28 @@
         }
 
         initPopover() {
-            // 确保 body 存在
             if (!document.body) return;
 
-            // 创建 popover 元素
             const popover = document.createElement('div');
             popover.className = 'bcz-word-popover';
+            popover.setAttribute('translate', 'no');
             popover.style.cssText = `
                 position: fixed;
                 display: none;
                 background: white;
-                border: 1px solid #ddd;
-                border-radius: 4px;
-                padding: 8px 12px;
-                box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+                border: 1px solid #e0e0e0;
+                border-radius: 12px;
+                padding: 16px;
+                box-shadow: 0 6px 16px rgba(0,0,0,0.12);
                 z-index: 999999;
-                max-width: 300px;
+                max-width: 380px;
+                min-width: 300px;
                 font-size: 14px;
+                line-height: 1.6;
+                color: #333;
+                font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+                backdrop-filter: blur(8px);
+                transform-origin: top left;
             `;
             document.body.appendChild(popover);
             this.popover = popover;
@@ -219,7 +223,9 @@
                                     parent.tagName === 'PRE' ||
                                     parent.tagName === 'CODE' ||
                                     (parent.className && typeof parent.className === 'string' && 
-                                     (parent.className.includes('bcz-') || parent.className.includes('highlight')))) {
+                                     (parent.className.includes('bcz-') || parent.className.includes('highlight'))) ||
+                                    // 检查是否在翻译弹窗内
+                                    parent.closest('.bcz-word-popover')) {
                                     return NodeFilter.FILTER_REJECT;
                                 }
                                 
@@ -276,16 +282,16 @@
                         return;
                     }
 
-                    regex.lastIndex = 0; // 重置正则表达式
+                    regex.lastIndex = 0;
                     let modified = false;
                     const newText = text.replace(regex, match => {
                         modified = true;
                         const wordInfo = Array.from(this.collectedWords)
                             .find(info => info.word.toLowerCase() === match.toLowerCase());
+                        
                         return `<span class="bcz-highlighted-word" 
                                      data-word="${wordInfo.word}"
                                      data-mean="${wordInfo.mean}"
-                                     data-accent="${wordInfo.accent}"
                                      style="border-bottom: 2px dashed #2196F3; cursor: pointer;">${match}</span>`;
                     });
 
@@ -305,46 +311,143 @@
         handleMouseOver(e) {
             const target = e.target;
             if (target.classList.contains('bcz-highlighted-word')) {
+                // 清除任何正在进行的隐藏定时器
+                if (this.hideTimeout) {
+                    clearTimeout(this.hideTimeout);
+                    this.hideTimeout = null;
+                }
+
                 const rect = target.getBoundingClientRect();
-                this.popover.innerHTML = `
-                    <div style="font-weight: bold;">${target.dataset.word}</div>
-                    <div style="color: #666;">${target.dataset.accent}</div>
-                    <div>${target.dataset.mean}</div>
-                `;
                 
-                // 计算最佳显示位置
+                // 格式化释义内容
+                const meanings = target.dataset.mean.split(';').map(m => m.trim());
+                const meaningsHtml = meanings.map((mean, index) => {
+                    let partOfSpeech = '';
+                    let definition = '';
+                    
+                    const match = mean.match(/^(\w+\.|【.*?】)?\s*(.+)$/);
+                    if (match) {
+                        partOfSpeech = match[1] || '';
+                        definition = match[2] || mean;
+                    } else {
+                        definition = mean;
+                    }
+                    
+                    return `
+                        <div class="bcz-meaning-item" style="
+                            margin-top: 8px;
+                            padding: 6px 10px;
+                            background: ${index % 2 === 0 ? '#f8f9fa' : 'white'};
+                            border-radius: 6px;
+                        ">
+                            <span style="
+                                color: #1976D2;
+                                font-weight: 500;
+                                margin-right: 6px;
+                                font-size: 12px;
+                            ">${partOfSpeech}</span>
+                            <span style="color: #424242;">${definition}</span>
+                        </div>
+                    `;
+                }).join('');
+
+                this.popover.innerHTML = `
+                    <div style="margin-bottom: 12px;" translate="no">
+                        <div style="
+                            display: flex;
+                            align-items: baseline;
+                            gap: 8px;
+                        ">
+                            <span style="
+                                font-size: 20px;
+                                font-weight: 600;
+                                color: #1976D2;
+                            ">${target.dataset.word}</span>
+                        </div>
+                    </div>
+                    
+                    <div style="
+                        max-height: 200px;
+                        overflow-y: auto;
+                        padding-right: 8px;
+                        scrollbar-width: thin;
+                        scrollbar-color: #90CAF9 #E3F2FD;
+                    " translate="no">${meaningsHtml}</div>
+                `;
+
+                // 立即显示新内容
+                this.popover.style.display = 'block';
+                this.popover.style.opacity = '0';
+                this.popover.style.transform = 'scale(0.95)';
+
+                // 自定义滚动条样式
+                const styleSheet = document.createElement('style');
+                styleSheet.textContent = `
+                    .bcz-word-popover div::-webkit-scrollbar {
+                        width: 6px;
+                    }
+                    .bcz-word-popover div::-webkit-scrollbar-track {
+                        background: #E3F2FD;
+                        border-radius: 3px;
+                    }
+                    .bcz-word-popover div::-webkit-scrollbar-thumb {
+                        background: #90CAF9;
+                        border-radius: 3px;
+                    }
+                `;
+                this.popover.appendChild(styleSheet);
+                
+                // 计算位置
                 const viewportWidth = window.innerWidth;
                 const viewportHeight = window.innerHeight;
-                const popoverWidth = 300; // 最大宽度
-                const popoverHeight = this.popover.offsetHeight || 100; // 预估高度
+                const popoverWidth = 380;
+                const popoverHeight = this.popover.offsetHeight || 150;
                 
-                // 默认位置
                 let left = rect.left;
-                let top = rect.bottom + 5;
+                let top = rect.bottom + 12;
                 
-                // 检查右边界
                 if (left + popoverWidth > viewportWidth) {
-                    left = viewportWidth - popoverWidth - 10;
+                    left = viewportWidth - popoverWidth - 20;
                 }
                 
-                // 检查下边界
                 if (top + popoverHeight > viewportHeight) {
-                    top = rect.top - popoverHeight - 5; // 显示在单词上方
+                    top = rect.top - popoverHeight - 12;
                 }
                 
-                // 确保不会超出左边界
-                left = Math.max(10, left);
+                left = Math.max(20, left);
                 
-                this.popover.style.display = 'block';
+                // 立即更新位置
                 this.popover.style.left = `${left}px`;
                 this.popover.style.top = `${top}px`;
+                
+                // 使用 requestAnimationFrame 确保平滑过渡
+                requestAnimationFrame(() => {
+                    this.popover.style.transition = 'opacity 0.15s ease-in-out, transform 0.15s ease-in-out';
+                    this.popover.style.opacity = '1';
+                    this.popover.style.transform = 'scale(1)';
+                });
             }
         }
 
         handleMouseOut(e) {
             const target = e.target;
             if (target.classList.contains('bcz-highlighted-word')) {
-                this.popover.style.display = 'none';
+                // 检查鼠标是否移动到了另一个高亮单词上
+                const relatedTarget = e.relatedTarget;
+                if (relatedTarget && relatedTarget.classList.contains('bcz-highlighted-word')) {
+                    // 如果是移动到另一个高亮单词，不执行隐藏
+                    return;
+                }
+
+                // 设置隐藏动画
+                this.popover.style.opacity = '0';
+                this.popover.style.transform = 'scale(0.95)';
+
+                // 存储隐藏定时器
+                this.hideTimeout = setTimeout(() => {
+                    this.popover.style.display = 'none';
+                    this.hideTimeout = null;
+                }, 150); // 减少延迟时间
             }
         }
 
@@ -359,7 +462,7 @@
                     clearTimeout(this.highlightDebounceTimer);
                 }
                 
-                // 确保不会在滚动过程中处理高亮
+                // 确保不会在滚动过程中处理亮
                 if (scrollTimeout) {
                     clearTimeout(scrollTimeout);
                 }
