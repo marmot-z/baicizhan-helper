@@ -421,7 +421,7 @@
                     back += '</div></div>';
                 }
 
-                // 添加���语
+                // 添加短语
                 if (ankiSettings.exportPhrases && shortPhrases && shortPhrases.length > 0) {
                     back += `<div class="extra-section">
                         <h4>常用短语</h4>
@@ -449,7 +449,7 @@
                 // 添加反义词
                 if (ankiSettings.exportAntonyms && antonyms && antonyms.length > 0) {
                     back += `<div class="extra-section">
-                        <h4>反词</h4>
+                        <h4>反义词</h4>
                         <div class="antonyms">`;
                     antonyms.forEach(a => {
                         back += `<span class="word-group">${a.syn_ant}</span>`;
