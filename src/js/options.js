@@ -174,6 +174,16 @@
             exportBtn.disabled = true;
             exportBtn.textContent = '导出中...';
             
+            // 1. 先同步单词本
+            try {
+                showMessage('正在同步单词本...');
+                await window.apiModule.syncWordbook();
+            } catch (error) {
+                console.error('同步单词本失败:', error);
+                // 同步失败不阻止导出，继续使用本地数据
+            }
+            
+            // 2. 获取当前单词本的所有单词
             const bookId = $('#wordbookSelect').val() || await storageModule.get('bookId') || 0;
             const words = await window.wordbookStorageModule.WordbookStorage.load(bookId);
             
@@ -181,16 +191,10 @@
                 showMessage('没有找到收藏的单词');
                 return;
             }
-            
-            progressDiv.style.display = 'block';
-            totalCount.textContent = words.length;
-            exportedCount.textContent = '0';
-            progressBar.style.width = '0%';
-            
-            const ankiService = new AnkiService();
-            let exported = 0;
-            let skipped = 0;
 
+            const ankiService = new AnkiService();
+            
+            // 3. 检查 Anki 连接和设置
             try {
                 await ankiService.invoke('version');
             } catch (error) {
@@ -198,11 +202,7 @@
                 return;
             }
 
-            const models = await ankiService.invoke('modelNames');
-            if (!models.includes('BaiCiZhan Basic')) {
-                await ankiService.createBasicModel();
-            }
-
+            // 4. 获取/创建必要的设置
             const settings = await chrome.storage.local.get(['ankiSettings']);
             const ankiSettings = settings.ankiSettings || {
                 enabled: true,
@@ -219,20 +219,55 @@
                 exportEnMeans: true
             };
 
+            // 5. 确保模板和牌组存在
+            const models = await ankiService.invoke('modelNames');
+            if (!models.includes('BaiCiZhan Basic')) {
+                await ankiService.createBasicModel();
+            }
+
             const decks = await ankiService.invoke('deckNames');
             if (!decks.includes(ankiSettings.deckName)) {
                 await ankiService.createDeck(ankiSettings.deckName);
             }
 
-            for (const wordItem of words) {
+            // 6. 获取 Anki 中已有的单词
+            showMessage('正在获取 Anki 中已有的单词...');
+            const existingWords = await ankiService.findNotesInDeck(ankiSettings.deckName);
+            
+            // 7. 过滤出需要导出的单词
+            const wordsToExport = words.filter(wordItem => {
+                const wordLower = wordItem.word.toLowerCase().trim();
+                return !existingWords.has(wordLower);
+            });
+
+            console.log('Total words:', words.length);
+            console.log('Existing words:', existingWords.size);
+            console.log('Words to export:', wordsToExport.length);
+
+            if (wordsToExport.length === 0) {
+                showMessage('没有新的单词需要导出');
+                return;
+            }
+
+            // 8. 更新进度条显示
+            progressDiv.style.display = 'block';
+            totalCount.textContent = wordsToExport.length;
+            exportedCount.textContent = '0';
+            progressBar.style.width = '0%';
+
+            let exported = 0;
+            let failed = 0;
+
+            // 9. 导出新单词
+            for (const wordItem of wordsToExport) {
                 try {
-                    progressBar.style.width = `${((exported + skipped) / words.length) * 100}%`;
-                    progressBar.textContent = `${Math.round(((exported + skipped) / words.length) * 100)}%`;
-                    exportedCount.textContent = `${exported}${skipped > 0 ? ` (已跳过 ${skipped} 个重复单词)` : ''}`;
+                    progressBar.style.width = `${(exported / wordsToExport.length) * 100}%`;
+                    progressBar.textContent = `${Math.round((exported / wordsToExport.length) * 100)}%`;
+                    exportedCount.textContent = exported.toString();
 
                     const wordDetail = await window.apiModule.getWordDetail(wordItem.topic_id);
                     if (!wordDetail) {
-                        skipped++;
+                        failed++;
                         continue;
                     }
 
@@ -255,17 +290,6 @@
                         enMeans: wordDetail.dict.en_means || []
                     };
 
-                    const canAdd = await ankiService.canAddNote(
-                        wordData.word,
-                        wordData.accent,
-                        wordData.meaning.map(m => `${m.type} ${m.mean}`).join('; ')
-                    );
-
-                    if (!canAdd) {
-                        skipped++;
-                        continue;
-                    }
-
                     const result = await ankiService.addNote(
                         wordData.word,
                         wordData.accent,
@@ -283,19 +307,21 @@
                     
                     if (result) exported++;
 
-                    if ((exported + skipped) % 5 === 0) {
-                        await new Promise(resolve => setTimeout(resolve, 0));
+                    // 每导出5个单词暂停一下，避免请求过快
+                    if (exported % 5 === 0) {
+                        await new Promise(resolve => setTimeout(resolve, 1000));
                     }
 
                 } catch (err) {
                     console.error(`导出单词 ${wordItem.word} 失败:`, err);
-                    skipped++;
+                    failed++;
                 }
             }
 
-            const message = exported > 0 ? 
-                `导出完成! 成功导出 ${exported} 个单词${skipped > 0 ? `，跳过 ${skipped} 个重复单词` : ''}` : 
-                '没有新的单词需要导出';
+            const skipped = words.length - wordsToExport.length;
+            const message = `导出完成! ${exported > 0 ? `成功导出 ${exported} 个单词` : ''}${
+                skipped > 0 ? `，跳过 ${skipped} 个已存在的单词` : ''}${
+                failed > 0 ? `，${failed} 个导出失败` : ''}`;
             showMessage(message);
 
         } catch (err) {
@@ -384,7 +410,14 @@
 
         // 导出按钮事件监听
         if (exportToAnki) {
-            exportToAnki.addEventListener('click', exportAllToAnki);
+            exportToAnki.addEventListener('click', function(e) {
+                // 阻止默认行为和事件冒泡
+                e.preventDefault();
+                e.stopPropagation();
+                
+                // 调用导出函数
+                exportAllToAnki();
+            });
         }
 
         // 在 DOMContentLoaded 事件处理中修改
