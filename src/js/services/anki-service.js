@@ -421,7 +421,7 @@
                     back += '</div></div>';
                 }
 
-                // 添加短语
+                // 添加���语
                 if (ankiSettings.exportPhrases && shortPhrases && shortPhrases.length > 0) {
                     back += `<div class="extra-section">
                         <h4>常用短语</h4>
@@ -449,7 +449,7 @@
                 // 添加反义词
                 if (ankiSettings.exportAntonyms && antonyms && antonyms.length > 0) {
                     back += `<div class="extra-section">
-                        <h4>反义词</h4>
+                        <h4>反词</h4>
                         <div class="antonyms">`;
                     antonyms.forEach(a => {
                         back += `<span class="word-group">${a.syn_ant}</span>`;
@@ -489,7 +489,8 @@
                         Image: ''
                     },
                     options: {
-                        allowDuplicate: false
+                        allowDuplicate: false,
+                        duplicateScope: "deck"
                     },
                     tags: ["BaiCiZhan"]
                 };
@@ -552,27 +553,26 @@
                     }
                 }
 
-                console.log('Adding note:', note); // 添加调试日志
+                console.log('Adding note:', note);
 
-                // 添加笔记
                 try {
                     const result = await this.invoke('addNote', { note });
-                    return result;
+                    return true;
                 } catch (error) {
-                    // 如果是重复单词的错误，我们不把它当作错误处理
+                    // 如果是重复单词的错误，返回 true
                     if (error.message.includes('duplicate')) {
                         console.log('Word already exists in Anki:', word);
-                        return true;  // 返回成功，因为单词已经在 Anki 中了
+                        return true;
                     }
-                    throw error;  // 其他错误继续抛出
+                    throw error;
                 }
             } catch (error) {
                 console.error('Error in addNote:', error);
-                // 如果不是重复单词的错误，才抛出
-                if (!error.message.includes('duplicate')) {
-                    throw error;
+                // 如果是重复单词的错误，返回 true
+                if (error.message.includes('duplicate')) {
+                    return true;
                 }
-                return true;  // 重复单词返回成功
+                throw error;
             }
         }
 
@@ -655,6 +655,44 @@
                 return result;
             } catch (error) {
                 console.error('Test error:', error);
+                throw error;
+            }
+        }
+
+        // 在 AnkiService 类中添加新方法
+        async findNotesInDeck(deckName) {
+            try {
+                // 构建查询字符串
+                const query = `deck:"${deckName}"`;
+                
+                // 获取所有笔记的ID
+                const noteIds = await this.invoke('findNotes', {
+                    query: query
+                });
+
+                if (!noteIds || noteIds.length === 0) {
+                    return new Set();
+                }
+
+                // 获取笔记的详细信息
+                const notesInfo = await this.invoke('notesInfo', {
+                    notes: noteIds
+                });
+
+                // 提取所有单词并转换为小写存入Set
+                const wordsInDeck = new Set();
+                notesInfo.forEach(note => {
+                    // 从Front字段提取单词
+                    const match = note.fields.Front.value.match(/<div class="word">(.*?)<\/div>/);
+                    if (match) {
+                        const word = match[1].trim().toLowerCase();
+                        wordsInDeck.add(word);
+                    }
+                });
+
+                return wordsInDeck;
+            } catch (error) {
+                console.error('Error getting notes from deck:', error);
                 throw error;
             }
         }

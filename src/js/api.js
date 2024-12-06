@@ -351,13 +351,55 @@
         });
     }
 
+    async function syncWordbook() {
+        try {
+            // 获取当前单词本ID
+            const bookId = await storageModule.get('bookId') || 0;
+            
+            // 从服务器获取最新的单词列表
+            const [host, port, accessToken] = await loadRequestOptions();
+            const url = `http://${host}:${port}/book/${bookId}/words`;
+            
+            const response = await fetch(url, {
+                method: 'GET',
+                headers: {
+                    'access_token': accessToken,
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            if (!response.ok) {
+                throw new Error('同步单词本失败');
+            }
+
+            const responseJson = await response.json();
+            if (responseJson.code !== 200) {
+                throw new Error(responseJson.message || '获取单词列表失败');
+            }
+
+            const data = responseJson.data;
+            if (!data || !Array.isArray(data)) {
+                throw new Error('获取单词列表失败');
+            }
+
+            // 更新本地存储
+            await window.wordbookStorageModule.WordbookStorage.save(bookId, data);
+            
+            return true;
+        } catch (error) {
+            console.error('同步单词本出错:', error);
+            throw error;
+        }
+    }
+
     const exports = {
         getVerifyCode, loginWithPhone, getUserInfo, 
         getBooks, defaultHost, defaultPort, loginWithEmail,
         searchWord, getWordDetail, collectWord, translate,
         cancelCollectWord, getBookWords, getWordInfo, 
         getCalendarDailyInfo, getLatestVersion, getSelectBookPlanInfo,
-        getAllBookInfo, getRoadmaps, getLearnedWords, updateDoneData
+        getAllBookInfo, getRoadmaps, getLearnedWords, updateDoneData,
+        syncWordbook
     };
 
     global.apiModule = exports;
