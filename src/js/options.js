@@ -183,9 +183,8 @@
                 // 同步失败不阻止导出，继续使用本地数据
             }
             
-            // 2. 获取当前单词本的所有单词
-            const bookId = $('#wordbookSelect').val() || await storageModule.get('bookId') || 0;
-            const words = await window.wordbookStorageModule.WordbookStorage.load(bookId);
+            // 2. 获取所有单词本的所有单词
+            const words = await window.wordbookStorageModule.WordbookStorage.loadAllWords();
             
             if (!words || words.length === 0) {
                 showMessage('没有找到收藏的单词');

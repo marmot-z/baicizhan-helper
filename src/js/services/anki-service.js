@@ -331,8 +331,8 @@
                     exportEnMeans: true
                 };
 
-                // 如果功能未启用或自动导出被禁用，直接返回
-                if (!ankiSettings.enabled || !ankiSettings.autoExport) {
+                // 如果功能未启用，直接返回
+                if (!ankiSettings.enabled) {
                     return;
                 }
 
