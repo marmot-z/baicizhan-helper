@@ -3,18 +3,17 @@
 
     class ContentHighlighter {
         constructor() {
-            this.collectedWords = new Set();
+            this.collectedWords = new Map();
             this.popover = null;
             this.initialized = false;
             this.observer = null;
             this.highlightDebounceTimer = null;
             this.processedNodes = new WeakSet();
-            this.MAX_HIGHLIGHT_WORDS = 1000;  // 最大高亮单词数
             this.isProcessing = false;
-            this.originalOverflow = null;  // 保存原始的 overflow 样式
-            this.debug = true;  // 开启调试模式
-            this.highlightStyle = 'underline';  // 默认样式
-            this.highlightColor = '#2196F3';    // 默认颜色
+            this.originalOverflow = null;
+            this.debug = true;
+            this.highlightStyle = 'underline';
+            this.highlightColor = '#2196F3';
             
             // 默认配置
             this.defaultSettings = {
@@ -88,7 +87,6 @@
             try {
                 console.log('Initializing highlighter...');
                 
-                // 获取当前收藏的单词
                 const bookId = await this.getCurrentBookId();
                 console.log('Current book ID:', bookId);
                 
@@ -102,17 +100,10 @@
                 
                 if (!words || words.length === 0) return;
 
-                // 如果单词数量超过限制，进行筛选
-                if (words.length > this.MAX_HIGHLIGHT_WORDS) {
-                    const filteredWords = this.filterWords(words);
-                    words.length = 0;
-                    words.push(...filteredWords);
-                }
-
-                // 将单词添加到集合中
+                // 使用 Map 存储单词信息，提高查找效率
                 words.forEach(word => {
                     if (word && word.word) {
-                        this.collectedWords.add({
+                        this.collectedWords.set(word.word.toLowerCase(), {
                             word: word.word.toLowerCase(),
                             mean: Array.isArray(word.means) ? word.means.join('; ') : word.mean,
                             frequency: word.frequency || 0,
@@ -184,7 +175,7 @@
             document.removeEventListener('mouseover', this.handleMouseOver.bind(this));
             document.removeEventListener('mouseout', this.handleMouseOut.bind(this));
 
-            // 使用 requestIdleCallback 在浏览器空闲时处理
+            // 用 requestIdleCallback 在浏览器空闲时处理
             if ('requestIdleCallback' in window) {
                 window.requestIdleCallback(() => {
                     this.processHighlighting();
@@ -208,98 +199,168 @@
             this.isProcessing = true;
 
             try {
-                // 保存当前滚动位置
                 const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
                 
-                // 创建一个包含所有单词的正则表达式
-                const words = Array.from(this.collectedWords).map(info => info.word);
+                // 创建正则表达式时对单词进行排序，优先处理较长的单词
+                const words = Array.from(this.collectedWords.keys())
+                    .sort((a, b) => b.length - a.length);
                 const wordsRegex = new RegExp(`\\b(${words.join('|')})\\b`, 'gi');
                 
                 // 获取可见区域的范围
                 const viewportHeight = window.innerHeight;
                 const visibleRange = {
-                    top: window.scrollY - 100,
-                    bottom: window.scrollY + viewportHeight + 100
+                    top: window.scrollY,
+                    center: window.scrollY + (viewportHeight / 2),
+                    bottom: window.scrollY + viewportHeight
                 };
 
-                requestAnimationFrame(() => {
-                    const walker = document.createTreeWalker(
-                        document.body,
-                        NodeFilter.SHOW_TEXT,
-                        {
-                            acceptNode: (node) => {
-                                const parent = node.parentElement;
-                                if (!parent || this.processedNodes.has(node)) return NodeFilter.FILTER_REJECT;
-                                
-                                // 检查节点是否在可视区域内
-                                const rect = parent.getBoundingClientRect();
-                                const nodeTop = rect.top + window.scrollY;
-                                if (nodeTop > visibleRange.bottom || nodeTop + rect.height < visibleRange.top) {
-                                    return NodeFilter.FILTER_REJECT;
-                                }
+                // 使用 IntersectionObserver API 来优化可见性检测
+                this.setupIntersectionObserver();
 
-                                // 排除不需要处理的元素
-                                if (parent.tagName === 'SCRIPT' || 
-                                    parent.tagName === 'STYLE' || 
-                                    parent.tagName === 'NOSCRIPT' ||
-                                    parent.tagName === 'TEXTAREA' ||
-                                    parent.tagName === 'INPUT' ||
-                                    parent.tagName === 'PRE' ||
-                                    parent.tagName === 'CODE' ||
-                                    (parent.className && typeof parent.className === 'string' && 
-                                     (parent.className.includes('bcz-') || parent.className.includes('highlight'))) ||
-                                    // 检查是否在翻译弹窗内
-                                    parent.closest('.bcz-word-popover')) {
-                                    return NodeFilter.FILTER_REJECT;
-                                }
-                                
-                                return /[a-zA-Z]/.test(node.textContent) ? 
-                                       NodeFilter.FILTER_ACCEPT : 
-                                       NodeFilter.FILTER_REJECT;
-                            }
-                        }
-                    );
-
-                    const textNodes = [];
-                    let node;
-                    let processedCount = 0;
-                    const batchSize = 10;
-
-                    while (node = walker.nextNode()) {
-                        textNodes.push(node);
-                        if (textNodes.length >= batchSize) {
-                            this.processBatch(textNodes, wordsRegex);
-                            textNodes.length = 0;
-                            processedCount += batchSize;
-
-                            if (processedCount >= 100) {
-                                // 使用 setTimeout 来让出主线程
-                                setTimeout(() => {
-                                    this.isProcessing = false;
-                                    this.processHighlighting();
-                                }, 0);
-                                return;
-                            }
-                        }
-                    }
-
-                    if (textNodes.length > 0) {
-                        this.processBatch(textNodes, wordsRegex);
-                    }
-
-                    // 恢复滚动位置
-                    window.scrollTo(0, scrollTop);
-                    this.isProcessing = false;
-                });
+                // 使用较低优先级处理可视区域外的内容
+                requestIdleCallback(() => {
+                    this.processContentByPriority(wordsRegex, visibleRange, scrollTop);
+                }, { timeout: 1000 });
             } catch (error) {
                 console.error('Error in processHighlighting:', error);
                 this.isProcessing = false;
             }
         }
 
+        // 新增方法：设置 IntersectionObserver
+        setupIntersectionObserver() {
+            if (this.intersectionObserver) {
+                this.intersectionObserver.disconnect();
+            }
+
+            this.intersectionObserver = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        const element = entry.target;
+                        if (!element.hasAttribute('data-highlighted')) {
+                            element.setAttribute('data-highlighted', 'true');
+                            this.highlightElement(element);
+                        }
+                    }
+                });
+            }, {
+                root: null,
+                rootMargin: '100px 0px',
+                threshold: 0.1
+            });
+        }
+
+        // 新增方法：按优先级处理内容
+        processContentByPriority(wordsRegex, visibleRange, scrollTop) {
+            // 将页面分为三个优先级区域：可见区域、缓冲区、其他区域
+            const bufferSize = 500;
+            const zones = [
+                { // 高优先级：可见区域
+                    range: {
+                        top: visibleRange.top,
+                        bottom: visibleRange.bottom
+                    },
+                    delay: 0
+                },
+                { // 中优先级：缓冲区
+                    range: {
+                        top: visibleRange.top - bufferSize,
+                        bottom: visibleRange.bottom + bufferSize
+                    },
+                    delay: 100
+                },
+                { // 低优先级：其他区域
+                    range: {
+                        top: 0,
+                        bottom: document.documentElement.scrollHeight
+                    },
+                    delay: 500
+                }
+            ];
+
+            // 按优先级处理各个区域
+            zones.forEach((zone, index) => {
+                setTimeout(() => {
+                    const nodes = this.getNodesInRange(zone.range);
+                    this.processNodesInChunks(nodes, wordsRegex, 10);
+                }, zone.delay);
+            });
+        }
+
+        // 新增方法：获取指定范围内的节点
+        getNodesInRange(range) {
+            const nodes = [];
+            const walker = document.createTreeWalker(
+                document.body,
+                NodeFilter.SHOW_TEXT,
+                {
+                    acceptNode: (node) => {
+                        const parent = node.parentElement;
+                        if (!parent || this.processedNodes.has(node)) return NodeFilter.FILTER_REJECT;
+                        
+                        const rect = parent.getBoundingClientRect();
+                        const nodeTop = rect.top + window.scrollY;
+                        
+                        if (nodeTop < range.top || nodeTop > range.bottom) {
+                            return NodeFilter.FILTER_REJECT;
+                        }
+
+                        if (this.shouldSkipNode(parent)) {
+                            return NodeFilter.FILTER_REJECT;
+                        }
+
+                        return /[a-zA-Z]/.test(node.textContent) ? 
+                               NodeFilter.FILTER_ACCEPT : 
+                               NodeFilter.FILTER_REJECT;
+                    }
+                }
+            );
+
+            let node;
+            while (node = walker.nextNode()) {
+                nodes.push(node);
+            }
+            return nodes;
+        }
+
+        // 新增方法：分块处理节点
+        processNodesInChunks(nodes, wordsRegex, chunkSize) {
+            let index = 0;
+            
+            const processChunk = () => {
+                const chunk = nodes.slice(index, index + chunkSize);
+                if (chunk.length === 0) {
+                    this.isProcessing = false;
+                    return;
+                }
+
+                requestIdleCallback(() => {
+                    this.processBatch(chunk, wordsRegex);
+                    index += chunkSize;
+                    processChunk();
+                }, { timeout: 100 });
+            };
+
+            processChunk();
+        }
+
+        shouldSkipNode(parent) {
+            const skipTags = ['SCRIPT', 'STYLE', 'NOSCRIPT', 'TEXTAREA', 'INPUT', 'PRE', 'CODE'];
+            return skipTags.includes(parent.tagName) ||
+                   (parent.className && typeof parent.className === 'string' && 
+                    (parent.className.includes('bcz-') || parent.className.includes('highlight'))) ||
+                   parent.closest('.bcz-word-popover');
+        }
+
         processBatch(nodes, regex) {
             try {
                 nodes.forEach(textNode => {
+                    // 检查节点是否仍然在文档中
+                    if (!textNode.isConnected || !textNode.parentNode) {
+                        this.processedNodes.add(textNode);
+                        return;
+                    }
+
                     const text = textNode.textContent;
                     if (!regex.test(text)) {
                         this.processedNodes.add(textNode);
@@ -310,8 +371,11 @@
                     let modified = false;
                     const newText = text.replace(regex, match => {
                         modified = true;
-                        const wordInfo = Array.from(this.collectedWords)
-                            .find(info => info.word.toLowerCase() === match.toLowerCase());
+                        // 从 Map 中获取单词信息
+                        const wordInfo = this.collectedWords.get(match.toLowerCase());
+                        if (!wordInfo) {
+                            return match; // 如果找不到单词信息，保持原样
+                        }
                         
                         // 根据样式类型生成不同的样式
                         let style = '';
@@ -340,9 +404,16 @@
                     });
 
                     if (modified) {
-                        const span = document.createElement('span');
-                        span.innerHTML = newText;
-                        textNode.parentNode.replaceChild(span, textNode);
+                        try {
+                            // 再次检查父节点是否存在
+                            if (textNode.parentNode) {
+                                const span = document.createElement('span');
+                                span.innerHTML = newText;
+                                textNode.parentNode.replaceChild(span, textNode);
+                            }
+                        } catch (e) {
+                            console.warn('Failed to replace text node:', e);
+                        }
                     }
                     this.processedNodes.add(textNode);
                 });
@@ -506,16 +577,11 @@
                     clearTimeout(this.highlightDebounceTimer);
                 }
                 
-                // 确保不会在滚动过程中处理亮
-                if (scrollTimeout) {
-                    clearTimeout(scrollTimeout);
-                }
-                
                 this.highlightDebounceTimer = setTimeout(() => {
                     if (!this.isProcessing) {
-                        this.highlightWords();
+                        this.processHighlighting();
                     }
-                }, 500);
+                }, 150); // 降低滚动时的处理频率
             };
 
             // 优化滚动处理
@@ -528,28 +594,28 @@
                     if (!this.isProcessing) {
                         debouncedHighlight();
                     }
-                }, 150);
+                }, 100);
             }, { passive: true });
 
+            // 使用 MutationObserver 监听 DOM 变化
             this.observer = new MutationObserver((mutations) => {
                 let shouldHighlight = false;
                 for (const mutation of mutations) {
-                    // 只处理内容变化，忽略属性变化
                     if (mutation.type === 'childList' && mutation.addedNodes.length) {
                         shouldHighlight = true;
                         break;
                     }
                 }
                 if (shouldHighlight && !this.isProcessing) {
-                    debouncedHighlight();
+                    requestIdleCallback(() => debouncedHighlight(), { timeout: 1000 });
                 }
             });
 
             this.observer.observe(document.body, {
                 childList: true,
                 subtree: true,
-                characterData: false,  // 不监听文本变化
-                attributes: false      // 不监听属性变化
+                characterData: false,
+                attributes: false
             });
         }
 
@@ -579,67 +645,6 @@
                     document.body.style.overflow = this.originalOverflow;
                 }
             }
-        }
-
-        filterWords(words) {
-            // 计算单词分数
-            const scoredWords = words.map(word => ({
-                ...word,
-                score: this.calculateWordScore(word)
-            }));
-
-            // 按分数排序并选择前 MAX_HIGHLIGHT_WORDS 个单词
-            return scoredWords
-                .sort((a, b) => b.score - a.score)
-                .slice(0, this.MAX_HIGHLIGHT_WORDS);
-        }
-
-        calculateWordScore(word) {
-            const now = Date.now();
-            const daysSinceCollected = (now - word.created_at) / (1000 * 60 * 60 * 24);
-            
-            // 计算分数的因素：
-            // 1. 单词长度（较短的单词优先）
-            const lengthScore = Math.max(0, 10 - word.word.length) / 10;
-            
-            // 2. 收藏时间（最近收藏的优先）
-            const timeScore = Math.max(0, 30 - daysSinceCollected) / 30;
-            
-            // 3. 单词复杂度（基于是否包含特殊字符、连字符等）
-            const complexityScore = this.getWordComplexityScore(word.word);
-            
-            // 4. 使用频率（如果有的话）
-            const frequencyScore = word.frequency ? word.frequency / 100 : 0;
-
-            // 权重配置
-            const weights = {
-                length: 0.2,
-                time: 0.3,
-                complexity: 0.2,
-                frequency: 0.3
-            };
-
-            // 计算最终分数
-            return (lengthScore * weights.length) +
-                   (timeScore * weights.time) +
-                   (complexityScore * weights.complexity) +
-                   (frequencyScore * weights.frequency);
-        }
-
-        getWordComplexityScore(word) {
-            // 简单词汇的特征
-            const hasHyphen = word.includes('-');
-            const hasSpecialChars = /[^a-zA-Z-]/.test(word);
-            const isAllLowerCase = word === word.toLowerCase();
-            const isShort = word.length <= 6;
-
-            let score = 1;
-            if (hasHyphen) score -= 0.2;
-            if (hasSpecialChars) score -= 0.3;
-            if (!isAllLowerCase) score -= 0.1;
-            if (!isShort) score -= 0.2;
-
-            return Math.max(0, score);
         }
 
         // 添加调试方法
