@@ -158,9 +158,12 @@
                 if (collected) {
                     try {
                         const settings = await chrome.storage.local.get(['ankiSettings']);
-                        const ankiSettings = settings?.ankiSettings || { enabled: false };  // 默认为 false
+                        const ankiSettings = settings?.ankiSettings || { 
+                            enabled: false,
+                            autoExport: true  // 添加默认的自动导出设置
+                        };
 
-                        if (ankiSettings.enabled) {
+                        if (ankiSettings.enabled && ankiSettings.autoExport) {
                             const ankiService = new AnkiService();
                             await ankiService.addNote(
                                 data.word_basic_info.word,
@@ -180,13 +183,13 @@
                                 data.antonyms || [],
                                 data.en_means || []
                             );
-                            showMessage('已收藏并导出到Anki');
+                            showMessage('已收藏并同步到 Anki');
                         } else {
-                            showMessage('已收藏');  // 当 Anki 导出功能关闭时只显示已收藏
+                            showMessage('已收藏');  // 当 Anki 导出功能关闭或自动导出关闭时只显示已收藏
                         }
                     } catch (error) {
                         console.error('Export to Anki failed:', error);
-                        showMessage('已收藏，但导出到Anki失败：' + error.message);
+                        showMessage('已收藏，但同步到 Anki 失败：' + error.message);
                     }
                 } else {
                     showMessage('已取消收藏');

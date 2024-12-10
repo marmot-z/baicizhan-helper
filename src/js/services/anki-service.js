@@ -317,6 +317,7 @@
                 const settings = await chrome.storage.local.get(['ankiSettings']);
                 const ankiSettings = settings.ankiSettings || {
                     enabled: false,
+                    autoExport: true,
                     deckName: 'English Vocabulary',
                     exportPhonetic: true,
                     exportAudio: true,
@@ -330,8 +331,8 @@
                     exportEnMeans: true
                 };
 
-                // 如果功能未启用，直接返回
-                if (!ankiSettings.enabled) {
+                // 如果功能未启用或自动导出被禁用，直接返回
+                if (!ankiSettings.enabled || !ankiSettings.autoExport) {
                     return;
                 }
 
