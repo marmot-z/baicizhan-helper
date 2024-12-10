@@ -87,15 +87,13 @@
             try {
                 console.log('Initializing highlighter...');
                 
-                const bookId = await this.getCurrentBookId();
-                console.log('Current book ID:', bookId);
-                
                 if (!window.wordbookStorageModule) {
                     console.error('wordbookStorageModule not found');
                     return;
                 }
 
-                const words = await window.wordbookStorageModule.WordbookStorage.load(bookId);
+                // 获取所有单词本中的单词
+                const words = await window.wordbookStorageModule.WordbookStorage.loadAllWords();
                 console.log('Loaded words:', words?.length || 0);
                 
                 if (!words || words.length === 0) return;
@@ -133,11 +131,6 @@
             } catch (error) {
                 console.error('Failed to initialize highlighter:', error);
             }
-        }
-
-        async getCurrentBookId() {
-            return await chrome.storage.local.get('bookId')
-                .then(result => result.bookId || 0);
         }
 
         initPopover() {

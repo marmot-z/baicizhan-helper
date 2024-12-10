@@ -284,5 +284,19 @@
         }
     }
 
+    async function getAllWords() {
+        try {
+            const allWords = await WordbookStorage.loadAllWords();
+            
+            // 可以按时间排序
+            allWords.sort((a, b) => b.created_at - a.created_at);
+            
+            return allWords;
+        } catch(e) {
+            console.error('获取所有单词失败', e);
+            return [];
+        }
+    }
+
     window.wordbookModule = {init};
 } (this, document, jQuery));
