@@ -97,70 +97,27 @@
         });
     };
 
-    // 缓存相关常量
-    const CACHE_KEY = 'wordbook-cache';
-    const CACHE_EXPIRE_TIME = 5 * 60 * 1000; // 5分钟缓存过期
-
-    // 缓存结构
-    let cache = {
-        words: [],
-        timestamp: 0
-    };
-
     WordbookStorage.loadAllWords = async function() {
-        // 1. 检查缓存
-        if (cache.words.length > 0 && 
-            Date.now() - cache.timestamp < CACHE_EXPIRE_TIME) {
-            console.log('返回缓存的单词数据:', cache.words.length);
-            return cache.words;
-        }
-
-        // 1. 获取所有 storage keys
-        const items = await chrome.storage.local.get(null);
-        const wordbookKeys = Object.keys(items).filter(key => key.startsWith(KEY_PREFIX));
+        // 1. 先获取所有 keys
+        const keys = await chrome.storage.local.get(null).then(items => 
+            Object.keys(items).filter(key => key.startsWith(KEY_PREFIX))
+        );
         
-        // 2. 直接从 items 中提取数据，避免二次查询
-        const allWords = wordbookKeys.reduce((acc, key) => {
-            const words = items[key] || [];
-            return acc.concat(words);
-        }, []);
+        // 2. 并行加载所有单词本
+        const wordbooks = await Promise.all(
+            keys.map(key => chrome.storage.local.get(key))
+        );
         
-        // 3. 更新缓存
-        cache.words = allWords;
-        cache.timestamp = Date.now();
-        console.log('更新缓存，单词数:', allWords.length);
+        // 3. 使用 Map 合并去重
+        const uniqueWords = new Map();
+        wordbooks.forEach(item => {
+            const words = Object.values(item)[0] || [];
+            words.forEach(word => {
+                uniqueWords.set(word.topic_id, word);
+            });
+        });
         
-        return allWords;
-    };
-
-    // 添加清除缓存的方法
-    WordbookStorage.clearCache = function() {
-        cache = {
-            words: [],
-            timestamp: 0
-        };
-        console.log('单词缓存已清除');
-    };
-
-    // 在数据变更时清除缓存
-    const originalAdd = WordbookStorage.add;
-    WordbookStorage.add = async function(...args) {
-        const result = await originalAdd.apply(this, args);
-        WordbookStorage.clearCache();
-        return result;
-    };
-
-    const originalRemove = WordbookStorage.remove;
-    WordbookStorage.remove = async function(...args) {
-        const result = await originalRemove.apply(this, args);
-        WordbookStorage.clearCache();
-        return result;
-    };
-
-    const originalClear = WordbookStorage.clear;
-    WordbookStorage.clear = function() {
-        originalClear.call(this);
-        WordbookStorage.clearCache();
+        return Array.from(uniqueWords.values());
     };
 
     global.wordbookStorageModule = {WordbookStorage};
