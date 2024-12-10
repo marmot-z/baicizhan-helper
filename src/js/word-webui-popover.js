@@ -279,9 +279,12 @@
                     if (collected) {
                         try {
                             const settings = await chrome.storage.local.get(['ankiSettings']);
-                            const ankiSettings = settings?.ankiSettings || { enabled: false };
+                            const ankiSettings = settings?.ankiSettings || { 
+                                enabled: false,
+                                autoExport: true  // 添加默认的自动导出设置
+                            };
 
-                            if (ankiSettings.enabled) {
+                            if (ankiSettings.enabled && ankiSettings.autoExport) {  // 增加 autoExport 条件判断
                                 const ankiService = new window.AnkiService();
                                 await ankiService.addNote(
                                     data.word_basic_info.word,
@@ -301,13 +304,13 @@
                                     data.antonyms || [],
                                     data.en_means || []
                                 );
-                                $supportEl.trigger('baicizhanHelper:alert', ['已收藏并导出到Anki']);
+                                $supportEl.trigger('baicizhanHelper:alert', ['已收藏并同步到 Anki']);
                             } else {
                                 $supportEl.trigger('baicizhanHelper:alert', ['已收藏']);
                             }
                         } catch (error) {
                             console.error('Export to Anki failed:', error);
-                            $supportEl.trigger('baicizhanHelper:alert', ['已收藏，但导出到Anki失败：' + error.message]);
+                            $supportEl.trigger('baicizhanHelper:alert', ['已收藏，但同步到 Anki 失败：' + error.message]);
                         }
                     } else {
                         $supportEl.trigger('baicizhanHelper:alert', ['已取消收藏']);
