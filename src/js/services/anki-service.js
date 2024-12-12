@@ -317,6 +317,7 @@
                 const settings = await chrome.storage.local.get(['ankiSettings']);
                 const ankiSettings = settings.ankiSettings || {
                     enabled: false,
+                    autoExport: true,
                     deckName: 'English Vocabulary',
                     exportPhonetic: true,
                     exportAudio: true,

@@ -158,35 +158,20 @@
                 if (collected) {
                     try {
                         const settings = await chrome.storage.local.get(['ankiSettings']);
-                        const ankiSettings = settings?.ankiSettings || { enabled: false };  // 默认为 false
+                        const ankiSettings = settings?.ankiSettings || { 
+                            enabled: false,
+                            autoExport: true
+                        };
 
-                        if (ankiSettings.enabled) {
-                            const ankiService = new AnkiService();
-                            await ankiService.addNote(
-                                data.word_basic_info.word,
-                                data.word_basic_info.accent_uk,
-                                data.chn_means.map(m => ({
-                                    type: m.mean_type,
-                                    mean: m.mean
-                                })),
-                                data.sentences?.[0]?.img_uri ? 
-                                    'https://7n.bczcdn.com' + data.sentences[0].img_uri : '',
-                                data.sentences?.[0]?.sentence || '',
-                                data.sentences?.[0]?.sentence_trans || '',
-                                'https://7n.bczcdn.com' + data.word_basic_info.accent_uk_audio_uri,
-                                data.variant_info || null,
-                                data.short_phrases || [],
-                                data.synonyms || [],
-                                data.antonyms || [],
-                                data.en_means || []
-                            );
-                            showMessage('已收藏并导出到Anki');
+                        if (ankiSettings.enabled && ankiSettings.autoExport) {
+                            await exportToAnki(data);
+                            showMessage('已收藏并同步到 Anki');
                         } else {
-                            showMessage('已收藏');  // 当 Anki 导出功能关闭时只显示已收藏
+                            showMessage('已收藏');
                         }
                     } catch (error) {
                         console.error('Export to Anki failed:', error);
-                        showMessage('已收藏，但导出到Anki失败：' + error.message);
+                        showMessage('已收藏，但同步到 Anki 失败：' + error.message);
                     }
                 } else {
                     showMessage('已取消收藏');

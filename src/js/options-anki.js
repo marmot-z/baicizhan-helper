@@ -3,6 +3,53 @@
 
     const ankiService = new AnkiService();
     
+    function showMessage(message, type = 'success') {
+        const $msg = $(`
+            <div class="alert alert-${type} alert-dismissible fade show" role="alert">
+                ${message}
+                <button type="button" class="close" data-dismiss="alert">
+                    <span>&times;</span>
+                </button>
+            </div>
+        `);
+        
+        $('.card-body').prepend($msg);
+        
+        setTimeout(() => {
+            $msg.alert('close');
+        }, 3000);
+    }
+
+    async function saveAnkiSettings(showSaveMessage = true) {
+        const ankiSettings = {
+            enabled: $('#enableAnkiExport').prop('checked'),
+            deckName: $('#ankiDeck').val(),
+            exportPhonetic: $('#exportPhonetic').prop('checked'),
+            exportAudio: $('#exportAudio').prop('checked'),
+            exportMeaning: $('#exportMeaning').prop('checked'),
+            exportSentence: $('#exportSentence').prop('checked'),
+            exportImage: $('#exportImage').prop('checked'),
+            exportVariants: $('#exportVariants').prop('checked'),
+            exportPhrases: $('#exportPhrases').prop('checked'),
+            exportSynonyms: $('#exportSynonyms').prop('checked'),
+            exportAntonyms: $('#exportAntonyms').prop('checked'),
+            exportEnMeans: $('#exportEnMeans').prop('checked'),
+            autoExport: $('#autoExport').prop('checked')
+        };
+
+        try {
+            await chrome.storage.local.set({ ankiSettings });
+            if (showSaveMessage) {
+                showMessage('设置已保存');
+            }
+        } catch (error) {
+            console.error('Failed to save Anki settings:', error);
+            if (showSaveMessage) {
+                showMessage('保存设置失败', 'danger');
+            }
+        }
+    }
+
     async function initAnkiSettings() {
         const $ankiStatus = $('#ankiStatus');
         const $ankiSettingsDetails = $('#ankiSettingsDetails');
@@ -23,13 +70,14 @@
                 exportPhrases: true,
                 exportSynonyms: true,
                 exportAntonyms: true,
-                exportEnMeans: true
+                exportEnMeans: true,
+                autoExport: true  // 默认启用自动导出
             };
 
             // 设置开关状态
             $enableAnkiExport.prop('checked', ankiSettings.enabled);
 
-            // 设置导出选项的值（不管是否启用都先设置好）
+            // 设置导出选项的值
             $('#exportPhonetic').prop('checked', ankiSettings.exportPhonetic);
             $('#exportAudio').prop('checked', ankiSettings.exportAudio);
             $('#exportMeaning').prop('checked', ankiSettings.exportMeaning);
@@ -40,6 +88,7 @@
             $('#exportSynonyms').prop('checked', ankiSettings.exportSynonyms);
             $('#exportAntonyms').prop('checked', ankiSettings.exportAntonyms);
             $('#exportEnMeans').prop('checked', ankiSettings.exportEnMeans);
+            $('#autoExport').prop('checked', ankiSettings.autoExport);
 
             // 如果功能已启用，则尝试连接 Anki
             if (ankiSettings.enabled) {
@@ -125,52 +174,6 @@
                 .html('初始化设置失败')
                 .show();
         }
-    }
-
-    async function saveAnkiSettings(showMessage = true) {
-        const ankiSettings = {
-            enabled: $('#enableAnkiExport').prop('checked'),
-            deckName: $('#ankiDeck').val(),
-            exportPhonetic: $('#exportPhonetic').prop('checked'),
-            exportAudio: $('#exportAudio').prop('checked'),
-            exportMeaning: $('#exportMeaning').prop('checked'),
-            exportSentence: $('#exportSentence').prop('checked'),
-            exportImage: $('#exportImage').prop('checked'),
-            exportVariants: $('#exportVariants').prop('checked'),
-            exportPhrases: $('#exportPhrases').prop('checked'),
-            exportSynonyms: $('#exportSynonyms').prop('checked'),
-            exportAntonyms: $('#exportAntonyms').prop('checked'),
-            exportEnMeans: $('#exportEnMeans').prop('checked')
-        };
-
-        try {
-            await chrome.storage.local.set({ ankiSettings });
-            if (showMessage) {
-                showMessage('设置已保存');
-            }
-        } catch (error) {
-            console.error('Failed to save Anki settings:', error);
-            if (showMessage) {
-                showMessage('保存设置失败', 'danger');
-            }
-        }
-    }
-
-    function showMessage(message, type = 'success') {
-        const $msg = $(`
-            <div class="alert alert-${type} alert-dismissible fade show" role="alert">
-                ${message}
-                <button type="button" class="close" data-dismiss="alert">
-                    <span>&times;</span>
-                </button>
-            </div>
-        `);
-        
-        $('.card-body').prepend($msg);
-        
-        setTimeout(() => {
-            $msg.alert('close');
-        }, 3000);
     }
 
     // 初始化

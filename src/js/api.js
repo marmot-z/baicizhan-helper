@@ -129,11 +129,8 @@
 
     async function fillCollectedField(data) {
         let topicId = data.dict.word_basic_info.topic_id;
-        let bookId = await getWordbookId();        
-        let collected = await WordbookStorage.contains(bookId, topicId);
-
+        let collected = await WordbookStorage.contains(topicId);
         data.dict.word_basic_info.__collected__ = collected;
-
         return data;
     }
 
@@ -188,27 +185,44 @@
         return data;
     }
 
-    function cancelCollectWord(topicId) {
-        return Promise.all([
-            loadRequestOptions(),
-            getWordbookId()
-        ])
-        .then(([[host, port, accessToken], bookId]) => {
-            const url = `http://${host}:${port}/book/${bookId}/word/${topicId}`;
-
-            return sendRequest({
-                url,
-                method: 'DELETE',
-                headers: {'access_token': accessToken}
+    async function cancelCollectWord(topicId) {
+        try {
+            // 1. 直接从本地存储获取包含该单词的单词本
+            const allWords = await WordbookStorage.loadAllWords();
+            const bookIds = new Set();
+            allWords.forEach(word => {
+                if(word.topic_id == topicId) {
+                    bookIds.add(word.book_id);
+                }
             });
-        })
-        .then(async (data) => removeWord(data, topicId));
-    }
 
-    async function removeWord(data, topicId) {
-        WordbookStorage.remove(await getWordbookId(), topicId);
+            if(bookIds.size === 0) {
+                return true; // 单词未被收藏，直接返回
+            }
 
-        return data;
+            // 2. 获取请求配置
+            const [host, port, accessToken] = await loadRequestOptions();
+
+            // 3. 从所有包含该单词的单词本中删除
+            const promises = Array.from(bookIds).map(async (bookId) => {
+                // 先从服务器删除
+                const url = `http://${host}:${port}/book/${bookId}/word/${topicId}`;
+                await sendRequest({
+                    url,
+                    method: 'DELETE',
+                    headers: {'access_token': accessToken}
+                });
+
+                // 再从本地存储删除 - 本地存储会自动过滤掉这个单词
+                await WordbookStorage.remove(bookId, topicId);
+            });
+
+            await Promise.all(promises);
+            return true;
+        } catch(error) {
+            console.error('Cancel collect word failed:', error);
+            throw error;
+        }
     }
 
     function getBookWords(bookId) {
@@ -383,13 +397,27 @@
             }
 
             // 更新本地存储
-            await window.wordbookStorageModule.WordbookStorage.save(bookId, data);
+            await wordbookStorageModule.WordbookStorage.save(bookId, data);
             
             return true;
         } catch (error) {
             console.error('同步单词本出错:', error);
             throw error;
         }
+    }
+
+    // 获取用户所有单词本
+    async function getAllUserBooks() {
+        const [host, port, accessToken] = await loadRequestOptions();
+        const url = `http://${host}:${port}/books`;
+        
+        const response = await sendRequest({
+            url,
+            method: 'GET',
+            headers: {'access_token': accessToken}
+        });
+        
+        return response.user_books || [];
     }
 
     const exports = {

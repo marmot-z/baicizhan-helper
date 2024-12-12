@@ -40,6 +40,19 @@
     }
 
     chrome.runtime.onMessage.addListener(handleMessage);
+
+    chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+        if (request.type === 'wordbookUpdated') {
+            // 通知所有标签页刷新高亮状态
+            chrome.tabs.query({}, (tabs) => {
+                tabs.forEach(tab => {
+                    chrome.tabs.sendMessage(tab.id, {
+                        type: 'refreshHighlight'
+                    }).catch(() => {});  // 忽略不支持的标签页错误
+                });
+            });
+        }
+    });
 } (
     function(global) {
         'use strict';
