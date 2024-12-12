@@ -23,7 +23,6 @@
 
     function loadWordbook(bookId) {
         let key = `${KEY_PREFIX}${bookId}`;
-
         return new Promise((resolve) => {
             chrome.storage.local.get([key])
                 .then(result => resolve(result[key] || []));
@@ -60,29 +59,43 @@
         });
     };
 
-    WordbookStorage.remove = function (bookId, topicId) {
+    WordbookStorage.remove = async function (bookId, topicId) {
         if (!topicId) return;
 
-        return new Promise((resolve) => {
-            WordbookStorage.load(bookId)
-                .then(wordbook => {
-                    let filteredWordbook = wordbook.filter(word => word.topic_id != topicId);
-
-                    WordbookStorage.save(bookId, filteredWordbook);
-                    resolve(true);
-                });
-        });
+        try {
+            // 1. 检查单词本中是否存在该单词
+            const allWords = await this.loadAllWords();
+            const wordsToDelete = allWords.filter(word => 
+                word.topic_id == topicId && word.book_id == bookId
+            );
+            
+            if (wordsToDelete.length > 0) {
+                // 2. 加载并过滤单词本
+                const wordbook = await WordbookStorage.load(bookId);
+                const filteredWordbook = wordbook.filter(word => word.topic_id != topicId);
+                
+                // 3. 保存过滤后的单词本
+                await WordbookStorage.save(bookId, filteredWordbook);
+                
+                // 4. 验证删除结果
+                const verifyWordbook = await WordbookStorage.load(bookId);
+                if (verifyWordbook.some(word => word.topic_id == topicId)) {
+                    throw new Error('删除单词失败：单词仍然存在');
+                }
+            }
+            
+            return true;
+        } catch (error) {
+            console.error('[Storage] Remove word from storage failed:', error);
+            throw error;
+        }
     };
 
-    WordbookStorage.contains = function (bookId, topicId) {
-        return new Promise((resolve) => {
-            WordbookStorage.load(bookId)
-                .then(wordbook => {
-                    let topicIdSet = new Set(wordbook.map(word => word.topic_id));
-
-                    resolve(topicIdSet.has(topicId));
-                });
-        });
+    WordbookStorage.contains = async function (topicId) {
+        // 获取所有单词
+        const allWords = await this.loadAllWords();
+        // 检查是否在任意单词本中存在
+        return allWords.some(word => word.topic_id == topicId);
     };
 
     WordbookStorage.clear = function () {
@@ -108,16 +121,22 @@
             keys.map(key => chrome.storage.local.get(key))
         );
         
-        // 3. 使用 Map 合并去重
-        const uniqueWords = new Map();
+        // 3. 保留所有单词本中的单词（不去重）
+        const allWords = [];
         wordbooks.forEach(item => {
-            const words = Object.values(item)[0] || [];
-            words.forEach(word => {
-                uniqueWords.set(word.topic_id, word);
-            });
+            const [key, words] = Object.entries(item)[0];
+            if (words && Array.isArray(words)) {
+                const bookId = key.replace(KEY_PREFIX, '');
+                words.forEach(word => {
+                    if (word.book_id != bookId) {
+                        word.book_id = bookId; // 确保 book_id 正确
+                    }
+                    allWords.push(word);
+                });
+            }
         });
         
-        return Array.from(uniqueWords.values());
+        return allWords;
     };
 
     global.wordbookStorageModule = {WordbookStorage};
