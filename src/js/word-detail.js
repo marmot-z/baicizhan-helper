@@ -160,32 +160,14 @@
                         const settings = await chrome.storage.local.get(['ankiSettings']);
                         const ankiSettings = settings?.ankiSettings || { 
                             enabled: false,
-                            autoExport: true  // 添加默认的自动导出设置
+                            autoExport: true
                         };
 
                         if (ankiSettings.enabled && ankiSettings.autoExport) {
-                            const ankiService = new AnkiService();
-                            await ankiService.addNote(
-                                data.word_basic_info.word,
-                                data.word_basic_info.accent_uk,
-                                data.chn_means.map(m => ({
-                                    type: m.mean_type,
-                                    mean: m.mean
-                                })),
-                                data.sentences?.[0]?.img_uri ? 
-                                    'https://7n.bczcdn.com' + data.sentences[0].img_uri : '',
-                                data.sentences?.[0]?.sentence || '',
-                                data.sentences?.[0]?.sentence_trans || '',
-                                'https://7n.bczcdn.com' + data.word_basic_info.accent_uk_audio_uri,
-                                data.variant_info || null,
-                                data.short_phrases || [],
-                                data.synonyms || [],
-                                data.antonyms || [],
-                                data.en_means || []
-                            );
+                            await exportToAnki(data);
                             showMessage('已收藏并同步到 Anki');
                         } else {
-                            showMessage('已收藏');  // 当 Anki 导出功能关闭或自动导出关闭时只显示已收藏
+                            showMessage('已收藏');
                         }
                     } catch (error) {
                         console.error('Export to Anki failed:', error);
