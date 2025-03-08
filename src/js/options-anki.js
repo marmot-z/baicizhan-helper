@@ -28,7 +28,6 @@
             exportAudio: $('#exportAudio').prop('checked'),
             exportMeaning: $('#exportMeaning').prop('checked'),
             exportSentence: $('#exportSentence').prop('checked'),
-            exportImage: $('#exportImage').prop('checked'),
             exportVariants: $('#exportVariants').prop('checked'),
             exportPhrases: $('#exportPhrases').prop('checked'),
             exportSynonyms: $('#exportSynonyms').prop('checked'),
@@ -65,7 +64,6 @@
                 exportAudio: true,
                 exportMeaning: true,
                 exportSentence: true,
-                exportImage: true,
                 exportVariants: true,
                 exportPhrases: true,
                 exportSynonyms: true,
@@ -82,7 +80,6 @@
             $('#exportAudio').prop('checked', ankiSettings.exportAudio);
             $('#exportMeaning').prop('checked', ankiSettings.exportMeaning);
             $('#exportSentence').prop('checked', ankiSettings.exportSentence);
-            $('#exportImage').prop('checked', ankiSettings.exportImage);
             $('#exportVariants').prop('checked', ankiSettings.exportVariants);
             $('#exportPhrases').prop('checked', ankiSettings.exportPhrases);
             $('#exportSynonyms').prop('checked', ankiSettings.exportSynonyms);

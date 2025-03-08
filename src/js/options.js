@@ -210,7 +210,6 @@
                 exportAudio: true,
                 exportMeaning: true,
                 exportSentence: true,
-                exportImage: true,
                 exportVariants: true,
                 exportPhrases: true,
                 exportSynonyms: true,
@@ -270,39 +269,26 @@
                         continue;
                     }
 
-                    const wordData = {
+                    const noteInfo = {
                         word: wordDetail.dict.word_basic_info.word,
-                        accent: wordDetail.dict.word_basic_info.accent_uk,
-                        meaning: wordDetail.dict.chn_means.map(m => ({
-                            type: m.mean_type,
-                            mean: m.mean
-                        })),
+                        phonetic: wordDetail.dict.word_basic_info.accent_uk + ' ' + wordDetail.dict.word_basic_info.accent_usa,
+                        meaning: wordDetail.dict.chn_means.map(m => ({type: m.mean_type, mean: m.mean})),
                         image: wordDetail.dict.sentences?.[0]?.img_uri ? 
                                'https://7n.bczcdn.com' + wordDetail.dict.sentences[0].img_uri : '',
                         sentence: wordDetail.dict.sentences?.[0]?.sentence || '',
                         sentenceTrans: wordDetail.dict.sentences?.[0]?.sentence_trans || '',
-                        audioUrl: 'https://7n.bczcdn.com' + wordDetail.dict.word_basic_info.accent_uk_audio_uri,
+                        sentenceAudioUrl: wordDetail.dict.sentences?.[0]?.audio_uri ?
+                            'https://7n.bczcdn.com' + wordDetail.dict.sentences?.[0]?.audio_uri : '',
+                        audioUkUrl: 'https://7n.bczcdn.com' + wordDetail.dict.word_basic_info.accent_uk_audio_uri,
+                        audioUsaUrl: wordDetail.dict.word_basic_info.accent_usa_audio_uri ?
+                            'https://7n.bczcdn.com' + wordDetail.dict.word_basic_info.accent_usa_audio_uri : '',
                         variants: wordDetail.dict.variant_info || null,
                         shortPhrases: wordDetail.dict.short_phrases || [],
                         synonyms: wordDetail.dict.synonyms || [],
                         antonyms: wordDetail.dict.antonyms || [],
                         enMeans: wordDetail.dict.en_means || []
                     };
-
-                    const result = await ankiService.addNote(
-                        wordData.word,
-                        wordData.accent,
-                        wordData.meaning,
-                        wordData.image,
-                        wordData.sentence,
-                        wordData.sentenceTrans,
-                        wordData.audioUrl,
-                        wordData.variants,
-                        wordData.shortPhrases,
-                        wordData.synonyms,
-                        wordData.antonyms,
-                        wordData.enMeans
-                    );
+                    const result = await ankiService.addNote(noteInfo);
                     
                     if (result) exported++;
 
