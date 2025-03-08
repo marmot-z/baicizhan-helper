@@ -358,8 +358,9 @@
             <br>
         `);
 
-        $($el[1]).on('click', (e) =>
-            redirectable ? refreshWordDetail(e) : e.preventDefault());
+        $($el[1]).on('click', function (e) {
+            redirectable ? refreshWordDetail.call(this, e) : e.preventDefault();
+        });
 
         return $el;
     }
@@ -382,8 +383,9 @@
         `);
 
         $parent.append($el);
-        $parent.find('a').on('click', (e) =>
-            redirectable ? refreshWordDetail(e) : e.preventDefault());
+        $parent.find('a').on('click', function (e) {
+            redirectable ? refreshWordDetail.call(this, e): e.preventDefault();
+        });
     }
 
     function generateSynonyms(data, $parent, redirectable = false) {
@@ -404,8 +406,9 @@
         `);
 
         $parent.append($el);
-        $parent.find('a').on('click', (e) =>
-            redirectable ? refreshWordDetail(e) : e.preventDefault());
+        $parent.find('a').on('click', function (e) {
+            redirectable ? refreshWordDetail.call(this, e) : e.preventDefault();
+        });
     }
 
     function generateSimilarWords(data, $parent, redirectable = false) {
@@ -426,8 +429,9 @@
         `);
 
         $parent.append($el);
-        $parent.find('a').on('click', (e) =>
-            redirectable ? refreshWordDetail(e) : e.preventDefault());
+        $parent.find('a').on('click', function (e) {
+            redirectable ? refreshWordDetail.call(this, e) : e.preventDefault();
+        });
     }
 
     function refreshWordDetail(e) {
