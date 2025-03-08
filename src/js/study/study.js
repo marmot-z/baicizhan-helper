@@ -1,4 +1,4 @@
-;(function(window, doc, $) {
+; (function (window, doc, $) {
     'use strict';
 
     const StudyIterator = window.StudyIterator;
@@ -22,7 +22,6 @@
 
         async start() {
             this.state = 'ready';
-            this.learnedWords = await getCalendarDailyInfo();
             this.learnBookInfo = await getLearnBookInfo();
             await loadLearnedWords(this.learnBookInfo.book_id);
             this.learningWords = await getLearningWords(this.learnBookInfo.daily_plan_count);
@@ -39,7 +38,7 @@
         }
 
         updateView() {
-            switch(this.state) {
+            switch (this.state) {
                 case 'ready': return this._readyView();
                 case 'ending': return this._endingView();
                 case 'error': return this._errorView();
@@ -50,23 +49,20 @@
 
         _readyView() {
             let html = '<div class="row d-flex justify-content-center align-items-center body">';
-            let hasLearnedWords = this.learnedWords && this.learnedWords.length;
             let hasLearningWords = this.learningWords && this.learningWords.length;
 
-            if (hasLearnedWords) {
-                html += `<p style="font-size: x-large;">
-                            去<button id="reviewBtn" type="button" class="btn btn-outline-primary btn-sm">复习</button> ${this.learnedWords.length} 个单词
-                        </p>`;
-            }
-
-            if (hasLearningWords) {
-                html += `<p style="font-size: x-large;">
-                        去<button id="studyBtn" type="button" class="btn btn-outline-primary btn-sm">学习</button> ${this.learnBookInfo.daily_plan_count} 个新词
-                    </p>`;
-            }
-
-            if (!hasLearnedWords && !hasLearningWords) {
+            if (!hasLearningWords) {
                 html += `恭喜你已经学完了「${this.learnBookInfo.name}」`;
+            } else {
+                html += `
+                    <p style="font-size: x-large;">
+                        <button id="reviewBtn" type="button" class="btn btn-outline-primary btn-sm">复习</button>                         
+                        <input type="text" id="calendar"> 单词
+                    </p>
+                    <p style="font-size: x-large;">
+                        <button id="studyBtn" type="button" class="btn btn-outline-primary btn-sm">学习</button> 新词
+                    </p>
+                `;
             }
 
             html += '</div>';
@@ -86,8 +82,52 @@
             `;
 
             this.$el.find('#body').empty().html(html);
-            this.$el.find('#reviewBtn').on('click', () => this._doStart(this.mode = 'review'));
+            this._initCalendar();
             this.$el.find('#studyBtn').on('click', () => this._doStart(this.mode = 'study'));
+            this.$el.find('#reviewBtn').on('click', async () => {
+                const dateText = this.$el.find('#calendar').val();
+                const words = await getCalendarDailyInfo(parseInt(dateText));
+
+                if (!words || words.length === 0) {
+                    alert('该日期没有学习记录');
+                    return;
+                }
+
+                this.learnedWords = words;
+                this._doStart(this.mode = 'review');
+            });                        
+        }
+
+        async _initCalendar() {
+            const $calendar = this.$el.find('#calendar');    
+            const today = new Date();
+            
+            $calendar.datepicker({
+                dateFormat: 'yymmdd',
+                maxDate: today,
+                showOtherMonths: true,
+                selectOtherMonths: true,
+                showButtonPanel: true,
+                changeMonth: true,
+                changeYear: true,
+                yearRange: '2020:+0',
+                showAnim: 'slideDown',
+                defaultDate: today
+            });            
+            $calendar.val($.datepicker.formatDate('yymmdd', today))
+                    // 设置日历输入框为只读，防止手动输入
+                    .attr('readonly', 'readonly')        
+                    // 添加样式使其看起来像按钮
+                    .css({
+                        'cursor': 'pointer',
+                        'background-color': 'transparent',
+                        'border': '1px solid #0d6efd',
+                        'border-radius': '0.25rem',
+                        'padding': '0.25rem 0.5rem',
+                        'font-size': '0.875rem',
+                        'color': '#0d6efd',
+                        'width': 'auto'
+                    });
         }
 
         _updateStudyView() {
@@ -137,17 +177,16 @@
                 this.$el.find('#body')
                     .empty()
                     .html(`
-                            <div class="word-list">
-                                <p style="font-size: x-large;">
-                                    恭喜，您已完成${modeName}了 ${words.length} 个单词${updated ? '（学习记录已上传）' : ''} 🎉🎉🎉
-                                </p>
-                                ${
-                                    words.map(w =>
-                                        `<p class="word-brief-info"><b>${w.dict.word_basic_info.word}</b>\t${w.mean}</p>`)
-                                        .join('')
-                                }
-                            </div>
-                    `);
+                        <div class="word-list">
+                            <p style="font-size: x-large;">
+                                恭喜，您已完成${modeName}了 ${words.length} 个单词${updated ? '（学习记录已上传）' : ''} 🎉🎉🎉
+                            </p>
+                            ${words.map(w =>
+                        `<p class="word-brief-info"><b>${w.dict.word_basic_info.word}</b>\t${w.mean}</p>`)
+                            .join('')
+                        }
+                        </div>
+                `);
             };
 
             render(isStudy);
@@ -161,28 +200,13 @@
             this.$el.find('#body')
                 .empty()
                 .html(`
-                    <div class="row d-flex justify-content-center align-items-center body">
-                        <p style="font-size: x-large;">
-                            发生错误了，请稍后再试😅
-                        </p>
-                    </div>
-                `);
+                <div class="row d-flex justify-content-center align-items-center body">
+                    <p style="font-size: x-large;">
+                        发生错误了，请稍后再试😅
+                    </p>
+                </div>
+            `);
         }
-    }
-
-    async function getCalendarDailyInfo() {
-        let dateNumber = Number.parseInt(formatDateAsYYYYMMDD(new Date()));
-        let calendarDailyInfo = await apiModule.getCalendarDailyInfo(dateNumber);
-
-        let words =  calendarDailyInfo?.words;
-
-        if (words) {
-            let bookWords = await storageModule.get('bookWords');
-            let bookWordMap = new Map(bookWords.map(i => [i.topic_id, i]));
-            words.forEach(word => word.options = bookWordMap.get(word.topic_id)?.options);
-        }
-
-        return words;
     }
 
     function formatDateAsYYYYMMDD(date) {
@@ -191,6 +215,23 @@
             date.getMonth() < 9 ? ('0' + (date.getMonth() + 1)) : (date.getMonth() + 1),
             date.getDate() < 10 ? ('0' + date.getDate()) : date.getDate()
         );
+    }
+
+    async function getCalendarDailyInfo(dateNumber = null) {
+        if (!dateNumber) {
+            dateNumber = Number.parseInt(formatDateAsYYYYMMDD(new Date()));
+        }
+        let calendarDailyInfo = await apiModule.getCalendarDailyInfo(dateNumber);
+
+        let words = calendarDailyInfo?.words;
+
+        if (words) {
+            let bookWords = await storageModule.get('bookWords');
+            let bookWordMap = new Map(bookWords.map(i => [i.topic_id, i]));
+            words.forEach(word => word.options = bookWordMap.get(word.topic_id)?.options);
+        }
+
+        return words;
     }
 
     async function getLearnBookInfo() {
@@ -292,4 +333,4 @@
         new Study($('#studyDiv')).start();
         initEventListener();
     }
-}) (this, document, jQuery);
+})(this, document, jQuery);
