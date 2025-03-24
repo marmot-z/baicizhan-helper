@@ -420,6 +420,33 @@
         return response.user_books || [];
     }
 
+    async function translate(text) {
+        try {
+            const myAppId = "37E13AC276BAB67F701AFE3EB1B5AC14EE66A049";
+            const from = isEnglishPhrase(text) ? "en" : "zh";
+            const to = isEnglishPhrase(text) ? "zh" : "en";
+            const url = `http://api.microsofttranslator.com/V2/Ajax.svc/Translate?appId=${myAppId}&from=${from}&to=${to}&text=${encodeURIComponent(text)}`;
+
+            const response = await fetch(url, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'text/plain',
+                    'Accept': 'application/json'
+                }
+            });
+
+            if (!response.ok) {
+                throw new Error('翻译请求失败');
+            }
+
+            const result = await response.text();
+            return {translatedText: result.replaceAll('"', '')};
+        } catch (error) {
+            console.error('Microsoft translate error:', error);
+            throw new Error('翻译失败：' + error.message);
+        }
+    }
+
     const exports = {
         getVerifyCode, loginWithPhone, getUserInfo, 
         getBooks, defaultHost, defaultPort, loginWithEmail,
