@@ -88,7 +88,7 @@
         try {
             const response = await sendRequest({
                 action: 'getStorageInfo',
-                args: ['triggerMode', 'popoverStyle', 'theme', 'collectShortcutkey']
+                args: [['triggerMode', 'popoverStyle', 'theme', 'collectShortcutkey']]
             });
 
             if (response) {
@@ -189,7 +189,7 @@
 
     function popupWordWebuiPopover(word) {
         sendRequest({action: 'fireEvent', args: ['selectWord', {'word': word}]});
-        sendRequest({action: 'getWordInfo', args: word}).then(response => {
+        sendRequest({action: 'getWordInfo', args: [word]}).then(response => {
             if (!response) return;
 
             $popover = new WordWebuiPopover({
@@ -215,7 +215,7 @@
 
     function popupPhraseWebuiPopover(phrase) {
         sendRequest({action: 'fireEvent', args: ['translatePharse', {'phrase': phrase}]});
-        sendRequest({action: 'translate', args: phrase}).then(response => {
+        sendRequest({action: 'translate', args: [phrase]}).then(response => {
             if (!response) {
                 throw new Error('翻译失败，返回结果为空');
             }

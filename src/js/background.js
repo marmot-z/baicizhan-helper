@@ -25,7 +25,7 @@
             // 处理其他请求
             for (let [fnName, fn] of Object.entries(actions)) {
                 if (fnName == request.action) {
-                    fn.call(null, request.args)
+                    fn.apply(null, request.args)
                         .then(r => sendResponse(r))
                         .catch(e => sendResponse(`[Error]:${e.message}`));
                     break;
@@ -65,7 +65,7 @@
             translate: global.apiModule.translate,
             cancelCollectWord: global.apiModule.cancelCollectWord,
             collectWord: global.apiModule.collectWord,
-            fireEvent: global.analyticsModule.fireEvent
+            fireEvent: global.Analytics.fireEvent.bind(global.Analytics)
         };
     } (this)
 ));

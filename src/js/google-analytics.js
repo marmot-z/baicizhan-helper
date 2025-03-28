@@ -116,4 +116,4 @@ class Analytics {
   }
 }
 
-window.Analytics = new Analytics();
+this.Analytics = new Analytics();
