@@ -11,6 +11,7 @@
         
         if (!content) return;
 
+        window.Analytics.fireEvent('searchWord', { word: content });
         searchWord(content)
             .then(generateWordList)
             .catch((e) => {
@@ -73,6 +74,7 @@
     }
 
     function init() {
+        window.Analytics.firePageViewEvent('search page', 'popup.html');
         initNav();
         initSearch();
     }

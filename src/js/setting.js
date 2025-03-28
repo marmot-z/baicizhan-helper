@@ -140,6 +140,8 @@
     }
 
     function save() {
+        window.Analytics.fireEvent('saveSettings', { });
+
         let bookId = $('#collectWordbookSelect').val();
         let popoverStyle = $('input[name="popoverStyle"]:checked').val();
         let triggerMode = $('input[name="triggerMode"]:checked').val();

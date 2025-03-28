@@ -57,14 +57,15 @@
     function(global) {
         'use strict';
 
-        importScripts('storage.js', 'wordbook-storage.js', 'api.js');        
+        importScripts('storage.js', 'wordbook-storage.js', 'api.js', 'google-analytics.js');        
 
         return {
             getStorageInfo: global.storageModule.getStorageInfo,
             getWordInfo: global.apiModule.getWordInfo,
             translate: global.apiModule.translate,
             cancelCollectWord: global.apiModule.cancelCollectWord,
-            collectWord: global.apiModule.collectWord
+            collectWord: global.apiModule.collectWord,
+            fireEvent: global.analyticsModule.fireEvent
         };
     } (this)
 ));

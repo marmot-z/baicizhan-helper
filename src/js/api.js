@@ -137,6 +137,8 @@
     function collectWord(word) {        
         let topicId = word.word_basic_info.topic_id;        
 
+        global.Analytics.fireEvent('collectWord', { topicId });
+
         return Promise.all([
             loadRequestOptions(),
             getWordbookId()
@@ -186,7 +188,9 @@
     }
 
     async function cancelCollectWord(topicId) {
-        try {
+        global.Analytics.fireEvent('cancelCollectWord', { topicId });
+
+        try {            
             // 1. 直接从本地存储获取包含该单词的单词本
             const allWords = await WordbookStorage.loadAllWords();
             const bookIds = new Set();

@@ -30,6 +30,8 @@
         }
 
         _doStart() {
+            window.Analytics.fireEvent(this.mode, {});
+            
             this.state = 'pending';
             let words = this.mode === 'study' ? this.learningWords : this.learnedWords;
             this.iterator = new StudyIterator(words, this.$el, this.updateView.bind(this));
@@ -323,6 +325,7 @@
 
     window.onload = async () => {
         let enable = !!await storageModule.get('enableStudy');
+        window.Analytics.firePageViewEvent('study page', 'study.html');
 
         if (!enable) {
             alert('暂未开启「背单词」功能，请前往选项页设置中开启「背单词」功能');

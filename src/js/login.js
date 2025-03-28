@@ -18,6 +18,7 @@
                 return alert('手机号码不能为空');
             }
 
+            window.Analytics.fireEvent('getVerifyCode', { phoneNum });
             getVerifyCode(phoneNum).then(() => {
                     alert('验证码发送成功');
                     $sendVerifyButton.off('click').prop('disabled', true);
@@ -45,6 +46,7 @@
             return alert('手机号码或验证码不能为空');
         }
 
+        window.Analytics.fireEvent('loginWithPhone', { phoneNum });
         loginWithPhone(phoneNum, verifyCode)
             .then(loginSuccessful)            
             .catch(loginFailure);

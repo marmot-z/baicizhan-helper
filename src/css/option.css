@@ -126,3 +126,27 @@
   background-color: #d9edf7;
   border-color: #bce8f1;
 }
+
+.preset-colors {
+    display: flex;
+    gap: 8px;
+    margin-top: 8px;
+}
+
+.color-preset {
+    width: 32px;
+    height: 32px;
+    border-radius: 16px;
+    border: 2px solid #fff;
+    box-shadow: 0 0 0 1px #ddd;
+    padding: 0;
+    transition: transform 0.2s;
+}
+
+.color-preset:hover {
+    transform: scale(1.1);
+}
+
+.color-preset.active {
+    box-shadow: 0 0 0 2px #666;
+}

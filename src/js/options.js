@@ -3,24 +3,12 @@
 
     const $doc = $(document);
 
-    async function checkUpgrade() {
-        let latestVersion = await apiModule.getLatestVersion();
-        let currentVersion = window.__baicizhanHelper__.version;
-        let hasNewVersion = latestVersion > currentVersion;
-
-        if (hasNewVersion) {
-            let $tips = $('#versionTips');
-            $tips.find('strong').text(currentVersion);
-            $tips.show();            
-        }
-    }
-
     async function init() {
         loginModule.init();
         settingModule.init();
         wordbookModule.init();
         studyModule.init();
-        checkUpgrade();
+        window.Analytics.firePageViewEvent('options page', 'options.html');   
 
         // 批量导入功能初始化
         initImportFeature();
@@ -59,7 +47,7 @@
             if (!file) return;
 
             try {
-                console.log('开始导入文件');
+                console.log('开始导入文件');                
                 importButton.disabled = true;
                 const text = await file.text();
                 const words = text.split('\n')
@@ -73,6 +61,8 @@
                     showMessage('没有找到有效的单词');
                     return;
                 }
+
+                window.Analytics.fireEvent('importWords', { wordSize: words.length });
 
                 importProgress.style.display = 'block';
                 totalImportCount.textContent = words.length;
@@ -169,6 +159,8 @@
         const progressBar = progressDiv.querySelector('.progress-bar');
         const exportedCount = document.getElementById('exportedCount');
         const totalCount = document.getElementById('totalCount');
+
+        window.Analytics.fireEvent('exportWords', {});
 
         try {
             exportBtn.disabled = true;

@@ -54,9 +54,10 @@
     }
 
     function loadFromServer(bookId) {
+        window.Analytics.fireEvent('loadBookWords', { bookId });
+
         return getBookWords(bookId).then(data => {
             WordbookStorage.save(bookId, data);
-
             return data;
         });
     }
@@ -226,11 +227,12 @@
 
     function refreshWordDetail(e, triggerEl) {
         if (!triggerEl) return;
-
+        
         let $triggerEl = $(triggerEl);
         let topicId = $triggerEl.data('topic-id');
         currentWordDetailIndex = parseInt($triggerEl.parent().parent().attr('tabindex'));
 
+        window.Analytics.fireEvent('wordDetail', { topicId });
         getWordDetail(topicId)
             .then(data => {
                 let $modal = $('#wordDetailModal').modal('show')
