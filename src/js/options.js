@@ -212,7 +212,7 @@
             // 5. 确保模板和牌组存在
             const models = await ankiService.invoke('modelNames');
             if (!models.includes('BaiCiZhan Basic')) {
-                await ankiService.createBasicModel();
+                await ankiService.createModelIfAbsent();
             }
 
             const decks = await ankiService.invoke('deckNames');
