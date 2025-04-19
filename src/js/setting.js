@@ -11,6 +11,7 @@
         antonymsDisplay: false,
         similarWordsDisplay: false,
         englishParaphraseDisplay: false,
+        autoPlayAudio: true,
     };
     const defaultHighlightSettings = {
         enabled: true,
@@ -81,6 +82,8 @@
                     $('#showSimilarWordsCheck').prop('checked', true);
                 if (settings.englishParaphraseDisplay)
                     $('#showEnglishParaphraseCheck').prop('checked', true);
+                if (settings.autoPlayAudio)
+                    $('#autoPlayAudioCheck').prop('checked', true); 
             });
 
         // 加载高亮设置
@@ -154,6 +157,7 @@
         let synonymsDisplay = $('#showSynonymsCheck').prop('checked');
         let antonymsDisplay = $('#showAntonymsCheck').prop('checked');
         let similarWordsDisplay = $('#showSimilarWordsCheck').prop('checked');
+        let autoPlayAudio = $('#autoPlayAudioCheck').prop('checked');
         let englishParaphraseDisplay = $('#showEnglishParaphraseCheck').prop('checked');
         let collectShortcutkey = $('#collectShortcutKeyInput').val().trim();
         let enableStudy = $('#enableStudyInput').prop('checked');
@@ -165,7 +169,7 @@
         storageModule.set('host', host);
         storageModule.set('port', port);
         storageModule.set('collectShortcutkey', collectShortcutkey);
-        storageModule.set('enableStudy', enableStudy);
+        storageModule.set('enableStudy', enableStudy);    
         storageModule.set('wordDetail', {
             variantDisplay,
             sentenceDisplay,
@@ -174,6 +178,7 @@
             antonymsDisplay,
             similarWordsDisplay,
             englishParaphraseDisplay,
+            autoPlayAudio,
         });
     }
 
