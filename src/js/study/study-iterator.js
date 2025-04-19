@@ -60,7 +60,7 @@
 
         onStudy(error, failedTimes) {
             if (error) {
-                console.log(`学习 ${this.currentWord.dict.word_basic_info.word} 单词时出现了异常`, error);
+                console.error(`学习 ${this.currentWord.dict.word_basic_info.word} 单词时出现了异常`, error);
             }
 
             if (!this.metrics.has(this.currentWord.topic_id)) {

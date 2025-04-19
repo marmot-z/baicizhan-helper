@@ -40,18 +40,14 @@
             })
             .catch(error => {
                 console.error('Error loading word detail settings:', error);
-                generateWordInfo(data.dict, $target, collectEnable, '');
-                generateSentence(data.dict.sentences, data.dict.word_basic_info.word, $target);
-                if (settings.autoPlayAudio) {
-                    const ukAudio = $('#accentUkAudio')[0];
-                    ukAudio.addEventListener('ended', () => $('#phraseAudio')[0].play());
-                    ukAudio.play();
-                }
+                $target.html(`<p>加载单词详情失败：${error.message}</p>`);                
             });             
     }
 
     function generateStudyWordDetail(data, $target) {
-        generateWordInfo(data.dict, $target, false, '');
+        collected = data.dict.word_basic_info.__collected__ || false;
+
+        generateWordInfo(data.dict, $target, true, '');
         generateVariant(data.dict.variant_info, $target);
         generateSentence(data.dict.sentences, data.dict.word_basic_info.word, $target);
         generateShortPhrases(data.dict.short_phrases, $target);
@@ -60,11 +56,16 @@
         generateSimilarWords(data.similar_words, $target);
         generateEnglishParaphrase(data.dict.en_means, $target);
 
-        if (settings.autoPlayAudio) {
-            const ukAudio = $('#accentUkAudio')[0];
-            ukAudio.addEventListener('ended', () => $('#phraseAudio')[0].play());
-            ukAudio.play();
-        }
+        storageModule.get(['wordDetail'])       
+           .then(([wordDetailSettings]) => {
+               const autoPlayAudio = wordDetailSettings?.autoPlayAudio;
+
+               if (autoPlayAudio) {
+                const ukAudio = $('#accentUkAudio')[0];
+                ukAudio.addEventListener('ended', () => $('#phraseAudio')[0].play());
+                ukAudio.play();
+            }
+           });        
     }
 
     function generateWordInfo(data, $parent, collectEnable, collectShortcutkey) {

@@ -107,15 +107,17 @@
     }
 
     function getHighlightWord(sentence, word) {
-        let stemWord = stemmer.stemWord(word);
-
         return sentence.split(/\s/)
             .map(s => {
                 let regex = /[\w-]+/;
 
                 if (regex.test(s)) {
                     let term = s.match(regex)[0];
-                    let distance = levenshtein(term, stemWord);
+                    let distance = Math.min(
+                        levenshtein(term, word), 
+                        levenshtein(term, stemmer.stemWord(word)), 
+                        levenshtein(stemmer.stemWord(term), word), 
+                        levenshtein(stemmer.stemWord(term), stemmer.stemWord(word)));
                     let highlightable = term.length < 7 ? distance <= 3 : distance <= 5;
 
                     if (highlightable) {
