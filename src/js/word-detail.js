@@ -20,7 +20,8 @@
                     synonymsDisplay: false,
                     antonymsDisplay: false,
                     similarWordsDisplay: false,
-                    englishParaphraseDisplay: false
+                    englishParaphraseDisplay: false,
+                    autoPlayAudio: true                
                 };
 
                 generateWordInfo(data.dict, $target, collectEnable, collectShortcutkey);
@@ -31,14 +32,21 @@
                 if (settings.antonymsDisplay) generateAntonyms(data.dict.antonyms, $target, true);
                 if (settings.similarWordsDisplay) generateSimilarWords(data.similar_words, $target, true);
                 if (settings.englishParaphraseDisplay) generateEnglishParaphrase(data.dict.en_means, $target);
-
-                $('#accentUkAudio')[0].play();
+                if (settings.autoPlayAudio) {
+                    const ukAudio = $('#accentUkAudio')[0];
+                    ukAudio.addEventListener('ended', () => $('#phraseAudio')[0].play());
+                    ukAudio.play();
+                }
             })
             .catch(error => {
                 console.error('Error loading word detail settings:', error);
                 generateWordInfo(data.dict, $target, collectEnable, '');
                 generateSentence(data.dict.sentences, data.dict.word_basic_info.word, $target);
-                $('#accentUkAudio')[0].play();
+                if (settings.autoPlayAudio) {
+                    const ukAudio = $('#accentUkAudio')[0];
+                    ukAudio.addEventListener('ended', () => $('#phraseAudio')[0].play());
+                    ukAudio.play();
+                }
             });             
     }
 
@@ -52,7 +60,11 @@
         generateSimilarWords(data.similar_words, $target);
         generateEnglishParaphrase(data.dict.en_means, $target);
 
-        $('#accentUkAudio')[0].play();
+        if (settings.autoPlayAudio) {
+            const ukAudio = $('#accentUkAudio')[0];
+            ukAudio.addEventListener('ended', () => $('#phraseAudio')[0].play());
+            ukAudio.play();
+        }
     }
 
     function generateWordInfo(data, $parent, collectEnable, collectShortcutkey) {
@@ -60,18 +72,22 @@
         let $section = $(`
             <div class="section">
                 <span class="word">${data.word_basic_info.word}</span>
+                <span id="copyIcon" class="copy" style="cursor: pointer; margin-left: 5px;">
+                    <img src="../svgs/copy.svg" title="复制单词">
+                </span>
                 <span id="starIcon" class="star" style="display: ${collectEnable ? 'block' : 'none'}">
                     <img src="../svgs/${starIconSvg}">
                 </span>
                 <br>                
             </div>
-        `);        
-        
+        `);                
+
         generateAccent(data.word_basic_info, $section);
         generateMeansTable(data.chn_means, $section);
 
         $section.appendTo($parent);
-        
+        $section.find('#copyIcon').on('click', () =>
+            navigator.clipboard.writeText(data.word_basic_info.word));
         $section.find('#starIcon').on('click', function(e) {
             favoriteWord.bind(this)(data)
         });
