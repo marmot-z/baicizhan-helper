@@ -57,6 +57,7 @@
         `);
 
         $parent.empty().append($errorTipsRow);
+        window.Analytics.fireErrorEvent(new Error('搜索单词失败'), { message: '搜索单词失败' });
     }
 
     function refreshWordDetail(e, triggerEl) {
@@ -133,6 +134,7 @@
         } catch (error) {
             showMessage('Failed to export to Anki. Make sure Anki is running with AnkiConnect installed.');
             console.error('Anki export error:', error);
+            window.Analytics.fireErrorEvent(error, { message: '导出单个单词到anki失败' });
         }
     }
 

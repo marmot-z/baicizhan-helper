@@ -320,6 +320,7 @@
                 }
             } catch (error) {
                 console.error(`${tips}异常:`, error);
+                sendRequest({action: 'fireErrorEvent', args: [error, {'message': '单词弹窗显示失败'}]});
                 $supportEl.trigger('baicizhanHelper:alert', [error.message]);
             }
         };

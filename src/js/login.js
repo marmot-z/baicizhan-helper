@@ -21,10 +21,11 @@
             window.Analytics.fireEvent('getVerifyCode', { phoneNum });
             getVerifyCode(phoneNum).then(() => {
                     alert('验证码发送成功');
-                    $sendVerifyButton.off('click').prop('disabled', true);
+                    $sendVerifyButton.off('click').prop('disabled', true);                    
                 })
                 .catch(e => {
-                    console.error(`向 ${phoneNum} 发送验证码失败`, e);
+                    console.error(`向 ${phoneNum} 发送验证码失败`, e);                    
+                    window.Analytics.fireErrorEvent(e, { message: '验证码发送失败' });
                     alert('发送验证码失败，请稍候再试');
                 });
         });
@@ -67,6 +68,7 @@
 
     function loginFailure(e) {
         console.error(`登录失败`, e);
+        window.Analytics.fireErrorEvent(e, { message: '登录失败' });
         alert('登录失败，请稍候再试');
     }
 
@@ -114,7 +116,10 @@
             let nickname = data.length ? data[0].nickname : 'guest';
             $('#username').html(nickname);            
         })
-        .catch(e => console.error(`获取用户信息失败`, e));
+        .catch(e => {
+            console.error(`获取用户信息失败`, e);
+            window.Analytics.fireErrorEvent(e, { message: '获取用户信息失败' });
+        });
     }
 
     function logout() {

@@ -49,6 +49,7 @@
             generateWordbookTable(wordbookData);
         } catch(e) {
             console.error(`加载单词本 ${bookId} 内容错误`, e);
+            window.Analytics.fireErrorEvent(e, { message: '加载单词本内容失败' });
             generateErrorTips();
         }
     }
@@ -187,6 +188,7 @@
         } catch(e) {
             successful = false;
             console.error(`取消收藏单词 ${topicId} 异常`, e);
+            window.Analytics.fireErrorEvent(e, { message: '取消收藏单词失败' });
         }
 
         if (!successful) {
@@ -296,6 +298,7 @@
             return allWords;
         } catch(e) {
             console.error('获取所有单词失败', e);
+            window.Analytics.fireErrorEvent(e, { message: '获取所有单词失败' });
             return [];
         }
     }

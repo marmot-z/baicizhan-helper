@@ -29,7 +29,10 @@
             $('#collectWordbookSelect').html(html);
             $doc.trigger(events.BOOKS_LOADED, [data]);
         })
-            .catch(e => console.error('加载单词本失败', e));
+        .catch(e => {
+            console.error('加载单词本失败', e)
+            window.Analytics.fireErrorEvent(e, { message: '加载单词本失败' });
+        });
     }
 
     function loadSettings() {

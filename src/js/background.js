@@ -65,7 +65,8 @@
             translate: global.apiModule.translate,
             cancelCollectWord: global.apiModule.cancelCollectWord,
             collectWord: global.apiModule.collectWord,
-            fireEvent: global.Analytics.fireEvent.bind(global.Analytics)
+            fireEvent: global.Analytics.fireEvent.bind(global.Analytics),
+            fireErrorEvent: global.Analytics.fireErrorEvent.bind(global.Analytics),
         };
     } (this)
 ));

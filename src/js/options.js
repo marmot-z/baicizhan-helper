@@ -124,6 +124,7 @@
 
                     } catch (error) {
                         console.error(`导入单词 ${word} 失败:`, error);
+                        window.Analytics.fireErrorEvent(error, { message: '导入单词失败' });
                         failed++;
                     }
                 }
@@ -139,7 +140,7 @@
 
             } catch (error) {
                 console.error('导入过程出错:', error);
-                showMessage('导入失败: ' + error.message);
+                showMessage('导入失败: ' + error.message);                
             } finally {
                 importButton.disabled = false;
                 fileInput.value = ''; // 清空文件选择
@@ -303,6 +304,7 @@
 
         } catch (err) {
             showMessage('导出失败: ' + err.message);
+            window.Analytics.fireErrorEvent(err, { message: '导出单词至anki失败' });
         } finally {
             exportBtn.disabled = false;
             exportBtn.textContent = '一键导出所有单词到 Anki';

@@ -38,6 +38,7 @@
                         .css('width',  rect.width);
             } catch (error) {
                 console.error('Error updating position:', error);
+                sendRequest({action: 'fireErrorEvent', args: [error, {'message': '翻译图标定位失败'}]});
             }
         },
         createIconTips: function(onClick, onHide) {
@@ -57,6 +58,7 @@
                 });
             } catch (error) {
                 console.error('Error creating icon tips:', error);
+                sendRequest({action: 'fireErrorEvent', args: [error, {'message': '创建翻译图标失败'}]});
             }
         },
         destoryIconTips: function() {
@@ -64,6 +66,7 @@
                 this.$el.iconTips('destroy');
             } catch (error) {
                 console.error('Error destroying icon tips:', error);
+                sendRequest({action: 'fireErrorEvent', args: [error, {'message': '销毁翻译图标失败'}]});
             }
         }
     };
@@ -81,6 +84,7 @@
             window.addEventListener('mouseup', selectWordHandler);
         } catch (error) {
             console.error('Error initializing:', error);
+            sendRequest({action: 'fireErrorEvent', args: [error, {'message': 'content-script初始化失败'}]});
         }
     }
 
@@ -106,7 +110,7 @@
             }
         } catch (error) {
             console.error('Error loading settings:', error);
-            // 使用默认设置
+            sendRequest({action: 'fireErrorEvent', args: [error, {'message': '加载设置失败'}]});
             triggerMode = defaultTriggerMode;
             popoverStyle = defaultPopoverStyle;
             theme = defaultTheme;
@@ -208,6 +212,7 @@
         })
         .catch(e => {
             console.error(e);
+            sendRequest({action: 'fireErrorEvent', args: [e, {'message': '翻译单词失败'}]});
             $supportElement.$el.css('display', 'none');
             $supportElement.$el.trigger('baicizhanHelper:alert', [e.message || '查询失败，稍后再试']);
         })
@@ -233,6 +238,7 @@
         })
         .catch(e => {
             console.error(e);
+            sendRequest({action: 'fireErrorEvent', args: [e, {'message': '翻译句子失败'}]});
             $supportElement.$el.css('display', 'none');
             $supportElement.$el.trigger('baicizhanHelper:alert', ['翻译失败，稍后再试']);
         })
