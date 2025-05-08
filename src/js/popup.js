@@ -74,10 +74,31 @@
             });
     }
 
-    function init() {
+    async function init() {
         window.Analytics.firePageViewEvent('search page', 'popup.html');
         initNav();
         initSearch();
+        initAnnoucementLink();
+    }
+
+    async function initAnnoucementLink() {
+        const result = await storageModule.get('announcement.close');
+
+        if (!result) {
+            window.Analytics.fireEvent('loadAnnouncementLink', {});
+
+            const $reminder = $(`
+                <a href="#" id="questionnaireLink" style="text-decoration: underline; color: #664d03;">您有一个公告待查看>></a>
+            `)
+            .on('click', function(e) {
+                e.preventDefault();
+                chrome.tabs.create({
+                    url: chrome.runtime.getURL('src/options.html')
+                });
+            });
+
+            $('#searchDiv').prepend($reminder);
+        }
     }
 
     function initSearch() {
