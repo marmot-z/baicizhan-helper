@@ -16,7 +16,7 @@
             .then(generateWordList)
             .catch((e) => {
                 console.error(e);
-                generateErrorTips($('#searchTable > tbody'));
+                generateErrorTips($('#searchTable > tbody'), e);
             });
     }
 
@@ -49,14 +49,15 @@
         });
     }
 
-    function generateErrorTips($parent) {
-        let $errorTipsRow = $(`
-            <tr>
-                <td>查询失败，请稍候再试</td>
-            </tr>
-        `);
+    function generateErrorTips($parent, e) {
+        let errorMsg;
+        if (e && e instanceof AccessDeniedException) {
+            errorMsg = `您尚未开通会员,<a href="./charge.html" target="_blank">去开通</a>`;
+        } else {
+            errorMsg = '查询失败，请稍候再试';
+        }
 
-        $parent.empty().append($errorTipsRow);
+        $parent.empty().append(`<tr><td>${errorMsg}</td></tr>`);
         window.Analytics.fireErrorEvent(new Error('搜索单词失败'), { message: '搜索单词失败' });
     }
 
@@ -78,29 +79,8 @@
         window.Analytics.firePageViewEvent('search page', 'popup.html');
         initNav();
         initSearch();
-        initAnnoucementLink();
     }
-
-    async function initAnnoucementLink() {
-        const result = await storageModule.get('announcement.close');
-
-        if (!result) {
-            window.Analytics.fireEvent('loadAnnouncementLink', {});
-
-            const $reminder = $(`
-                <a href="#" id="questionnaireLink" style="text-decoration: underline; color: #664d03;">您有一个公告待查看>></a>
-            `)
-            .on('click', function(e) {
-                e.preventDefault();
-                chrome.tabs.create({
-                    url: chrome.runtime.getURL('src/options.html')
-                });
-            });
-
-            $('#searchDiv').prepend($reminder);
-        }
-    }
-
+    
     function initSearch() {
         $('#searchButton').on('click', search);
         $('#searchInput').focus().on('keypress', (e) => {

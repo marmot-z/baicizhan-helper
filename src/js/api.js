@@ -1,14 +1,14 @@
 ;(function(global) {
     'use strict';
 
-    const defaultHost = '110.42.229.221';
-    const defaultPort = 8080;
+    const defaultHost = 'www.baicizhan-helper.cn';
+    const defaultPort = 80;
     const {storageModule, wordbookStorageModule} = global;
     const {WordbookStorage} = wordbookStorageModule;
 
     function getVerifyCode(phoneNum) {
         return loadRequestOptions().then(([host, port, accessToken]) => {
-            const url = `http://${host}:${port}/login/sendSmsVerifyCode/${phoneNum}`;
+            const url = `http://www.baicizhan-helper.cn/login/sendSmsVerifyCode/${phoneNum}`;
 
             return sendRequest({url, method: 'POST'});
         });
@@ -16,7 +16,7 @@
 
     function loginWithPhone(phoneNum, verifyCode) {
         return loadRequestOptions().then(([host, port, accessToken]) => {
-            const url = `http://${host}:${port}/login/${phoneNum}/${verifyCode}`;
+            const url = `http://www.baicizhan-helper.cn/login/${phoneNum}/${verifyCode}`;
         
             return sendRequest({url, method: 'POST'});
         });
@@ -24,7 +24,7 @@
 
     function loginWithEmail(email, password) {
         return loadRequestOptions().then(([host, port, accessToken]) => {
-            const url = `http://${host}:${port}/loginWithEmail?email=${encodeURIComponent(email)}&password=${password}`;
+            const url = `http://www.baicizhan-helper.cn/loginWithEmail?email=${encodeURIComponent(email)}&password=${password}`;
         
             return sendRequest({url, method: 'POST'});
         });
@@ -32,7 +32,7 @@
 
     function getUserInfo() {
         return loadRequestOptions().then(([host, port, accessToken]) => {
-            const url = `http://${host}:${port}/userInfo`;
+            const url = `http://www.baicizhan-helper.cn/userInfo`;
 
             return sendRequest({
                 url, 
@@ -44,7 +44,7 @@
 
     function getBooks() {
         return loadRequestOptions().then(([host, port, accessToken]) => {
-            const url = `http://${host}:${port}/books`;
+            const url = `http://www.baicizhan-helper.cn/books`;
 
             return sendRequest({
                 url, 
@@ -67,36 +67,13 @@
 
     function searchWord(word) {
         return loadRequestOptions().then(([host, port, accessToken]) => {
-            const url = `http://${host}:${port}/search/word/${word}`;
+            const url = `http://www.baicizhan-helper.cn/search/word/${word}`;
 
             return sendRequest({
                 url, 
                 method: 'GET',
                 headers: {'access_token': accessToken}
             });
-        });
-    }
-
-    function translate(phrase) {
-        return loadRequestOptions().then(([host, port, accessToken]) => {
-            const url = `http://${host}:${port}/translate`;
-
-            return fetch(url, {
-                method: 'POST',
-                mode: 'cors',
-                headers: {
-                    'access_token': accessToken,
-                    'content-type': 'application/json',
-                },
-                body: JSON.stringify({
-                    q: phrase,
-                    source: "auto",
-                    target: isEnglishPhrase(phrase) ? 'zh' : 'en',
-                    format: 'text',
-                }),
-            })
-            .then(response => response.json())
-            .catch(e => reject(e));
         });
     }
 
@@ -116,7 +93,7 @@
 
     function getWordDetail(topicId, withDict = true, withMedia = false, withSimilarWords = false) {
         return loadRequestOptions().then(([host, port, accessToken]) => {
-            const url = `http://${host}:${port}/word/${topicId}?withDict=${withDict}&withMedia=${withMedia}&withSimilarWords=${withSimilarWords}`;                      
+            const url = `http://www.baicizhan-helper.cn/word/${topicId}?withDict=${withDict}&withMedia=${withMedia}&withSimilarWords=${withSimilarWords}`;                      
 
             return sendRequest({
                 url, 
@@ -144,7 +121,7 @@
             getWordbookId()
         ])
         .then(([[host, port, accessToken], bookId]) => {
-            const url = `http://${host}:${port}/book/${bookId}/word/${topicId}`;
+            const url = `http://www.baicizhan-helper.cn/book/${bookId}/word/${topicId}`;
 
             return sendRequest({
                 url,
@@ -210,7 +187,7 @@
             // 3. 从所有包含该单词的单词本中删除
             const promises = Array.from(bookIds).map(async (bookId) => {
                 // 先从服务器删除
-                const url = `http://${host}:${port}/book/${bookId}/word/${topicId}`;
+                const url = `http://www.baicizhan-helper.cn/book/${bookId}/word/${topicId}`;
                 await sendRequest({
                     url,
                     method: 'DELETE',
@@ -231,7 +208,7 @@
 
     function getBookWords(bookId) {
         return loadRequestOptions().then(([host, port, accessToken]) => {
-            const url = `http://${host}:${port}/book/${bookId}/words`;
+            const url = `http://www.baicizhan-helper.cn/book/${bookId}/words`;
 
             return sendRequest({
                 url,
@@ -243,7 +220,7 @@
 
     function getCalendarDailyInfo(date) {
         return loadRequestOptions().then(([host, port, accessToken]) => {
-            const url = `http://${host}:${port}/calendarDailyInfo?date=${date}&pageOffset=0&pageSize=200`;
+            const url = `http://www.baicizhan-helper.cn/calendarDailyInfo?date=${date}&pageOffset=0&pageSize=200`;
 
             return sendRequest({
                 url,
@@ -253,20 +230,9 @@
         });
     }
 
-    function getLatestVersion() {
-        return loadRequestOptions().then(([host, port, accessToken]) => {
-            const url = `http://${host}:${port}/latestVersion`;
-
-            return sendRequest({
-                url,
-                method: 'GET'
-            });
-        });
-    }
-
     function getSelectBookPlanInfo() {
         return loadRequestOptions().then(([host, port, accessToken]) => {
-            const url = `http://${host}:${port}/selectBookPlanInfo`;
+            const url = `http://www.baicizhan-helper.cn/selectBookPlanInfo`;
 
             return sendRequest({
                 url,
@@ -278,7 +244,7 @@
 
     function getAllBookInfo() {
         return loadRequestOptions().then(([host, port, accessToken]) => {
-            const url = `http://${host}:${port}/booksInfo`;
+            const url = `http://www.baicizhan-helper.cn/booksInfo`;
 
             return sendRequest({
                 url,
@@ -290,7 +256,7 @@
 
     function getRoadmaps(bookId) {
         return loadRequestOptions().then(([host, port, accessToken]) => {
-            const url = `http://${host}:${port}/roadmap?bookId=${bookId}`;
+            const url = `http://www.baicizhan-helper.cn/roadmap?bookId=${bookId}`;
 
             return sendRequest({
                 url,
@@ -302,7 +268,7 @@
 
     function getLearnedWords(bookId) {
         return loadRequestOptions().then(([host, port, accessToken]) => {
-            const url = `http://${host}:${port}/learnedWords?bookId=${bookId}`;
+            const url = `http://www.baicizhan-helper.cn/learnedWords?bookId=${bookId}`;
 
             return sendRequest({
                 url,
@@ -322,7 +288,7 @@
         })
 
         return loadRequestOptions().then(([host, port, accessToken]) => {
-            const url = `http://${host}:${port}/updateDoneData`;
+            const url = `http://www.baicizhan-helper.cn/updateDoneData`;
 
             return sendRequest({
                 url,
@@ -334,6 +300,74 @@
                 body: {
                     doneRecords: records,
                     wordLevelId: words[0]?.wordLevelId
+                }
+            });
+        });
+    }
+
+    function getGoodsList() {
+        return loadRequestOptions().then(([host, port, _]) => {
+            const url = `http://www.baicizhan-helper.cn/goodsList`;
+
+            return sendRequest({
+                url,
+                method: 'GET'
+            });
+        });
+    }
+
+    function createOrder(goodsId) {
+        return loadRequestOptions().then(([host, port, accessToken]) => {
+            const url = `http://www.baicizhan-helper.cn/createOrder?goodsId=${goodsId}`;
+
+            return sendRequest({
+                url,
+                method: 'POST',
+                headers: {
+                    'access_token': accessToken,
+                    'content-type': 'application/json',
+                }
+            });
+        });
+    }
+
+    function generateWxpayQrCode(orderNo) {
+        return loadRequestOptions().then(([host, port, accessToken]) => {
+            const url = `http://www.baicizhan-helper.cn/wxpayQrcode?orderNo=${orderNo}`;
+
+            return sendRequest({
+                url,
+                method: 'POST',
+                headers: {
+                    'access_token': accessToken,
+                }
+            });
+        })
+    }
+
+    function getOrderState(orderNo) {
+        return loadRequestOptions().then(([host, port, accessToken]) => {
+            const url = `http://www.baicizhan-helper.cn/orderState?orderNo=${orderNo}`;
+
+            return sendRequest({
+                url,
+                method: 'GET',
+                headers: {
+                    'access_token': accessToken,
+                }
+            });
+        })
+    }
+
+    function getOrderInfos() {
+        return loadRequestOptions().then(([host, port, accessToken]) => {
+            const url = `http://www.baicizhan-helper.cn/orderInfo`;
+
+            return sendRequest({
+                url,
+                method: 'GET',
+                headers: {
+                    'access_token': accessToken
                 }
             });
         });
@@ -361,10 +395,21 @@
                         body: options.body ? JSON.stringify(options.body) : undefined
                     })
                     .then(response => response.json())
-                    .then(responseJson => responseJson.code === 200 ?
+                    .then(responseJson => {
+                        // 响应未登录时，清除本地 token
+                        if (responseJson.code === 401) {
+                            storageModule.remove(['accessToken']);
+                        }
+
+                        // 处理无权限异常，弹出提示
+                        if (responseJson.code === 403) {
+                            return reject(new AccessDeniedException(responseJson.message));
+                        }
+
+                        return responseJson.code === 200 ?
                             resolve(responseJson.data) : 
                             reject(new Error(responseJson.message))
-                    )
+                    })
                     .catch(e => reject(e));
         });
     }
@@ -376,7 +421,7 @@
             
             // 从服务器获取最新的单词列表
             const [host, port, accessToken] = await loadRequestOptions();
-            const url = `http://${host}:${port}/book/${bookId}/words`;
+            const url = `http://www.baicizhan-helper.cn/book/${bookId}/words`;
             
             const response = await fetch(url, {
                 method: 'GET',
@@ -413,7 +458,7 @@
     // 获取用户所有单词本
     async function getAllUserBooks() {
         const [host, port, accessToken] = await loadRequestOptions();
-        const url = `http://${host}:${port}/books`;
+        const url = `http://www.baicizhan-helper.cn/books`;
         
         const response = await sendRequest({
             url,
@@ -456,9 +501,10 @@
         getBooks, defaultHost, defaultPort, loginWithEmail,
         searchWord, getWordDetail, collectWord, translate,
         cancelCollectWord, getBookWords, getWordInfo, 
-        getCalendarDailyInfo, getLatestVersion, getSelectBookPlanInfo,
+        getCalendarDailyInfo, getSelectBookPlanInfo,
         getAllBookInfo, getRoadmaps, getLearnedWords, updateDoneData,
-        syncWordbook
+        syncWordbook, getGoodsList, createOrder, getOrderInfos, 
+        generateWxpayQrCode, getOrderState
     };
 
     global.apiModule = exports;

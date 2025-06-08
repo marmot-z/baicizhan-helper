@@ -30,6 +30,10 @@
             $doc.trigger(events.BOOKS_LOADED, [data]);
         })
         .catch(e => {
+            if (e instanceof AccessDeniedException) {
+                $doc.trigger(events.ACCESS_DENIED, [e]);
+            }
+
             console.error('加载单词本失败', e)
             window.Analytics.fireErrorEvent(e, { message: '加载单词本失败' });
         });

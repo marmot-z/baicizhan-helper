@@ -1,41 +1,52 @@
 ;(function(window, doc, $) {
     'use strict';
 
+    const $doc = $(doc);
     const events = window.events;
     const apiModule = window.apiModule;
     const storageModule = window.storageModule;
 
     async function enableStudy() {
-        let bookPlanInfos = await apiModule.getSelectBookPlanInfo();
+        try {
+            let bookPlanInfos = await apiModule.getSelectBookPlanInfo();
 
-        if (bookPlanInfos.length === 0) {
+            if (bookPlanInfos.length === 0) {
+                return;
+            }
+
+            let bookPlanInfo = bookPlanInfos[0];
+            let localBookPlanInfo = await storageModule.get('bookPlanInfo');
+
+            if (bookPlanInfo.book_id !== localBookPlanInfo?.book_id) {
+                // 拉取学习书籍信息
+                let allBookInfo = await apiModule.getAllBookInfo();
+                let bookMap = Object.groupBy(allBookInfo.books_info, ({id}) => id);
+                let bookInfo = bookMap[bookPlanInfo.book_id]?.[0];
+
+                storageModule.set('bookPlanInfo', Object.assign(bookPlanInfo, bookInfo));
+
+                // 单词本内全部单词
+                let bookWords = await apiModule.getRoadmaps(bookPlanInfo.book_id);
+                storageModule.set('bookWords', bookWords);
+
+                // 已学单词列表
+                let learnedWords = await apiModule.getLearnedWords(bookPlanInfo.book_id);
+                storageModule.set('learnedWords', learnedWords);
+                storageModule.set('loadLearnedWordsTimestamp', new Date().getTime());
+            } else {
+                bookPlanInfo = localBookPlanInfo;
+            }
+
+            generateStudyBookCard(bookPlanInfo);
+        } catch (e) {
+            console.error(e);
+
+            if (e instanceof AccessDeniedException) {
+                $doc.trigger(events.ACCESS_DENIED, [e]);
+            }
+            
             return;
         }
-
-        let bookPlanInfo = bookPlanInfos[0];
-        let localBookPlanInfo = await storageModule.get('bookPlanInfo');
-
-        if (bookPlanInfo.book_id !== localBookPlanInfo?.book_id) {
-            // 拉取学习书籍信息
-            let allBookInfo = await apiModule.getAllBookInfo();
-            let bookMap = Object.groupBy(allBookInfo.books_info, ({id}) => id);
-            let bookInfo = bookMap[bookPlanInfo.book_id]?.[0];
-
-            storageModule.set('bookPlanInfo', Object.assign(bookPlanInfo, bookInfo));
-
-            // 单词本内全部单词
-            let bookWords = await apiModule.getRoadmaps(bookPlanInfo.book_id);
-            storageModule.set('bookWords', bookWords);
-
-            // 已学单词列表
-            let learnedWords = await apiModule.getLearnedWords(bookPlanInfo.book_id);
-            storageModule.set('learnedWords', learnedWords);
-            storageModule.set('loadLearnedWordsTimestamp', new Date().getTime());
-        } else {
-            bookPlanInfo = localBookPlanInfo;
-        }
-
-        generateStudyBookCard(bookPlanInfo);
     }
 
     function generateStudyBookCard(bookInfo) {

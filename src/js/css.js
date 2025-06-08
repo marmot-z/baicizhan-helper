@@ -115,7 +115,9 @@
         },
         'toast-body': {
             'padding': '0.75rem',
-            'color': 'black'
+            'color': 'black',
+            'font-weight': 'bolder',
+            'font-size': 'medium',
         },
         'mr-auto': {
             'margin-right': 'auto !important',

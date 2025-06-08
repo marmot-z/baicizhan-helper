@@ -48,9 +48,13 @@
 
             generateWordbookTable(wordbookData);
         } catch(e) {
+            if (e instanceof AccessDeniedException) {
+                $doc.trigger(events.ACCESS_DENIED, [e]);
+            }
+
             console.error(`加载单词本 ${bookId} 内容错误`, e);
             window.Analytics.fireErrorEvent(e, { message: '加载单词本内容失败' });
-            generateErrorTips();
+            generateErrorTips();        
         }
     }
 

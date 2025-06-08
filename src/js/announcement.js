@@ -1,4 +1,4 @@
-;(function (window, document, $) {
+; (function (window, document, $) {
     'use strict';
 
     const questionnaire_template_html = `<div class="modal" id="questionnarieModal" tabindex="-1">
@@ -11,9 +11,17 @@
                             </button>
                         </div>
                         <div class="modal-body">
-                            <p>大家好，不知不觉，百词斩助手已经上线将近三年了。最初，它只是一个为自己学习英语而开发的小工具，后来觉得或许也能对更多人有所帮助，于是将插件发布在了应用商店。一路走来，收获了许多用户的肯定与鼓励，衷心感谢每一位使用和支持它的朋友。</p>
-                            <p>这三年来，我始终坚持免费提供服务，并尽力对插件进行维护和优化。但随着用户数量的增长，服务器和数据存储等方面的支出也不断增加，加之个人时间和精力有限，继续无偿维护的压力越来越大。为了让这个工具能够持续、稳定地运行下去，我决定对插件收取一定的费用。</p>
-                            <p>收费标准为约 <b>2 元/月</b>，插件将于 <b>2025 年 6 月 14</b> 日起开始收费。感谢您的理解与支持，希望百词斩助手能继续在你的英语学习之路上陪伴左右。</p>                        
+                            <p>尊敬的用户：</p>
+                            <p>感谢您一直以来对本插件的关注与支持。为了持续提升服务质量、保障插件的稳定运营，并为您带来更优质的使用体验，我们将于即日起实行收费机制。</p>
+                            <p>收费标准如下：</p>
+                            <ul>
+                            <li>月度会员：2元/月</li>
+                            <li>半年会员：8元/6个月</li>
+                            <li>年度会员：12元/12个月</li>
+                            </ul>
+                            <p>您可根据自身需求选择适合的套餐，享受会员权益。付费会员将优先获得插件新功能体验、专属客服支持及更多定制化服务。<a href="/src/charge.html" target="_blank">>>>去购买</a></p>
+                            <p>如您在使用过程中有任何疑问或建议，欢迎随时与我们联系。</p>
+                            <p>再次感谢您的理解与支持！</p>
                         </div>
                     </div>
                 </div>
@@ -22,16 +30,16 @@
     function showQuestionnarie() {
         const $modal = $(questionnaire_template_html).appendTo('body');
 
-        $modal.find('.btn-close').on('click', function() {
+        $modal.find('.btn-close').on('click', function () {
             $modal.modal('hide');
-            storageModule.set('announcement.close', true);
+            storageModule.set('announcement.close.v2.0.0', true);
         });
 
         $modal.modal('show');
     }
 
     function initAnnouncementIfNecessary() {
-        storageModule.get('announcement.close')
+        storageModule.get('announcement.close.v2.0.0')
             .then((result) => {
                 if (!result) {
                     window.Analytics.fireEvent('loadAnnouncement', {});
@@ -40,5 +48,5 @@
             });
     }
 
-    window.announcementModule = {init: initAnnouncementIfNecessary};
-}) (this, document, jQuery);
+    window.announcementModule = { init: initAnnouncementIfNecessary };
+})(this, document, jQuery);

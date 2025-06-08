@@ -2,7 +2,7 @@
     "name": "百词斩助手",
     "description": "百词斩网页助手，支持取词翻译、收藏单词、背单词、同步anki等操作（可同步至百词斩APP中）",
     "author": "zhangxunwei",
-    "version": "1.26",
+    "version": "2.0.0",
     "manifest_version": 3,
     "options_page": "src/options.html",
     "background": {
@@ -40,7 +40,7 @@
                 "src/assets/jquery-3.6.0/jquery.hotkeys.js",            
                 "src/assets/webui-popover-1.2.17/jquery.webui-popover.min.js",
                 "src/js/base-stemmer.js",
-                "src/js/english-stemmer.js",
+                "src/js/english-stemmer.js",               
                 "src/js/util.js",
                 "src/js/css.js",
                 "src/js/storage.js",

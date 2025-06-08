@@ -16,6 +16,11 @@
     const UNAUTHED = 'bcz.unauthed';
 
     /**
+     * 权限不足（未购买会员）事件
+     */
+    const ACCESS_DENIED = 'bcz.accessDenied';
+
+    /**
      * 单词本列表记载成功事件
      */
     const BOOKS_LOADED = 'bcz.booksLoaded';
@@ -35,5 +40,5 @@
      */
     const DISABLE_STUDY = 'bcz.disableStudy';
 
-    window.events = {AUTHED, UNAUTHED, BOOKS_LOADED, WORD_DETAIL, ENABLE_STUDY, DISABLE_STUDY};
+    window.events = {AUTHED, UNAUTHED, ACCESS_DENIED, BOOKS_LOADED, WORD_DETAIL, ENABLE_STUDY, DISABLE_STUDY};
 } (this));

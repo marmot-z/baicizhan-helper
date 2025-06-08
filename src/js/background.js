@@ -57,7 +57,7 @@
     function(global) {
         'use strict';
 
-        importScripts('storage.js', 'wordbook-storage.js', 'api.js', 'google-analytics.js');        
+        importScripts('storage.js', 'wordbook-storage.js', 'exception.js', 'api.js', 'google-analytics.js');        
 
         return {
             getStorageInfo: global.storageModule.getStorageInfo,

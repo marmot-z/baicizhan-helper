@@ -54,13 +54,10 @@
     }
 
     function loginSuccessful(data) {
-        // ccess_token 写入 storage
-        storageModule.set('accessToken', data.access_token);
-        // 禁止点击
+        console.log(`登录成功`, data);
+        storageModule.set('accessToken', data);
         $('#loginButton').off('click').prop('disabled', true);
-        // 登录模态框隐藏
         $loginModel.modal('hide');
-        // 显示用户信息，支持退出
         loadUserInfo();        
         alert('登录成功');        
         $doc.trigger(events.AUTHED);
