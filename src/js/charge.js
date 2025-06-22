@@ -5,6 +5,34 @@
     const storageModule = window.storageModule;
     const $table = $('#purchaseTable');
 
+    async function initTrail() {
+        try {
+            let isTrial = await apiModule.hasTrial();
+
+            if (!isTrial) {            
+                $('#trialDiv').show();
+                $('#trialBtn').on('click', applyTrial);
+            }
+        } catch (error) {
+            console.error('检查试用信息失败:', error);
+        }
+    }
+
+    async function applyTrial() {
+        if (confirm(`是否申请试用？`)) {
+            window.Analytics.fireEvent('charge.trial', {});
+
+            try {
+                await apiModule.createTrialOrder();
+                $table.bootstrapTable('refresh');
+            } catch(e) {
+                window.Analytics.fireErrorEvent(e, { message: '申请试用失败' });
+                alert(e.message || '申请试用失败');
+                console.error(e);
+            }
+        }
+    }
+
     async function renderGoods() {        
         const goods = await apiModule.getGoodsList();
         const $container = $('#goodsContainer');
@@ -145,6 +173,7 @@
     }
 
     function init() {
+        initTrail();
         renderGoods();
         initOrderTable();
         checkAccount();

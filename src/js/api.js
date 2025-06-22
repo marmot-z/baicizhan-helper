@@ -373,6 +373,34 @@
         });
     }
 
+    function hasTrial() {
+        return loadRequestOptions().then(([host, port, accessToken]) => {
+            const url = `http://www.baicizhan-helper.cn/hasTrial`;
+
+            return sendRequest({
+                url,
+                method: 'GET',
+                headers: {
+                    'access_token': accessToken
+                }
+            });
+        });
+    }
+
+    function createTrialOrder() {
+        return loadRequestOptions().then(([host, port, accessToken]) => {
+            const url = `http://www.baicizhan-helper.cn/createTrialOrder`;
+
+            return sendRequest({
+                url,
+                method: 'POST',
+                headers: {
+                    'access_token': accessToken
+                }
+            });
+        });
+    }
+
     function getWordbookId() {
         return storageModule.get('bookId').then(bookId => bookId || 0);
     }
@@ -504,7 +532,7 @@
         getCalendarDailyInfo, getSelectBookPlanInfo,
         getAllBookInfo, getRoadmaps, getLearnedWords, updateDoneData,
         syncWordbook, getGoodsList, createOrder, getOrderInfos, 
-        generateWxpayQrCode, getOrderState
+        generateWxpayQrCode, getOrderState, hasTrial, createTrialOrder
     };
 
     global.apiModule = exports;

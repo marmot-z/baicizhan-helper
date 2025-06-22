@@ -10,8 +10,8 @@
         wordbookModule.init();
         studyModule.init();
         ankiOptionsModule.init();
-        announcementModule.init();
         initToast();
+        initTrial();
         window.Analytics.firePageViewEvent('options page', 'options.html');   
 
         let accessToken = await storageModule.get('accessToken');
@@ -27,6 +27,18 @@
         $doc.on(events.ACCESS_DENIED, (event, ex) => {
             $toastElement.alert(ex.message);
         });
+    }
+
+    async function initTrial() {
+        try {
+            let isTrial = await apiModule.hasTrial();
+
+            if (!isTrial) {            
+                $('#chargeHref').tooltip('show');
+            }
+        } catch (error) {
+            console.error('检查试用信息失败:', error);
+        }
     }
 
     window.onload = init;
