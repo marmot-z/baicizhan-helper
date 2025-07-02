@@ -265,7 +265,7 @@
             try {
                 const response = await sendRequest({
                     action,
-                    args: arg
+                    args: [arg]
                 });
 
                 if (response) {
