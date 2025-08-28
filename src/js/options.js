@@ -34,7 +34,7 @@
             let isTrial = await apiModule.hasTrial();
 
             if (!isTrial) {            
-                $('#chargeHref').tooltip('show');
+                $('#chargeHref').tooltip();
             }
         } catch (error) {
             console.error('检查试用信息失败:', error);
