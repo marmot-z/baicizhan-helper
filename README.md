@@ -1,6 +1,8 @@
 # Baicizhan Helper  
 English | [中文](./README-zh.md)
 
+The web version is here: [http://www.baicizhan-helper.cn](http://www.baicizhan-helper.cn)
+
 This application is a browser extension similar to the Google Translate plugin. It supports translation by selecting words and can work in collaboration with the Baicizhan APP. The current supported features are as follows:
 - Translation by selecting words
 - Bookmarking/Unbookmarking words (with real-time synchronization to the Baicizhan APP)
