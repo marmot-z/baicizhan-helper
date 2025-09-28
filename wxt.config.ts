@@ -44,8 +44,7 @@ export default defineConfig({
       },
     },
     permissions: [
-      'storage',
-      'contentSettings',
+      'storage'
     ],
     host_permissions: [
       'http://www.baicizhan-helper.cn/*',
@@ -57,6 +56,6 @@ export default defineConfig({
   
   // 构建输出配置
   zip: {
-    name: `crx-${pkg.name}-${pkg.version}.zip`,
+    name: `${pkg.name}-${pkg.version}.zip`,
   },
 });
