@@ -1,0 +1,36 @@
+{
+  "name": "baicizhan-helper",
+  "type": "module",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "wxt",
+    "dev:firefox": "wxt -b firefox",
+    "build": "wxt build",
+    "build:firefox": "wxt build -b firefox",
+    "zip": "wxt zip",
+    "zip:firefox": "wxt zip -b firefox",
+    "postinstall": "wxt prepare"
+  },
+  "dependencies": {
+    "@fortawesome/fontawesome-svg-core": "^7.0.1",
+    "@fortawesome/free-solid-svg-icons": "^7.0.1",
+    "@fortawesome/react-fontawesome": "^3.0.2",
+    "@radix-ui/react-popover": "^1.1.15",
+    "@types/react-router-dom": "^5.3.3",
+    "axios": "^1.12.2",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0",
+    "react-router-dom": "^7.9.1",
+    "zustand": "^5.0.8"
+  },
+  "devDependencies": {
+    "@types/chrome": "^0.1.1",
+    "@types/node": "^24.0.15",
+    "@types/react": "^19.1.8",
+    "@types/react-dom": "^19.1.6",
+    "@wxt-dev/module-react": "^1.1.1",
+    "typescript": "~5.8.3",
+    "wxt": "^0.19.15"
+  }
+}

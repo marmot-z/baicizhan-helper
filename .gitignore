@@ -30,3 +30,5 @@ coverage
 *.zip
 *.pem
 *.crx
+
+.wxt/

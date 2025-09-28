@@ -1,0 +1,90 @@
+.settings-container {
+  padding: 20px;
+  max-width: 400px;
+  margin: 0 auto;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+.settings-title {
+  font-size: 20px;
+  font-weight: 600;
+  color: #1a1a1a;
+  margin-bottom: 24px;
+  text-align: center;
+}
+
+.settings-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.setting-item {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 16px;
+  align-items: center;
+  padding: 12px 0;
+  border-bottom: 1px solid #e9ecef;
+}
+
+.setting-label {
+  font-size: 14px;
+  font-weight: 500;
+  color: #495057;
+  margin: 0;
+}
+
+.setting-select {
+  padding: 6px 12px;
+  border: 1px solid #ced4da;
+  border-radius: 6px;
+  font-size: 14px;
+  background-color: white;
+  cursor: pointer;
+  outline: none;
+  min-width: 120px;
+}
+
+.switch-container {
+  position: relative;
+}
+
+.switch-input {
+  width: 44px;
+  height: 24px;
+  appearance: none;
+  border-radius: 12px;
+  position: relative;
+  cursor: pointer;
+  outline: none;
+  transition: background-color 0.2s ease;
+}
+
+.switch-input:checked {
+  background-color: #007bff;
+}
+
+.switch-input:not(:checked) {
+  background-color: #ced4da;
+}
+
+.switch-slider {
+  position: absolute;
+  top: 2px;
+  width: 20px;
+  height: 20px;
+  background-color: white;
+  border-radius: 50%;
+  transition: left 0.2s ease;
+  pointer-events: none;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+}
+
+.switch-input:checked + .switch-slider {
+  left: 22px;
+}
+
+.switch-input:not(:checked) + .switch-slider {
+  left: 2px;
+}

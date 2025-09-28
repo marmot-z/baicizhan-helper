@@ -1,0 +1,202 @@
+/* Word popover styles */
+.word-popover {
+  font-family: Arial, sans-serif !important;
+  width: 360px !important;
+  padding: 10px !important;
+  border: 1px solid #c0c0c0 !important;
+  border-radius: 8px !important;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1) !important;
+  background-color: #fff !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 8px !important;
+}
+
+.header-row {
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: center !important;
+  font-size: 1.2em !important;
+  font-weight: bold !important;
+  font-family: inherit !important;
+  margin-bottom: 5px !important;
+}
+
+.word {
+  font-size: 24px !important;
+  margin: 0px !important;
+  font-weight: 600 !important;
+  color: #2c3e50 !important;
+  line-height: 1.2 !important;
+  letter-spacing: 0.5px !important;
+}
+
+.favorite-icon {
+  cursor: pointer;
+  font-size: 1.2em;
+}
+
+.pronunciation-row {
+  display: flex !important;
+  align-items: center !important;
+  gap: 0.5rem !important;
+  font-size: 16px !important;
+  color: #6c757d !important;
+  font-family: inherit !important;
+  font-weight: 400 !important;
+  line-height: 1.3 !important;
+  margin-bottom: 5px !important;
+}
+
+.pronunciation {
+  color: #6c757d !important;
+  font-size: 16px !important;
+  font-family: inherit !important;
+  font-weight: 400 !important;
+  line-height: 1.3 !important;
+}
+
+.definition-row {
+  font-size: 15px !important;
+  font-family: inherit !important;
+  color: #343a40 !important;
+  line-height: 1.5 !important;
+  font-weight: 400 !important;
+}
+
+.definition-row p {
+  margin: 0.25rem 0 !important;
+  font-size: 15px !important;
+  color: #343a40 !important;
+  line-height: 1.5 !important;
+}
+
+.definition-row strong {
+  font-weight: 600 !important;
+  color: #212529 !important;
+}
+
+/* Tips 组件样式 */
+.tips {
+  position: fixed;
+  top: 20%;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: rgba(0, 0, 0, 0.8);
+  color: white;
+  padding: 8px 12px;
+  border-radius: 4px;
+  font-size: 14px;
+  text-align: center;
+  z-index: 9999;
+  min-width: 10ch;
+  max-width: 20ch;
+  word-wrap: break-word;
+  word-break: break-all;
+  line-height: 1.4;
+}
+
+/* ErrorPopover 组件样式 */
+.error-popover {
+  width: 200px;
+  height: 200px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  background-color: white;
+  color: black;
+  font-weight: bold;
+  border: 1px solid #c0c0c0;
+  border-radius: 8px;
+  box-sizing: border-box;
+}
+
+.login-link {
+  cursor: pointer;
+  color: #1976d2;
+  text-decoration: underline;
+}
+
+.pronunciation-container {
+  display: flex !important;
+  flex-wrap: wrap !important;
+  gap: 1rem !important;
+  align-items: center !important;
+}
+
+.pronunciation-item {
+  display: flex !important;
+  align-items: center !important;
+  gap: 0.25rem !important;
+  font-size: 14px !important;
+  color: #495057 !important;
+  font-weight: 500 !important;
+  line-height: 1.4 !important;
+}
+
+.separator {
+  border: none !important;
+  border-top: 1px solid #eee !important;
+  margin: 5px 0 !important;
+}
+
+.example-sentence-row {
+  display: flex !important;
+  align-items: center !important;
+  gap: 5px !important;
+  font-size: 15px !important;
+  justify-content: space-between !important;
+  font-family: inherit !important;
+  color: #495057 !important;
+  font-weight: 400 !important;
+  line-height: 1.4 !important;
+}
+
+.example-sentence-row .sentence {
+  font-size: 15px !important;
+  color: #495057 !important;
+  font-weight: 400 !important;
+  line-height: 1.4 !important;
+  font-style: italic !important;
+}
+
+.pronounce-sentence-icon {
+  cursor: pointer;
+  color: #007bff;
+}
+
+.example-translation-row {
+  color: #6c757d !important;
+  font-size: 14px !important;
+  font-family: inherit !important;
+  font-weight: 400 !important;
+  line-height: 1.4 !important;
+}
+
+.example-translation-row .translation {
+  font-size: 14px !important;
+  color: #6c757d !important;
+  font-weight: 400 !important;
+  line-height: 1.4 !important;
+}
+
+.example-image-row { 
+  max-width: 100%;
+  object-fit: contain;
+}
+
+.example-image {
+  max-width: 300px;
+  height: auto;
+  border-radius: 4px;
+  margin-top: 5px;
+}
+
+.fontawesome-icon {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+  cursor: pointer;
+}

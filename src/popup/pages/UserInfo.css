@@ -1,0 +1,164 @@
+/* 用户信息容器 */
+.user-info-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  padding: 20px;
+  font-family: Arial, sans-serif;
+}
+
+.user-info-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
+  padding: 32px;
+  background-color: #ffffff;
+}
+
+/* 用户资料区域 */
+.user-profile {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+
+.user-avatar {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background-color: #e9ecef;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: 3px solid #dee2e6;
+}
+
+.avatar-icon {
+  font-size: 36px;
+  color: #6c757d;
+}
+
+.user-details {
+  text-align: center;
+}
+
+.user-name-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  justify-content: center;
+}
+
+.user-name {
+  font-size: 20px;
+  font-weight: 600;
+  color: #212529;
+  margin: 0;
+}
+
+.wechat-icon {
+  font-size: 18px;
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+
+.wechat-icon.bound {
+  color: #28a745;
+}
+
+.wechat-icon.unbound {
+  color: #6c757d;
+}
+
+/* 账号类型区域 */
+.account-type {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 16px 24px;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  border: 1px solid #e9ecef;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.account-label {
+  font-size: 14px;
+  color: #6c757d;
+  margin: 0;
+}
+
+.account-value {
+  font-size: 16px;
+  font-weight: 600;
+  color: #007bff;
+  margin: 0;
+}
+
+/* 退出按钮 */
+.logout-button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 24px;
+  background-color: #dc3545;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  min-width: 120px;
+  justify-content: center;
+}
+
+.logout-button:hover {
+  background-color: #c82333;
+}
+
+.logout-button:active {
+  transform: translateY(1px);
+}
+
+.logout-icon {
+  font-size: 14px;
+}
+
+/* 升级会员链接样式 */
+.upgrade-label {
+  color: #F44336;
+  cursor: pointer;
+  margin-left: 8px;
+  text-decoration: underline;
+}
+
+/* 响应式设计 */
+@media (max-width: 480px) {
+  .user-info-container {
+    padding: 16px;
+  }
+  
+  .user-info-content {
+    padding: 24px;
+    min-width: 260px;
+  }
+  
+  .user-avatar {
+    width: 60px;
+    height: 60px;
+  }
+  
+  .avatar-icon {
+    font-size: 28px;
+  }
+  
+  .user-name {
+    font-size: 18px;
+  }
+}
