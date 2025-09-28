@@ -33,6 +33,7 @@ export default defineConfig({
   // Manifest配置
   manifest: {
     name: pkg.name,
+    description: pkg.description,
     version: pkg.version,
     icons: {
       48: '/logo.png',
@@ -49,6 +50,8 @@ export default defineConfig({
     host_permissions: [
       'http://www.baicizhan-helper.cn/*',
       'https://www.baicizhan-helper.cn/*',
+      "http://127.0.0.1:8765/*",
+      "http://localhost:8765/*"
     ],
   },
   
