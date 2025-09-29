@@ -11,8 +11,6 @@ export default defineContentScript({
       (window as any).React = React;
     }
 
-    console.log('[WXT] Hello world from content script!');
-
     const container = document.createElement('div');
     container.id = 'wxt-app';
     document.body.appendChild(container);

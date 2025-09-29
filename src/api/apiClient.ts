@@ -3,8 +3,7 @@ import { UnauthorizedError, ForbiddenError } from "./errors";
 import { ApiResponse } from "./types";
 import { useAuthStore } from "../stores/useAuthStore";
 
-// const API_BASE_URL = 'http://www.baicizhan-helper.cn';
-const API_BASE_URL = 'http://localhost:18033';
+const API_BASE_URL = 'http://www.baicizhan-helper.cn';
 
 // 创建axios实例
 const apiClient: AxiosInstance = axios.create({
