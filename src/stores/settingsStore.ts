@@ -5,18 +5,23 @@ import { chromeStorage } from '../utils/chromeStorage';
 interface SettingsState {
   defaultWordBook: {bookId: number, bookName: string};
   autoPlay: boolean;
+  translateTiming: number;
   setDefaultWordBook: (book: {bookId: number, bookName: string}) => void;
   setAutoPlay: (autoPlay: boolean) => void;
+  setTranslateTiming: (timing: number) => void;
 }
 
 export const settingsStore = create<SettingsState>()(persist(
   (set) => ({
     defaultWordBook: {bookId: 0, bookName: '收藏的单词'},
     autoPlay: false,
+    translateTiming: 0,
     
     setDefaultWordBook: (book: {bookId: number, bookName: string}) => set({ defaultWordBook: book }),
     
     setAutoPlay: (autoPlay: boolean) => set({ autoPlay }),
+    
+    setTranslateTiming: (timing: number) => set({ translateTiming: timing }),
   }),
   {
     name: 'setting-storage',
@@ -24,6 +29,7 @@ export const settingsStore = create<SettingsState>()(persist(
     partialize: (state) => ({
       defaultWordBook: state.defaultWordBook,
       autoPlay: state.autoPlay,
+      translateTiming: state.translateTiming,
     })
   }
 ));

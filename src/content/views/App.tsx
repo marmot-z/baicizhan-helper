@@ -8,6 +8,7 @@ import { UnauthorizedError, ForbiddenError } from '../../api/errors'
 import AnkiExport from '../../components/AnkiExport'
 import { WordData } from '../../components/AnkiExport'
 import { isEnglishWord } from '../../utils/index'
+import { settingsStore } from '../../stores/settingsStore'
 import './App.css'
 
 function App() {
@@ -20,11 +21,13 @@ function App() {
   const [wordResult, setWordResult] = useState<TopicResourceV2 | null>(null)
   const [operateError, setOperateError] = useState<Error | null>(null)
   const [isExportModalOpen, setIsExportModalOpen] = useState(false)
-  const [exportWords, setExportWords] = useState<WordData[]>([{ topicId: 18604, word: 'though' }, { topicId: 19714, word: 'what'}, {topicId: 9902, word: 'optional'}])
+  const [exportWords, setExportWords] = useState<WordData[]>([])
 
   // 查询单词信息
-  const handleSearchWord = async () => {
-    if (!selectedWord) return
+  const handleSearchWord = async (word?: string) => {
+    const wordToSearch = word || selectedWord
+    if (!wordToSearch) return
+    if (settingsStore.getState().translateTiming === 2) return;
 
     setWordResult(null)
     setShowIcon(false)
@@ -33,7 +36,7 @@ function App() {
       // 通过background service worker调用API
       const response = await chrome.runtime.sendMessage({
         action: 'searchWord',
-        word: selectedWord
+        word: wordToSearch
       })
 
       setShowPopover(true)
@@ -69,7 +72,12 @@ function App() {
       setSelectionPosition({ x: rect.left, y: rect.top })
       setSelectionSize({ width: rect.width, height: rect.height })
       setSelectedWord(selectedText)
-      setShowIcon(true)
+
+      if (settingsStore.getState().translateTiming === 1) {
+        handleSearchWord(selectedText);
+      } else if (settingsStore.getState().translateTiming === 0) {
+        setShowIcon(true)
+      }
     } else {
       setShowIcon(false)
     }
@@ -111,7 +119,7 @@ function App() {
             zIndex: 10000,
             cursor: 'pointer'
           }}
-          onClick={handleSearchWord}
+          onClick={() => handleSearchWord()}
         >
           <img src={Logo} alt="Selection icon" className="selection-icon-img" />
         </div>

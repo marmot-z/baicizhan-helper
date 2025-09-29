@@ -9,6 +9,7 @@ interface SettingsProps {}
 const Settings: React.FC<SettingsProps> = () => {
   const [defaultWordBook, setDefaultWordBook] = useState<number>(settingsStore.getState().defaultWordBook.bookId);
   const [autoPlay, setAutoPlay] = useState<boolean>(settingsStore.getState().autoPlay);
+  const [translateTiming, setTranslateTiming] = useState<number>(settingsStore.getState().translateTiming);
   const [wordBooks, setWordBooks] = useState<UserBookItem[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
 
@@ -40,6 +41,12 @@ const Settings: React.FC<SettingsProps> = () => {
     settingsStore.getState().setAutoPlay(e.target.checked);
   };
 
+  const handleTranslateTimingChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const timing = Number(e.target.value);
+    setTranslateTiming(timing);
+    settingsStore.getState().setTranslateTiming(timing);
+  };
+
   return (
     <div className="settings-container">
       <h2 className="settings-title">设置</h2>
@@ -65,6 +72,19 @@ const Settings: React.FC<SettingsProps> = () => {
                  </option>
                ))
             )}
+          </select>
+        </div>
+
+        <div className="setting-item">
+          <label className="setting-label">翻译时机</label>
+          <select
+            value={translateTiming}
+            onChange={handleTranslateTimingChange}
+            className="setting-select"
+          >
+            <option value={0}>显示图标，点击翻译</option>
+            <option value={1}>直接翻译</option>
+            <option value={3}>永不翻译</option>
           </select>
         </div>
 
