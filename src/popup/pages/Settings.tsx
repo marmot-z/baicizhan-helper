@@ -48,9 +48,7 @@ const Settings: React.FC<SettingsProps> = () => {
   };
 
   return (
-    <div className="settings-container">
-      <h2 className="settings-title">设置</h2>
-      
+    <div className="settings-container">      
       <form className="settings-form">
         <div className="setting-item">
           <label className="setting-label">默认收藏单词本</label>
@@ -99,6 +97,10 @@ const Settings: React.FC<SettingsProps> = () => {
             />
             <div className="switch-slider" />
           </div>
+        </div>
+
+        <div className="setting-item">
+          <p>导出anki功能请到 <a href="http://www.baicizhan-helper.cn/page/wordbook/0" target="_blank">网页端</a> 进行操作</p>
         </div>
       </form>
     </div>
