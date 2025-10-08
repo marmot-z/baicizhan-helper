@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSearch } from '@fortawesome/free-solid-svg-icons';
 import { API } from '../../api/api';
@@ -9,6 +9,14 @@ export default function Home() {
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState<SearchWordResultV2[]>([]);
   const [wordDetail, setWordDetail] = useState<TopicResourceV2 | null>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
+  
+  useEffect(() => {
+    // 组件挂载后自动聚焦输入框
+    if (inputRef.current) {
+      inputRef.current.focus();
+    }
+  }, []);
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter') {
@@ -56,14 +64,16 @@ export default function Home() {
       <div className="search-container">
         <div className="search-box">
           <input
+            ref={inputRef}
             type="text"
             className="search-input"
             placeholder="输入要查询的单词..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             onKeyPress={handleKeyPress}
+            tabIndex={0}
           />
-          <button className="search-button" onClick={handleSearch}>
+          <button className="search-button" onClick={handleSearch} tabIndex={-1}>
             <FontAwesomeIcon icon={faSearch} />
           </button>
         </div>
@@ -81,6 +91,8 @@ export default function Home() {
               key={result.topic_id}
               className="word-item"
               onClick={() => handleWordClick(result.topic_id)}
+              tabIndex={1}
+              onKeyDown={(e) => e.key === 'Enter' && handleWordClick(result.topic_id)}
             >
               <div className="search-result-word">{result.word}</div>
               <div className="word-meaning">{result.mean_cn}</div>
