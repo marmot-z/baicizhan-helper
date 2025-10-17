@@ -37,12 +37,14 @@ class ExportTask {
     private totalWords: { topicId: number, word: string }[];
     private processedWords: number;
     private isExporting: boolean;
+    private lastError: Error | null;
 
     constructor() {
         this.deckName = '';
         this.totalWords = [];
         this.processedWords = 0;
         this.isExporting = false;
+        this.lastError = null;
     }
 
     async preprocess(deckName: string, wordTopicIds: { topicId: number, word: string }[]) {
@@ -71,6 +73,7 @@ class ExportTask {
         this.totalWords = wordTopicIds.filter(w => !existWordsInDeck.includes(w.word));
         this.processedWords = 0;
         this.deckName = deckName;
+        this.lastError = null;
 
         return {
             all: wordTopicIds.length,
@@ -82,43 +85,52 @@ class ExportTask {
     async doExport() {
         this.isExporting = true;
 
-        for (let i = 0; i < this.totalWords.length; i++) {
-            if (!this.isExporting) {
-                break;
+        try {
+            for (let i = 0; i < this.totalWords.length; i++) {
+                if (!this.isExporting) {
+                    break;
+                }
+
+                const word = await API.getWordDetail(this.totalWords[i].topicId);
+                this.processedWords++;
+
+                const noteData = {
+                    deckName: this.deckName,
+                    modelName: defaultModelName,
+                    fields: {
+                        Front: buildFrontContent(word),
+                        Back: buildBackContent(word)
+                    },
+                    options: {
+                        allowDuplicate: false,
+                        duplicateScope: "deck"
+                    },
+                    tags: ["BaiCiZhan"]
+                };
+
+                const baseUrl = 'https://7n.bczcdn.com';
+                const imageUrl = word.dict.sentences?.[0]?.img_uri ? `${baseUrl}${word.dict.sentences[0].img_uri}` : '';
+                const sentenceAudioUrl = word.dict.sentences?.[0]?.audio_uri ? `${baseUrl}${word.dict.sentences[0].audio_uri}` : '';
+                const audioUkUrl = `${baseUrl}${word.dict.word_basic_info.accent_uk_audio_uri}`;
+                const audioUsaUrl = word.dict.word_basic_info.accent_usa_audio_uri ? `${baseUrl}${word.dict.word_basic_info.accent_usa_audio_uri}` : '';
+
+                addImageToNote(noteData, word.dict.word_basic_info.word, imageUrl);
+                addAudioToNote(noteData, word.dict.word_basic_info.word, audioUkUrl, audioUsaUrl, sentenceAudioUrl);
+
+                await ankiConnectClient.addNote(noteData);
+                await new Promise(resolve => setTimeout(resolve, 2000));
             }
-
-            const word = await API.getWordDetail(this.totalWords[i].topicId);
-            this.processedWords++;
-
-            const noteData = {
-                deckName: this.deckName,
-                modelName: defaultModelName,
-                fields: {
-                    Front: buildFrontContent(word),
-                    Back: buildBackContent(word)
-                },
-                options: {
-                    allowDuplicate: false,
-                    duplicateScope: "deck"
-                },
-                tags: ["BaiCiZhan"]
-            };
-
-            const baseUrl = 'https://7n.bczcdn.com';
-            const imageUrl = word.dict.sentences?.[0]?.img_uri ? `${baseUrl}${word.dict.sentences[0].img_uri}` : '';
-            const sentenceAudioUrl = word.dict.sentences?.[0]?.audio_uri ? `${baseUrl}${word.dict.sentences[0].audio_uri}` : '';
-            const audioUkUrl = `${baseUrl}${word.dict.word_basic_info.accent_uk_audio_uri}`;
-            const audioUsaUrl = word.dict.word_basic_info.accent_usa_audio_uri ? `${baseUrl}${word.dict.word_basic_info.accent_usa_audio_uri}` : '';
-            
-            addImageToNote(noteData, word.dict.word_basic_info.word, imageUrl);
-            addAudioToNote(noteData, word.dict.word_basic_info.word, audioUkUrl, audioUsaUrl, sentenceAudioUrl);
-
-            await ankiConnectClient.addNote(noteData);
-            await new Promise(resolve => setTimeout(resolve, 2000));
+        } catch (e) {
+            this.lastError = e as Error;
+            console.error('导出单词至 anki 时出错:', e);
         }
     }
 
     getProgress() {
+        if (this.lastError) {
+            throw this.lastError;
+        }
+
         return {
             total: this.totalWords.length,
             processed: this.processedWords

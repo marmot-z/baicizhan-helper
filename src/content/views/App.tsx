@@ -83,22 +83,19 @@ function App() {
     }
   }
 
-  useEffect(() => {  
-    const validWebsites = ['localhost', 'www.baicizhan-helper.cn'];
+  useEffect(() => {
+    const validWebsites = ['http://localhost:5173', 'http://www.baicizhan-helper.cn'];
 
-    if (validWebsites.includes(window.location.hostname)) {
-      const addExportListener = () => {
-        const exportBtn = document.querySelector('#exportBtn') as HTMLElement
+    window.addEventListener('message', (event) => {
+      if (validWebsites.includes(event.origin) && event.data.type === 'EXPORT_TO_ANKI_WORDS') {
+        const words = Object.entries(event.data.payload).map(([topicId, word]) => ({
+          topicId: Number(topicId), word: word as string
+        }));
 
-        if (exportBtn) {
-          exportBtn.addEventListener('click', () => setIsExportModalOpen(true));
-        }
-      };
-
-      document.readyState === 'loading' ? 
-        document.addEventListener('DOMContentLoaded', addExportListener) :
-        addExportListener();
-    }
+        setExportWords(words);
+        setIsExportModalOpen(true);
+      }
+    });
 
     document.addEventListener('mouseup', handleMouseUp);
 

@@ -25,6 +25,12 @@ interface WordBookStore {
   deleteTopicId: (bookId: number, topicId: number) => boolean;
 }
 
+chrome.storage.onChanged.addListener((changes, namespace) => {
+  if (namespace === 'local' && changes?.['wordbook-storage']?.newValue) {
+    useWordBookStorage.persist.rehydrate();
+  }
+});
+
 const CACHE_DURATION = 12 * 60 * 60 * 1000; // 12小时
 
 export const useWordBookStorage = create<WordBookStore>()(persist(

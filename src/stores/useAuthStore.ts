@@ -12,6 +12,12 @@ interface AuthState {
   logout: () => void;
 }
 
+chrome.storage.onChanged.addListener((changes, namespace) => {
+  if (namespace === 'local' && changes?.['auth-storage']?.newValue) {
+    useAuthStore.persist.rehydrate();
+  }
+});
+
 export const useAuthStore = create<AuthState>()(persist(
   (set) => ({
     user: null,

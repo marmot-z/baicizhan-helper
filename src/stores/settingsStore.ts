@@ -11,6 +11,12 @@ interface SettingsState {
   setTranslateTiming: (timing: number) => void;
 }
 
+chrome.storage.onChanged.addListener((changes, namespace) => {
+  if (namespace === 'local' && changes?.['setting-storage']?.newValue) {
+    settingsStore.persist.rehydrate();
+  }
+});
+
 export const settingsStore = create<SettingsState>()(persist(
   (set) => ({
     defaultWordBook: {bookId: 0, bookName: '收藏的单词'},

@@ -181,16 +181,7 @@ const AnkiExport: React.FC<AnkiExportProps> = ({
             <div className="modal-body">
               {error ? (
                 <div className="error-message">
-                  {error}
-                  <div style={{ marginTop: '8px' }}>
-                    <button
-                      className="cancel-button"
-                      onClick={() => { setIsExporting(false); setError(''); }}
-                      style={{ fontSize: '12px', padding: '4px 8px' }}
-                    >
-                      返回
-                    </button>
-                  </div>
+                  {error}                  
                 </div>
               ) : (
                 <>
