@@ -1,6 +1,6 @@
 import { TopicResourceV2 } from '../api/types';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faStar } from '@fortawesome/free-solid-svg-icons';
+import { faStar, faLink } from '@fortawesome/free-solid-svg-icons';
 import AudioIcon from './AudioIcon';
 import { groupChineseMeanings } from '../utils';
 import { useState, useEffect } from 'react';
@@ -68,7 +68,16 @@ const PopoverContent: React.FC<{wordResult: TopicResourceV2}> = ({ wordResult })
     return (
         <div>
             <div className="bcz-helper-header-row">
-                <span className="bcz-helper-word">{wordResult.dict.word_basic_info.word}</span>
+                <span className="bcz-helper-word">
+                    {wordResult.dict.word_basic_info.word}
+                    <a href={`http://www.baicizhan-helper.cn/page/word-detail/${wordResult.dict.word_basic_info.topic_id}`} target="_blank">
+                        <FontAwesomeIcon 
+                            icon={faLink} 
+                            style={{fontSize: 'medium'}}
+                            title='查看详情'
+                        />
+                    </a>
+                </span>                
                 <FontAwesomeIcon
                     icon={faStar}
                     style={{color: collected ? '#007bff' : '#ccc'}}
