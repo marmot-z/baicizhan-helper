@@ -108,7 +108,7 @@ function App() {
     <>
       {showIcon && (
         <div
-          className="selection-icon"
+          className="bcz-helper-selection-icon"
           style={{
             position: 'fixed',
             left: `${iconPosition.x + 10}px`,
@@ -118,7 +118,7 @@ function App() {
           }}
           onClick={() => handleSearchWord()}
         >
-          <img src={Logo} alt="Selection icon" className="selection-icon-img" />
+          <img src={Logo} alt="Selection icon" className="bcz-helper-selection-icon-img" />
         </div>
       )}
       <Popover.Root open={showPopover} onOpenChange={setShowPopover}>
@@ -135,12 +135,12 @@ function App() {
           </div>
         </Popover.Trigger>
         <Popover.Portal>
-          <Popover.Content className="popover-content" sideOffset={5} >
+          <Popover.Content className="bcz-helper-popover-content" sideOffset={5} >
             {wordResult ? 
-              (<div className="word-popover"><PopoverContent wordResult={wordResult}/></div>) : 
+              (<div className="bcz-helper-word-popover"><PopoverContent wordResult={wordResult}/></div>) : 
               <ErrorPopover error={operateError} />
             }
-            <Popover.Arrow className="popover-arrow" />
+            <Popover.Arrow className="bcz-helper-popover-arrow" />
           </Popover.Content>
         </Popover.Portal>
       </Popover.Root>

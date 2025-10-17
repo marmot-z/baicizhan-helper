@@ -1,4 +1,4 @@
-.export-modal-overlay {
+.bcz-helper-export-modal-overlay {
   position: fixed;
   top: 0;
   left: 0;
@@ -11,7 +11,7 @@
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
 }
 
-.export-modal {
+.bcz-helper-export-modal {
   background-color: #ffffff;
   border-radius: 12px;
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
@@ -19,7 +19,7 @@
   overflow: hidden;
 }
 
-.modal-header {
+.bcz-helper-modal-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -27,14 +27,14 @@
   border-bottom: 1px solid #e5e7eb;
 }
 
-.modal-header h2 {
+.bcz-helper-modal-header h2 {
   margin: 0;
   font-size: 16px;
   font-weight: 600;
   color: #1f2937;
 }
 
-.close-button {
+.bcz-helper-close-button {
   background: none;
   border: none;
   font-size: 24px;
@@ -44,27 +44,27 @@
   line-height: 1;
 }
 
-.close-button:hover {
+.bcz-helper-close-button:hover {
   color: #6b7280;
 }
 
-.modal-body {
+.bcz-helper-modal-body {
   padding: 20px 16px;
 }
 
 /* Export Modal Styles */
-.form-group {
+.bcz-helper-form-group {
   display: flex;
   align-items: center;
   gap: 8px;
 }
 
-.form-group label {
+.bcz-helper-form-group label {
   font-size: 14px;
   color: #374151;
 }
 
-.form-group select {
+.bcz-helper-form-group select {
   flex-grow: 1;
   padding: 8px 12px;
   border: 1px solid #d1d5db;
@@ -75,12 +75,12 @@
   transition: border-color 0.2s, box-shadow 0.2s;
 }
 
-.form-group select:focus {
+.bcz-helper-form-group select:focus {
   border-color: #6366f1;
   box-shadow: 0 0 0 2px #c7d2fe;
 }
 
-.modal-footer {
+.bcz-helper-modal-footer {
   display: flex;
   justify-content: flex-end;
   gap: 12px;
@@ -89,7 +89,7 @@
   border-top: 1px solid #e5e7eb;
 }
 
-.cancel-button, .export-button {
+.bcz-helper-cancel-button, .bcz-helper-export-button {
   padding: 8px 16px;
   border-radius: 6px;
   border: 1px solid transparent;
@@ -99,13 +99,13 @@
   transition: background-color 0.2s, border-color 0.2s, color 0.2s;
 }
 
-.cancel-button {
+.bcz-helper-cancel-button {
   background-color: #ffffff;
   border-color: #d1d5db;
   color: #374151;
 }
 
-.cancel-button:hover {
+.bcz-helper-cancel-button:hover {
   background-color: #f3f4f6;
 }
 
@@ -114,22 +114,22 @@
   color: #ffffff;
 }
 
-.export-button:hover {
+.bcz-helper-export-button:hover {
   background-color: #4f46e5;
 }
 
-.export-button:disabled {
+.bcz-helper-export-button:disabled {
   opacity: 0.5;
   cursor: not-allowed;
 }
 
 /* Export Progress Styles */
-.modal-body:has(.progress-container) {
+.bcz-helper-modal-body:has(.progress-container) {
   padding: 24px 16px;
   text-align: center;
 }
 
-.progress-container {
+.bcz-helper-progress-container {
   display: flex;
   align-items: center;
   gap: 12px;
@@ -140,7 +140,7 @@
   overflow: hidden;
 }
 
-.progress-bar {
+.bcz-helper-progress-bar {
   height: 100%;
   background-color: #22c55e;
   border-radius: 5px;
@@ -153,10 +153,10 @@
     transparent 50px
   );
   background-size: 50px 50px;
-  animation: progress-animation 2s linear infinite;
+  animation: bcz-helper-progress-animation 2s linear infinite;
 }
 
-.progress-percentage {
+.bcz-helper-progress-percentage {
   font-size: 14px;
   font-weight: 500;
   color: #374151;
@@ -164,7 +164,7 @@
   text-align: center;
 }
 
-@keyframes progress-animation {
+@keyframes bcz-helper-progress-animation {
   from {
     background-position: 0 0;
   }
@@ -173,13 +173,13 @@
   }
 }
 
-.warning-text {
+.bcz-helper-warning-text {
   font-size: 12px;
   color: #6b7280;
   margin: 16px 0 0;
 }
 
-.error-message {
+.bcz-helper-error-message {
   margin-bottom: 16px;
   padding: 8px;
   background-color: #fee2e2;

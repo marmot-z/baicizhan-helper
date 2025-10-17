@@ -131,22 +131,22 @@ const AnkiExport: React.FC<AnkiExportProps> = ({
   }
 
   return (
-    <div className="export-modal-overlay">
-      <div className="export-modal">
+    <div className="bcz-helper-export-modal-overlay">
+      <div className="bcz-helper-export-modal">
         {!isExporting ? (
           // Export Modal
           <>
-            <div className="modal-header">
+            <div className="bcz-helper-modal-header">
               <h2>导出{words.length}词至Anki</h2>
-              <button className="close-button" onClick={handleClose}>&times;</button>
+              <button className="bcz-helper-close-button" onClick={handleClose}>&times;</button>
             </div>
-            <div className="modal-body">
+            <div className="bcz-helper-modal-body">
               {error && (
-                <div className="error-message">
+                <div className="bcz-helper-error-message">
                   {error}
                 </div>
               )}
-              <div className="form-group">
+              <div className="bcz-helper-form-group">
                 <label htmlFor="deck-select">deck:</label>
                 <select
                   id="deck-select"
@@ -166,10 +166,10 @@ const AnkiExport: React.FC<AnkiExportProps> = ({
                 </select>
               </div>
             </div>
-            <div className="modal-footer">
-              <button className="cancel-button" onClick={handleClose}>取消</button>
+            <div className="bcz-helper-modal-footer">
+              <button className="bcz-helper-cancel-button" onClick={handleClose}>取消</button>
               <button
-                className="export-button"
+                className="bcz-helper-export-button"
                 onClick={handleExport}
                 disabled={loading || !selectedDeck || availableDecks.length === 0}
               >
@@ -180,22 +180,22 @@ const AnkiExport: React.FC<AnkiExportProps> = ({
         ) : (
           // Export Progress
           <>
-            <div className="modal-header">
+            <div className="bcz-helper-modal-header">
               <h2>导出{words.length}词至Anki</h2>
-              <button className="close-button" onClick={handleClose}>&times;</button>
+              <button className="bcz-helper-close-button" onClick={handleClose}>&times;</button>
             </div>
-            <div className="modal-body">
+            <div className="bcz-helper-modal-body">
               {error ? (
-                <div className="error-message">
+                <div className="bcz-helper-error-message">
                   {error}                  
                 </div>
               ) : (
                 <>
-                  <div className="progress-container">
-                    <div className="progress-bar" style={{ width: `${progress}%` }}></div>
+                  <div className="bcz-helper-progress-container">
+                    <div className="bcz-helper-progress-bar" style={{ width: `${progress}%` }}></div>
                   </div>
-                  <div className="progress-percentage">{progress}%</div>
-                  <p className="warning-text">请耐心等候，退出该页面会中断导出。</p>
+                  <div className="bcz-helper-progress-percentage">{progress}%</div>
+                  <p className="bcz-helper-warning-text">请耐心等候，退出该页面会中断导出。</p>
                 </>
               )}
             </div>

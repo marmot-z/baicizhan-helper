@@ -1,4 +1,4 @@
-.popup-container {
+.bcz-helper-popup-container {
   position: fixed;
   right: 0;
   bottom: 0;
@@ -11,7 +11,7 @@
   line-height: 1em;
 }
 
-.popup-content {
+.bcz-helper-popup-content {
   background-color: white;
   color: #1f2937;
   border-radius: 0.5rem;
@@ -25,7 +25,7 @@
   transition: opacity 300ms;
 }
 
-.toggle-button {
+.bcz-helper-toggle-button {
   display: flex;
   justify-content: center;
   width: 2.5rem;
@@ -39,23 +39,23 @@
   background-color: #288cd7;
 }
 
-.toggle-button:hover {
+.bcz-helper-toggle-button:hover {
   background-color: #1e6aa3;
 }
 
-.button-icon {
+.bcz-helper-button-icon {
   padding: 4px;
 }
 
-.opacity-100 {
+.bcz-helper-opacity-100 {
   opacity: 1;
 }
 
-.opacity-0 {
+.bcz-helper-opacity-0 {
   opacity: 0;
 }
 
-.selection-icon {
+.bcz-helper-selection-icon {
   background-color: white;
   border-radius: 50%;
   box-shadow:
@@ -66,15 +66,15 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  animation: fadeIn 0.2s ease-in-out;
+  animation: bcz-helper-fadeIn 0.2s ease-in-out;
 }
 
-.selection-icon-img {
+.bcz-helper-selection-icon-img {
   width: 1.2rem;
   height: 1.2rem;
 }
 
-@keyframes fadeIn {
+@keyframes bcz-helper-fadeIn {
   from {
     opacity: 0;
     transform: scale(0.8);
@@ -86,8 +86,8 @@
   }
 }
 
-.popover-content {
-  animation: fadeIn 0.2s ease-in-out;
+.bcz-helper-popover-content {
+  animation: bcz-helper-fadeIn 0.2s ease-in-out;
   padding: '0';
   background-color: transparent;
   border: 'none';
@@ -96,6 +96,6 @@
   outline: none;
 }
 
-.popover-arrow {
+.bcz-helper-popover-arrow {
   fill: white;
 }

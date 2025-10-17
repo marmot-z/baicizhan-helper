@@ -67,33 +67,33 @@ const PopoverContent: React.FC<{wordResult: TopicResourceV2}> = ({ wordResult })
 
     return (
         <div>
-            <div className="header-row">
-                <span className="word">{wordResult.dict.word_basic_info.word}</span>
+            <div className="bcz-helper-header-row">
+                <span className="bcz-helper-word">{wordResult.dict.word_basic_info.word}</span>
                 <FontAwesomeIcon
                     icon={faStar}
                     style={{color: collected ? '#007bff' : '#ccc'}}
-                    className='fontawesome-icon'
+                    className='bcz-helper-fontawesome-icon'
                     onClick={manageCollect}
                     title="收藏/取消收藏"
                 />
             </div>
-            <div className="pronunciation-row">
-                <div className="pronunciation-container">
+            <div className="bcz-helper-pronunciation-row">
+                <div className="bcz-helper-pronunciation-container">
                     {wordResult.dict.word_basic_info.accent_uk && (
-                        <div className="pronunciation-item">
-                            英<span className="pronunciation">{wordResult.dict.word_basic_info.accent_uk}</span>
+                        <div className="bcz-helper-pronunciation-item">
+                            英<span className="bcz-helper-pronunciation">{wordResult.dict.word_basic_info.accent_uk}</span>
                             <AudioIcon src={wordResult.dict.word_basic_info.accent_uk_audio_uri} />
                         </div>
                     )}
                     {wordResult.dict.word_basic_info.accent_usa && (
-                        <div className="pronunciation-item">
-                            美<span className="pronunciation">{wordResult.dict.word_basic_info.accent_usa}</span>
+                        <div className="bcz-helper-pronunciation-item">
+                            美<span className="bcz-helper-pronunciation">{wordResult.dict.word_basic_info.accent_usa}</span>
                             <AudioIcon src={wordResult.dict.word_basic_info.accent_usa_audio_uri} />
                         </div>
                     )}
                 </div>
             </div>
-            <div className="definition-row">
+            <div className="bcz-helper-definition-row">
                 {Array.from(groupChineseMeanings(wordResult.dict.chn_means)).map(([meanType, means]) => (
                     <p key={meanType} style={{ margin: '0.25rem 0' }}>
                         <strong>{meanType}</strong> {(() => {
@@ -103,18 +103,18 @@ const PopoverContent: React.FC<{wordResult: TopicResourceV2}> = ({ wordResult })
                     </p>
                 ))}
             </div>
-            <hr className="separator" />
+            <hr className="bcz-helper-separator" />
             {wordResult.dict.sentences && wordResult.dict.sentences.length > 0 && (
                 <>
-                    <div className="example-sentence-row">
-                        <span className="sentence">{wordResult.dict.sentences[0].sentence}</span>
+                    <div className="bcz-helper-example-sentence-row">
+                        <span className="bcz-helper-sentence">{wordResult.dict.sentences[0].sentence}</span>
                         {wordResult.dict.sentences[0].audio_uri && <AudioIcon src={wordResult.dict.sentences[0].audio_uri} />}
                     </div>
-                    <div className="example-translation-row">
-                        <span className="translation">{wordResult.dict.sentences[0].sentence_trans}</span>
+                    <div className="bcz-helper-example-translation-row">
+                        <span className="bcz-helper-translation">{wordResult.dict.sentences[0].sentence_trans}</span>
                     </div>
-                    <div className="example-image-row">
-                        <img src={"https://7n.bczcdn.com" + wordResult.dict.sentences[0].img_uri} alt="Example Image" className="example-image" />
+                    <div className="bcz-helper-example-image-row">
+                        <img src={"https://7n.bczcdn.com" + wordResult.dict.sentences[0].img_uri} alt="Example Image" className="bcz-helper-example-image" />
                     </div>
                 </>
             )}
@@ -142,7 +142,7 @@ const Tips: React.FC<{ message: string; onClose?: () => void }> = ({ message, on
     if (!visible) return null;
 
     return (
-        <div className="tips">
+        <div className="bcz-helper-tips">
             {message}
         </div>
     );

@@ -1,5 +1,5 @@
 /* Word popover styles */
-.word-popover {
+.bcz-helper-word-popover {
   font-family: Arial, sans-serif !important;
   width: 360px !important;
   padding: 10px !important;
@@ -12,7 +12,7 @@
   gap: 8px !important;
 }
 
-.header-row {
+.bcz-helper-header-row {
   display: flex !important;
   justify-content: space-between !important;
   align-items: center !important;
@@ -22,7 +22,7 @@
   margin-bottom: 5px !important;
 }
 
-.word {
+.bcz-helper-word {
   font-size: 24px !important;
   margin: 0px !important;
   font-weight: 600 !important;
@@ -31,12 +31,12 @@
   letter-spacing: 0.5px !important;
 }
 
-.favorite-icon {
+.bcz-helper-favorite-icon {
   cursor: pointer;
   font-size: 1.2em;
 }
 
-.pronunciation-row {
+.bcz-helper-pronunciation-row {
   display: flex !important;
   align-items: center !important;
   gap: 0.5rem !important;
@@ -48,7 +48,7 @@
   margin-bottom: 5px !important;
 }
 
-.pronunciation {
+.bcz-helper-pronunciation {
   color: #6c757d !important;
   font-size: 16px !important;
   font-family: inherit !important;
@@ -56,7 +56,7 @@
   line-height: 1.3 !important;
 }
 
-.definition-row {
+.bcz-helper-definition-row {
   font-size: 15px !important;
   font-family: inherit !important;
   color: #343a40 !important;
@@ -64,20 +64,20 @@
   font-weight: 400 !important;
 }
 
-.definition-row p {
+.bcz-helper-definition-row p {
   margin: 0.25rem 0 !important;
   font-size: 15px !important;
   color: #343a40 !important;
   line-height: 1.5 !important;
 }
 
-.definition-row strong {
+.bcz-helper-definition-row strong {
   font-weight: 600 !important;
   color: #212529 !important;
 }
 
 /* Tips 组件样式 */
-.tips {
+.bcz-helper-tips {
   position: fixed;
   top: 20%;
   left: 50%;
@@ -97,7 +97,7 @@
 }
 
 /* ErrorPopover 组件样式 */
-.error-popover {
+.bcz-helper-error-popover {
   width: 200px;
   height: 200px;
   display: flex;
@@ -113,20 +113,20 @@
   box-sizing: border-box;
 }
 
-.login-link {
+.bcz-helper-login-link {
   cursor: pointer;
   color: #1976d2;
   text-decoration: underline;
 }
 
-.pronunciation-container {
+.bcz-helper-pronunciation-container {
   display: flex !important;
   flex-wrap: wrap !important;
   gap: 1rem !important;
   align-items: center !important;
 }
 
-.pronunciation-item {
+.bcz-helper-pronunciation-item {
   display: flex !important;
   align-items: center !important;
   gap: 0.25rem !important;
@@ -136,13 +136,13 @@
   line-height: 1.4 !important;
 }
 
-.separator {
+.bcz-helper-separator {
   border: none !important;
   border-top: 1px solid #eee !important;
   margin: 5px 0 !important;
 }
 
-.example-sentence-row {
+.bcz-helper-example-sentence-row {
   display: flex !important;
   align-items: center !important;
   gap: 5px !important;
@@ -154,7 +154,7 @@
   line-height: 1.4 !important;
 }
 
-.example-sentence-row .sentence {
+.bcz-helper-example-sentence-row .bcz-helper-sentence {
   font-size: 15px !important;
   color: #495057 !important;
   font-weight: 400 !important;
@@ -162,12 +162,12 @@
   font-style: italic !important;
 }
 
-.pronounce-sentence-icon {
+.bcz-helper-pronounce-sentence-icon {
   cursor: pointer;
   color: #007bff;
 }
 
-.example-translation-row {
+.bcz-helper-example-translation-row {
   color: #6c757d !important;
   font-size: 14px !important;
   font-family: inherit !important;
@@ -175,26 +175,26 @@
   line-height: 1.4 !important;
 }
 
-.example-translation-row .translation {
+.bcz-helper-example-translation-row .bcz-helper-translation {
   font-size: 14px !important;
   color: #6c757d !important;
   font-weight: 400 !important;
   line-height: 1.4 !important;
 }
 
-.example-image-row { 
+.bcz-helper-example-image-row { 
   max-width: 100%;
   object-fit: contain;
 }
 
-.example-image {
+.bcz-helper-example-image {
   max-width: 300px;
   height: auto;
   border-radius: 4px;
   margin-top: 5px;
 }
 
-.fontawesome-icon {
+.bcz-helper-fontawesome-icon {
   width: 20px;
   height: 20px;
   flex-shrink: 0;
