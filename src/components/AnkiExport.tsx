@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { ForbiddenError, UnauthorizedError } from '../api/errors';
 import './AnkiExport.css';
 
 interface WordData { 
@@ -90,7 +91,12 @@ const AnkiExport: React.FC<AnkiExportProps> = ({
             });
 
             if (!res.success) {
-              setError(res.error || '导出失败，请检查 Anki 是否正在运行');              
+              const message = res.errorType === UnauthorizedError.type ?
+                '未登录' :
+                res.errorType === ForbiddenError.type ? 
+                  '无权限' :
+                  res.error.message;
+              setError(message || '导出失败，请检查 Anki 是否正在运行');
               return;
             }
 
