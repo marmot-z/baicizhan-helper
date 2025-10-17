@@ -21,6 +21,10 @@ export default function Layout() {
     navigate('/settings');
   };
 
+  const handleFeedbackClick = () => {
+    window.open('http://www.baicizhan-helper.cn/comments', '_blank');    
+  };
+
   return (
     <div className="app-container">
       {/* 顶部导航栏 */}
@@ -38,6 +42,9 @@ export default function Layout() {
           <div className="nav-item" onClick={handleSettingsClick} title="设置">
             <span className="nav-text">设置</span>
           </div>
+          <div className="nav-item" onClick={handleFeedbackClick} title="反馈">
+            <span className="nav-text">反馈</span>
+          </div>          
         </div>
       </div>
 
