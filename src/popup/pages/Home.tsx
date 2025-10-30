@@ -4,19 +4,23 @@ import { faSearch } from '@fortawesome/free-solid-svg-icons';
 import { API } from '../../api/api';
 import { SearchWordResultV2, TopicResourceV2 } from '../../api/types';
 import PopoverContent from '../../components/PopoverContent';
+import { useAuthStore } from '../../stores/useAuthStore';
 
 export default function Home() {
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState<SearchWordResultV2[]>([]);
   const [wordDetail, setWordDetail] = useState<TopicResourceV2 | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const { refreshUserInfo } = useAuthStore();
   
   useEffect(() => {
     // 组件挂载后自动聚焦输入框
     if (inputRef.current) {
       inputRef.current.focus();
     }
-  }, []);
+
+    refreshUserInfo();
+  }, [refreshUserInfo]);
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter') {

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { ForbiddenError, UnauthorizedError } from '../api/errors';
+import { useAuthStore } from '../stores/useAuthStore';
 import './AnkiExport.css';
 
 interface WordData { 
@@ -27,6 +28,7 @@ const AnkiExport: React.FC<AnkiExportProps> = ({
   const [availableDecks, setAvailableDecks] = useState<string[]>([]);
   const [error, setError] = useState<string>('');
   const [loading, setLoading] = useState(false);
+  const { user } = useAuthStore();
 
   // 组件打开时获取可用牌组
   useEffect(() => {
@@ -68,6 +70,14 @@ const AnkiExport: React.FC<AnkiExportProps> = ({
   const handleExport = async () => {
     if (!selectedDeck) {
       setError('请选择一个牌组');
+      return;
+    }
+
+    const isVip = user?.user.vip;
+
+    if (!isVip) {
+      setError('无权限，请先充值会员');
+      setIsExporting(false);
       return;
     }
 
@@ -113,7 +123,6 @@ const AnkiExport: React.FC<AnkiExportProps> = ({
             // 休眠0.5s
             await new Promise(resolve => setTimeout(resolve, 500));
         }      
-
     } catch (error) {
       console.error('Export error:', error);
       setError(error instanceof Error ? error.message : '导出失败，请检查 Anki 是否正在运行');

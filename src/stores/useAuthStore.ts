@@ -10,6 +10,7 @@ interface AuthState {
   isLogin: boolean;
   login: (loginRequest: LoginRequest) => Promise<void>;
   logout: () => void;
+  refreshUserInfo: () => Promise<void>;
 }
 
 chrome.storage.onChanged.addListener((changes, namespace) => {
@@ -50,6 +51,19 @@ export const useAuthStore = create<AuthState>()(persist(
         token: null,
         isLogin: false
       });
+    },
+
+    refreshUserInfo: async () => {
+      try {
+        const userInfo = await API.getUserInfo();
+
+        set({
+          user: userInfo,
+        });
+      } catch (error) {
+        console.error('刷新用户信息失败:', error);
+        throw error;
+      }
     }
   }),
   {
