@@ -120,16 +120,18 @@ export const useWordBookStorage = create<WordBookStore>()(persist(
 
     deleteTopicId(bookId, topicId) {
       const { data } = get();
+      
       if (!data) return false;
 
-      const words = data.wordsMap[bookId];
-      if (!words) return false;
-
-      const index = words.findIndex(word => word === topicId);
-      if (index === -1) return false;
-
-      words.splice(index, 1);
+      for (const words of Object.values(data.wordsMap)) {
+        const index = words.findIndex(word => word === topicId);
+        if (index !== -1) {
+          words.splice(index, 1);
+        }
+      }
+      
       set({ data: { ...data } }); 
+
       return true;
     },
   }),
