@@ -10,6 +10,7 @@ const Settings: React.FC<SettingsProps> = () => {
   const [defaultWordBook, setDefaultWordBook] = useState<number>(settingsStore.getState().defaultWordBook.bookId);
   const [autoPlay, setAutoPlay] = useState<boolean>(settingsStore.getState().autoPlay);
   const [translateTiming, setTranslateTiming] = useState<number>(settingsStore.getState().translateTiming);
+  const [theme, setTheme] = useState<'light' | 'dark'>(settingsStore.getState().theme);
   const [wordBooks, setWordBooks] = useState<UserBookItem[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
 
@@ -45,6 +46,12 @@ const Settings: React.FC<SettingsProps> = () => {
     const timing = Number(e.target.value);
     setTranslateTiming(timing);
     settingsStore.getState().setTranslateTiming(timing);
+  };
+
+  const handleThemeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const newTheme = e.target.value as 'light' | 'dark';
+    setTheme(newTheme);
+    settingsStore.getState().setTheme(newTheme);
   };
 
   return (
@@ -83,6 +90,18 @@ const Settings: React.FC<SettingsProps> = () => {
             <option value={0}>显示图标，点击翻译</option>
             <option value={1}>直接翻译</option>
             <option value={3}>永不翻译</option>
+          </select>
+        </div>
+
+        <div className="setting-item">
+          <label className="setting-label">主题设置</label>
+          <select
+            value={theme}
+            onChange={handleThemeChange}
+            className="setting-select"
+          >
+            <option value="light">浅色</option>
+            <option value="dark">深色</option>
           </select>
         </div>
 

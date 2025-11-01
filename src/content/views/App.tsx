@@ -22,6 +22,7 @@ function App() {
   const [operateError, setOperateError] = useState<Error | null>(null)
   const [isExportModalOpen, setIsExportModalOpen] = useState(false)
   const [exportWords, setExportWords] = useState<WordData[]>([])
+  const theme = settingsStore.getState().theme
 
   // 查询单词信息
   const handleSearchWord = async (word?: string) => {
@@ -137,7 +138,9 @@ function App() {
         <Popover.Portal>
           <Popover.Content className="bcz-helper-popover-content" sideOffset={5} >
             {wordResult ? 
-              (<div className="bcz-helper-word-popover"><PopoverContent wordResult={wordResult}/></div>) : 
+              (<div className={`bcz-helper-word-popover ${theme === 'dark' ? 'dark-theme' : ''}`}>
+                <PopoverContent wordResult={wordResult}/>
+              </div>) : 
               <ErrorPopover error={operateError} />
             }
             <Popover.Arrow className="bcz-helper-popover-arrow" />

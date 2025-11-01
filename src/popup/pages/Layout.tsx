@@ -1,9 +1,38 @@
 import { Outlet, useNavigate } from 'react-router-dom';
+import { useEffect, useState } from 'react';
 import Logo from '../../assets/icon.png'
 import './Home.css';
+import { settingsStore } from '../../stores/settingsStore';
 
 export default function Layout() {
   const navigate = useNavigate();
+  const [theme, setTheme] = useState(settingsStore.getState().theme);
+  
+  // 同步暗色主题到body元素
+  useEffect(() => {
+    const updateTheme = () => {
+      setTheme(settingsStore.getState().theme);
+      if (settingsStore.getState().theme === 'dark') {
+        document.body.classList.add('dark-theme');
+      } else {
+        document.body.classList.remove('dark-theme');
+      }
+    };
+    
+    updateTheme();
+    
+    // 监听主题变化
+    const unsubscribe = settingsStore.subscribe((state) => {
+      if (state.theme !== theme) {
+        updateTheme();
+      }
+    });
+    
+    return () => {
+      document.body.classList.remove('dark-theme');
+      unsubscribe();
+    };
+  }, [theme]);
 
   const handleWebSiteClick = () => {
     window.open('http://www.baicizhan-helper.cn', '_blank');
@@ -26,7 +55,7 @@ export default function Layout() {
   };
 
   return (
-    <div className="app-container">
+    <div className={`app-container ${theme === 'dark' ? 'dark-theme' : ''}`}>
       {/* 顶部导航栏 */}
       <div className="top-navbar">
         <div className="logo">

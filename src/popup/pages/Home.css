@@ -9,6 +9,12 @@ body {
   background-color: #f5f5f5;
 }
 
+/* 暗黑模式下的body背景色 */
+body.dark-theme {
+  background-color: #1a1a1a;
+}
+
+/* 亮色主题（默认） */
 .app-container {
   position: relative;
   width: 400px;
@@ -72,6 +78,82 @@ body {
 .nav-text {
   font-size: 14px;
   font-weight: 500;
+}
+
+/* 暗色主题 */
+.app-container.dark-theme {
+  background-color: #1a1a1a;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.dark-theme .top-navbar {
+  background-color: #2d2d2d;
+  border-bottom: 1px solid #3d3d3d;
+}
+
+.dark-theme .nav-item {
+  color: #e0e0e0;
+}
+
+.dark-theme .nav-item:hover {
+  background-color: #3d3d3d;
+}
+
+.dark-theme .main-content {
+  background-color: #1a1a1a;
+  color: #e0e0e0;
+}
+
+/* 暗色主题下的搜索框 */
+.dark-theme .search-box {
+  background-color: #2d2d2d;
+  border: 2px solid #3d3d3d;
+}
+
+.dark-theme .search-input {
+  color: #e0e0e0;
+}
+
+.dark-theme .search-input::placeholder {
+  color: #888888;
+}
+
+.dark-theme .search-button {
+  background-color: #444444;
+}
+
+.dark-theme .search-button:hover {
+  background-color: #555555;
+}
+
+/* 暗色主题下的搜索结果 */
+.dark-theme .word-item {
+  border-bottom: 1px solid #3d3d3d;
+}
+
+.dark-theme .word-item:hover {
+  background-color: #2d2d2d;
+}
+
+.dark-theme .search-result-word {
+  color: #e0e0e0;
+}
+
+.dark-theme .word-meaning {
+  color: #b0b0b0;
+}
+
+/* 暗色主题下的滚动条 */
+.dark-theme .search-results::-webkit-scrollbar-track {
+  background: #2d2d2d;
+}
+
+.dark-theme .search-results::-webkit-scrollbar-thumb {
+  background: #555555;
+}
+
+.dark-theme .search-results::-webkit-scrollbar-thumb:hover {
+  background: #666666;
 }
 
 /* 主内容区域样式 */

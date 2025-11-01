@@ -6,9 +6,11 @@ interface SettingsState {
   defaultWordBook: {bookId: number, bookName: string};
   autoPlay: boolean;
   translateTiming: number;
+  theme: 'light' | 'dark';
   setDefaultWordBook: (book: {bookId: number, bookName: string}) => void;
   setAutoPlay: (autoPlay: boolean) => void;
   setTranslateTiming: (timing: number) => void;
+  setTheme: (theme: 'light' | 'dark') => void;
 }
 
 chrome.storage.onChanged.addListener((changes, namespace) => {
@@ -22,12 +24,15 @@ export const settingsStore = create<SettingsState>()(persist(
     defaultWordBook: {bookId: 0, bookName: '收藏的单词'},
     autoPlay: false,
     translateTiming: 0,
+    theme: 'light',
     
     setDefaultWordBook: (book: {bookId: number, bookName: string}) => set({ defaultWordBook: book }),
     
     setAutoPlay: (autoPlay: boolean) => set({ autoPlay }),
     
     setTranslateTiming: (timing: number) => set({ translateTiming: timing }),
+    
+    setTheme: (theme: 'light' | 'dark') => set({ theme }),
   }),
   {
     name: 'setting-storage',
@@ -36,6 +41,7 @@ export const settingsStore = create<SettingsState>()(persist(
       defaultWordBook: state.defaultWordBook,
       autoPlay: state.autoPlay,
       translateTiming: state.translateTiming,
+      theme: state.theme,
     })
   }
 ));

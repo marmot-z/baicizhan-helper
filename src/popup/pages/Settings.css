@@ -35,6 +35,10 @@
   margin: 0;
 }
 
+.dark-theme .setting-label {
+  color: #e0e0e0;
+}
+
 .setting-select {
   padding: 6px 12px;
   border: 1px solid #ced4da;
@@ -44,6 +48,12 @@
   cursor: pointer;
   outline: none;
   min-width: 120px;
+}
+
+.dark-theme .setting-select {
+  background-color: #212529;
+  color: #e0e0e0;
+  border-color: #495057;
 }
 
 .switch-container {

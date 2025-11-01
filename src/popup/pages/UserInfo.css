@@ -17,6 +17,11 @@
   background-color: #ffffff;
 }
 
+.dark-theme .user-info-content {
+  background-color: #1a1a1a;
+  color: #e0e0e0;
+}
+
 /* 用户资料区域 */
 .user-profile {
   display: flex;
@@ -59,6 +64,10 @@
   margin: 0;
 }
 
+.dark-theme .user-name {
+  color: #e0e0e0;
+}
+
 .wechat-icon {
   font-size: 18px;
   cursor: pointer;
@@ -87,10 +96,20 @@
   box-sizing: border-box;
 }
 
+.dark-theme .account-type {
+  background-color: #212529;
+  border-color: #495057;
+  color: #e0e0e0;
+}
+
 .account-label {
   font-size: 14px;
   color: #6c757d;
   margin: 0;
+}
+
+.dark-theme .account-label {
+  color: #e0e0e0;
 }
 
 .account-value {
