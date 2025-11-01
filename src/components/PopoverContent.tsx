@@ -15,6 +15,8 @@ const PopoverContent: React.FC<{wordResult: TopicResourceV2}> = ({ wordResult })
     const CDN_HOST = 'https://7n.bczcdn.com';
 
     useEffect(() => {
+        const audios: HTMLAudioElement[] = [];
+
         const playAudiosSequentially = async () => {
             const audioUrls = [
                 wordResult.dict.word_basic_info.accent_uk_audio_uri,
@@ -24,11 +26,12 @@ const PopoverContent: React.FC<{wordResult: TopicResourceV2}> = ({ wordResult })
             for (const audioUrl of audioUrls) {
                 try {
                     const audio = new Audio(CDN_HOST + audioUrl);
+                    audios.push(audio);
                     await new Promise((resolve, reject) => {
                         audio.onended = resolve;
                         audio.onerror = reject;
                         audio.play().catch(reject);
-                    });
+                    });                    
                     await new Promise(resolve => setTimeout(resolve, 500)); 
                 } catch (error) {
                     console.error('音频播放失败:', error);
@@ -37,6 +40,10 @@ const PopoverContent: React.FC<{wordResult: TopicResourceV2}> = ({ wordResult })
         };
 
         settingsStore.getState().autoPlay && playAudiosSequentially();
+
+        return () => {
+            audios.forEach(audio => audio.pause());
+        };
     }, [wordResult]);
 
     async function manageCollect() {
