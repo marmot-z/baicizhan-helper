@@ -202,6 +202,11 @@ function buildBackContent(word: TopicResourceV2): string {
         `;
     }
 
+    // 英文释义
+    if (word.dict.en_means && Array.isArray(word.dict.en_means)) {
+        back += buildEnglishMeaningContent(word.dict.en_means);
+    }
+
     return back;
 }
 
@@ -219,6 +224,25 @@ function buildMeaningContent(meaning: MeanInfo[]): string {
     backContent += '</div>';
 
     return backContent;
+}
+
+function buildEnglishMeaningContent(enMeans: MeanInfo[]): string {
+    const enMeansByType = groupChineseMeanings(enMeans);
+
+    let content = `<div class="extra-section">
+        <h4>英文释义</h4>
+        <div class="en-means">`;
+    enMeansByType.forEach((means, type) => {
+        content += `
+            <div class="en-meaning-group">
+                <div class="meaning-type">${type}</div>
+                <div class="en-meaning-content">${means.join(';<br>')}</div>
+            </div>
+        `;
+    });
+    content += '</div></div>';
+
+    return content;
 }
 
 function addImageToNote(note: AddNoteParams, word: string, image: string) {
