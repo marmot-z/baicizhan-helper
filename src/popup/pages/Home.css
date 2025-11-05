@@ -156,6 +156,18 @@ body.dark-theme {
   background: #666666;
 }
 
+.dark-theme .word-detail::-webkit-scrollbar-track {
+  background: #2d2d2d;
+}
+
+.dark-theme .word-detail::-webkit-scrollbar-thumb {
+  background: #555555;
+}
+
+.dark-theme .word-detail::-webkit-scrollbar-thumb:hover {
+  background: #666666;
+}
+
 /* 主内容区域样式 */
 .main-content {
   flex: 1;
@@ -263,6 +275,24 @@ body.dark-theme {
 }
 
 .search-results::-webkit-scrollbar-thumb:hover {
+  background: #95a5a6;
+}
+
+.word-detail::-webkit-scrollbar {
+  width: 6px;
+}
+
+.word-detail::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 3px;
+}
+
+.word-detail::-webkit-scrollbar-thumb {
+  background: #bdc3c7;
+  border-radius: 3px;
+}
+
+.word-detail::-webkit-scrollbar-thumb:hover {
   background: #95a5a6;
 }
 
