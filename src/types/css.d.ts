@@ -3,10 +3,12 @@ declare module '*.css' {
   export default content;
 }
 
-declare module '*.module.css' {
+declare module '*.css' {
   const classes: { [key: string]: string };
   export default classes;
 }
+
+declare const __APP_VERSION__: string;
 
 declare module '*.svg' {
   const content: string;

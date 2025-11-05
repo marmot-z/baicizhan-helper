@@ -39,7 +39,13 @@ body.dark-theme {
 }
 
 .logo {
-  margin-right: 16px;
+  margin-right: 8px;
+  display: flex;
+  align-items: center;
+}
+
+.dark-theme .logo {
+  color: #e0e0e0;
 }
 
 .logo-image {

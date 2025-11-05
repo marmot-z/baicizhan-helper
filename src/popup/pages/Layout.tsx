@@ -60,6 +60,7 @@ export default function Layout() {
       <div className="top-navbar">
         <div className="logo">
           <img src={Logo} alt="Logo" className="logo-image" onClick={handleWebSiteClick} />
+          V{__APP_VERSION__}
         </div>
         <div className="nav-items">
           <div className="nav-item" onClick={handleHomeClick} title="首页">

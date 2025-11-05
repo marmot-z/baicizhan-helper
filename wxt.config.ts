@@ -20,6 +20,7 @@ export default defineConfig({
     publicDir: path.resolve(__dirname, './public'),
     define: {
       __DEV__: JSON.stringify(process.env.NODE_ENV === 'development'),
+      __APP_VERSION__: JSON.stringify(pkg.version),
     },
     server: {
       port: 5173,
