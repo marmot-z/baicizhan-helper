@@ -1,0 +1,19 @@
+/* Tips 组件样式 */
+.bcz-helper-tips {
+  position: fixed;
+  top: 20%;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: rgba(0, 0, 0, 0.8);
+  color: white;
+  padding: 8px 12px;
+  border-radius: 4px;
+  font-size: 14px;
+  text-align: center;
+  z-index: 9999;
+  min-width: 10ch;
+  max-width: 20ch;
+  word-wrap: break-word;
+  word-break: break-all;
+  line-height: 1.4;
+}

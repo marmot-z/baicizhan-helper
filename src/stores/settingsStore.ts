@@ -7,10 +7,12 @@ interface SettingsState {
   autoPlay: boolean;
   translateTiming: number;
   theme: 'light' | 'dark';
+  collectShortcut: string;
   setDefaultWordBook: (book: {bookId: number, bookName: string}) => void;
   setAutoPlay: (autoPlay: boolean) => void;
   setTranslateTiming: (timing: number) => void;
   setTheme: (theme: 'light' | 'dark') => void;
+  setCollectShortcut: (shortcut: string) => void;
 }
 
 chrome.storage.onChanged.addListener((changes, namespace) => {
@@ -25,6 +27,7 @@ export const settingsStore = create<SettingsState>()(persist(
     autoPlay: false,
     translateTiming: 0,
     theme: 'light',
+    collectShortcut: '',
     
     setDefaultWordBook: (book: {bookId: number, bookName: string}) => set({ defaultWordBook: book }),
     
@@ -33,6 +36,8 @@ export const settingsStore = create<SettingsState>()(persist(
     setTranslateTiming: (timing: number) => set({ translateTiming: timing }),
     
     setTheme: (theme: 'light' | 'dark') => set({ theme }),
+    
+    setCollectShortcut: (shortcut: string) => set({ collectShortcut: shortcut }),
   }),
   {
     name: 'setting-storage',
@@ -42,6 +47,7 @@ export const settingsStore = create<SettingsState>()(persist(
       autoPlay: state.autoPlay,
       translateTiming: state.translateTiming,
       theme: state.theme,
+      collectShortcut: state.collectShortcut,
     })
   }
 ));

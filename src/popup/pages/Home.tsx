@@ -4,6 +4,7 @@ import { faSearch } from '@fortawesome/free-solid-svg-icons';
 import { API } from '../../api/api';
 import { SearchWordResultV2, TopicResourceV2 } from '../../api/types';
 import PopoverContent from '../../components/PopoverContent';
+import { HotkeysProvider } from 'react-hotkeys-hook';
 import { useAuthStore } from '../../stores/useAuthStore';
 
 export default function Home() {
@@ -14,7 +15,6 @@ export default function Home() {
   const { refreshUserInfo } = useAuthStore();
   
   useEffect(() => {
-    // 组件挂载后自动聚焦输入框
     if (inputRef.current) {
       inputRef.current.focus();
     }
@@ -86,7 +86,9 @@ export default function Home() {
       {/* 搜索结果或单词详情 */}
       {wordDetail ? (
         <div className="word-detail">
-          <PopoverContent wordResult={wordDetail} />
+          <HotkeysProvider initiallyActiveScopes={['popover']}>
+            <PopoverContent wordResult={wordDetail} />
+          </HotkeysProvider>
         </div>
       ) : (
         <div className="search-results">

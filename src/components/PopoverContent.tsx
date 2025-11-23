@@ -6,16 +6,23 @@ import { groupChineseMeanings } from '../utils';
 import { useState, useEffect } from 'react';
 import { UnauthorizedError, ForbiddenError } from '../api/errors';
 import { settingsStore } from '../stores/settingsStore';
+import { useHotkeys } from 'react-hotkeys-hook';
+import Tips from './Tips';
 import './PopoverContent.css';
+
+const CDN_HOST = 'https://7n.bczcdn.com';
 
 const PopoverContent: React.FC<{wordResult: TopicResourceV2}> = ({ wordResult }) => {
     const [collected, setCollected] = useState<boolean>(wordResult.collected);
     const [errorMessage, setErrorMessage] = useState<string>('');
 
-    const CDN_HOST = 'https://7n.bczcdn.com';
+    const collectShortcut = settingsStore.getState().collectShortcut;
+    if (collectShortcut) {
+        useHotkeys(collectShortcut, manageCollect, { scopes: ['popover'] });
+    }
 
     useEffect(() => {
-        const audios: HTMLAudioElement[] = [];
+        const audios: HTMLAudioElement[] = [];        
 
         const playAudiosSequentially = async () => {
             const audioUrls = [
@@ -39,12 +46,12 @@ const PopoverContent: React.FC<{wordResult: TopicResourceV2}> = ({ wordResult })
             }
         };
 
-        settingsStore.getState().autoPlay && playAudiosSequentially();
+        settingsStore.getState().autoPlay && playAudiosSequentially();        
 
         return () => {
             audios.forEach(audio => audio.pause());
         };
-    }, [wordResult]);
+    }, [wordResult, useHotkeys]);
 
     async function manageCollect() {
         try {
@@ -143,25 +150,5 @@ const PopoverContent: React.FC<{wordResult: TopicResourceV2}> = ({ wordResult })
         </div>
     )
 }
-
-const Tips: React.FC<{ message: string; onClose?: () => void }> = ({ message, onClose }) => {
-    const [visible, setVisible] = useState(true);
-
-    useEffect(() => {
-        const timer = setTimeout(() => {
-            setVisible(false);
-            onClose?.();
-        }, 3000);
-        return () => clearTimeout(timer);
-    }, [onClose]);
-
-    if (!visible) return null;
-
-    return (
-        <div className="bcz-helper-tips">
-            {message}
-        </div>
-    );
-};
 
 export default PopoverContent;

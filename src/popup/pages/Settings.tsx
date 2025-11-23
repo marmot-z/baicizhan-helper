@@ -3,6 +3,7 @@ import './Settings.css';
 import { API } from '../../api/api';
 import { UserBookItem } from '../../api/types';
 import { settingsStore } from '../../stores/settingsStore';
+import Tips from '../../components/Tips';
 
 interface SettingsProps {}
 
@@ -11,8 +12,10 @@ const Settings: React.FC<SettingsProps> = () => {
   const [autoPlay, setAutoPlay] = useState<boolean>(settingsStore.getState().autoPlay);
   const [translateTiming, setTranslateTiming] = useState<number>(settingsStore.getState().translateTiming);
   const [theme, setTheme] = useState<'light' | 'dark'>(settingsStore.getState().theme);
+  const [collectShortcut, setCollectShortcut] = useState<string>(settingsStore.getState().collectShortcut || '');
   const [wordBooks, setWordBooks] = useState<UserBookItem[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
+  const [errorMessage, setErrorMessage] = useState<string>('');
 
   useEffect(() => {
     const fetchWordBooks = async () => {
@@ -21,6 +24,7 @@ const Settings: React.FC<SettingsProps> = () => {
         setWordBooks(books);
       } catch (error) {
         console.error('获取单词本列表失败:', error);
+        setErrorMessage('获取单词本列表失败');
       } finally {
         setLoading(false);
       }
@@ -52,6 +56,47 @@ const Settings: React.FC<SettingsProps> = () => {
     const newTheme = e.target.value as 'light' | 'dark';
     setTheme(newTheme);
     settingsStore.getState().setTheme(newTheme);
+  };
+
+  const validateShortcut = (input: string) => {
+    const parts = input.trim().toLowerCase().split('+').map(p => p.trim()).filter(Boolean);
+
+    if (!parts.length) return '';
+
+    const mods = new Set<string>();
+    let key = '';
+
+    for (const p of parts) {
+      if (p === 'ctrl' || p === 'alt' || p === 'shift') { 
+        mods.add(p); 
+        continue; 
+      }
+
+      key = p;
+    }
+
+    if (!key) return null;
+
+    const validKey = /^[a-z0-9]$/.test(key)
+      || /^f([1-9]|1[0-2])$/.test(key)
+      || ['enter','escape','esc','tab','space','backspace','delete','del','home','end','pageup','pagedown','up','down','left','right'].includes(key);
+
+    if (!validKey) return null;
+
+    return [...mods].sort().concat(key).join('+');
+  };
+
+  const handleShortcutBlur = (e: React.FocusEvent<HTMLInputElement>) => {
+    const norm = validateShortcut(e.target.value);
+
+    if (norm === null) { 
+      setCollectShortcut('');       
+      setErrorMessage('收藏快捷键格式错误');
+      return; 
+    }
+
+    setCollectShortcut(norm);
+    settingsStore.getState().setCollectShortcut(norm);
   };
 
   return (
@@ -119,9 +164,28 @@ const Settings: React.FC<SettingsProps> = () => {
         </div>
 
         <div className="setting-item">
-          <p>导出anki功能请到 <a href="http://www.baicizhan-helper.cn/page/wordbook/0" target="_blank">网页端</a> 进行操作</p>
+          <label className="setting-label">收藏快捷键</label>
+          <div className="switch-container">
+            <input
+              type="text"
+              defaultValue={collectShortcut}
+              onBlur={handleShortcutBlur}
+              className="setting-input"
+            />
+          </div>
         </div>
+
+        <p>多键位时使用 + 分隔，如：ctrl + shift + c。支持 alt, ctrl, shift 以及其他字母数字键位</p>      
+        <p>导出anki功能请到 <a href="http://www.baicizhan-helper.cn/page/wordbook/0" target="_blank">网页端</a> 进行操作</p>
+        <p>单词本内容请到  <a href="http://www.baicizhan-helper.cn/page/dashboard" target="_blank">网页端</a> 查看</p>
       </form>
+
+      <>
+        {
+          errorMessage &&
+          <Tips message={errorMessage} onClose={() => setErrorMessage('')}  />
+        }
+      </>
     </div>
   );
 };

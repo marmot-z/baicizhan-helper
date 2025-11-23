@@ -15,14 +15,15 @@
   },
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^7.1.0",
-    "@fortawesome/free-solid-svg-icons": "^7.0.1",
     "@fortawesome/free-brands-svg-icons": "^7.0.1",
+    "@fortawesome/free-solid-svg-icons": "^7.0.1",
     "@fortawesome/react-fontawesome": "^3.0.2",
     "@radix-ui/react-popover": "^1.1.15",
     "@types/react-router-dom": "^5.3.3",
     "axios": "^1.12.2",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
+    "react-hotkeys-hook": "^5.2.1",
     "react-router-dom": "^7.9.1",
     "zustand": "^5.0.8"
   },
