@@ -32,8 +32,7 @@ apiClient.interceptors.request.use(
 apiClient.interceptors.response.use(
   (response: AxiosResponse) => {
     // 检查响应数据中的 code 字段
-    if (response.data?.code === 401) {      
-      window.location.hash = '/user-info';
+    if (response.data?.code === 401) {
       return Promise.reject(new UnauthorizedError('Token expired'));
     }
     
@@ -51,8 +50,7 @@ apiClient.interceptors.response.use(
   async (error) => {
     // 处理网络错误或其他HTTP错误
     if (error.response?.status === 401) {
-      // 自动清理登录状态
-      // useAuthStore.getState().logout();
+      return Promise.reject(new UnauthorizedError('Token expired'));
     }
     return Promise.reject(error);
   }

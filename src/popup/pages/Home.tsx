@@ -1,13 +1,16 @@
 import { useState, useRef, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSearch } from '@fortawesome/free-solid-svg-icons';
 import { API } from '../../api/api';
+import { UnauthorizedError } from '../../api/errors';
 import { SearchWordResultV2, TopicResourceV2 } from '../../api/types';
 import PopoverContent from '../../components/PopoverContent';
 import { HotkeysProvider } from 'react-hotkeys-hook';
 import { useAuthStore } from '../../stores/useAuthStore';
 
 export default function Home() {
+  const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState<SearchWordResultV2[]>([]);
   const [wordDetail, setWordDetail] = useState<TopicResourceV2 | null>(null);
@@ -36,6 +39,10 @@ export default function Home() {
       setSearchResults(results);
       setWordDetail(null);
     } catch (error) {
+      if (error instanceof UnauthorizedError) {
+        navigate('/user-info');
+        return;
+      }
       console.error('搜索失败:', error);
       setSearchResults([]);
     }
