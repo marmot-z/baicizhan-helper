@@ -25,8 +25,15 @@ const PopoverContent: React.FC<{wordResult: TopicResourceV2}> = ({ wordResult })
         const audios: HTMLAudioElement[] = [];        
 
         const playAudiosSequentially = async () => {
+            const autoPlayAccent = settingsStore.getState().autoPlayAccent;
+            const primaryPronunciationAudio = autoPlayAccent === 'usa'
+                ? wordResult.dict.word_basic_info.accent_usa_audio_uri
+                : wordResult.dict.word_basic_info.accent_uk_audio_uri;
+            const fallbackPronunciationAudio = autoPlayAccent === 'usa'
+                ? wordResult.dict.word_basic_info.accent_uk_audio_uri
+                : wordResult.dict.word_basic_info.accent_usa_audio_uri;
             const audioUrls = [
-                wordResult.dict.word_basic_info.accent_uk_audio_uri,
+                primaryPronunciationAudio || fallbackPronunciationAudio,
                 wordResult.dict.sentences?.[0]?.audio_uri
             ].filter(Boolean);
 
@@ -51,7 +58,7 @@ const PopoverContent: React.FC<{wordResult: TopicResourceV2}> = ({ wordResult })
         return () => {
             audios.forEach(audio => audio.pause());
         };
-    }, [wordResult, useHotkeys]);
+    }, [wordResult]);
 
     async function manageCollect() {
         try {

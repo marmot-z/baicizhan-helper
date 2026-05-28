@@ -5,11 +5,13 @@ import { chromeStorage } from '../utils/chromeStorage';
 interface SettingsState {
   defaultWordBook: {bookId: number, bookName: string};
   autoPlay: boolean;
+  autoPlayAccent: 'uk' | 'usa';
   translateTiming: number;
   theme: 'light' | 'dark';
   collectShortcut: string;
   setDefaultWordBook: (book: {bookId: number, bookName: string}) => void;
   setAutoPlay: (autoPlay: boolean) => void;
+  setAutoPlayAccent: (accent: 'uk' | 'usa') => void;
   setTranslateTiming: (timing: number) => void;
   setTheme: (theme: 'light' | 'dark') => void;
   setCollectShortcut: (shortcut: string) => void;
@@ -25,6 +27,7 @@ export const settingsStore = create<SettingsState>()(persist(
   (set) => ({
     defaultWordBook: {bookId: 0, bookName: '收藏的单词'},
     autoPlay: false,
+    autoPlayAccent: 'uk',
     translateTiming: 0,
     theme: 'light',
     collectShortcut: '',
@@ -32,6 +35,8 @@ export const settingsStore = create<SettingsState>()(persist(
     setDefaultWordBook: (book: {bookId: number, bookName: string}) => set({ defaultWordBook: book }),
     
     setAutoPlay: (autoPlay: boolean) => set({ autoPlay }),
+
+    setAutoPlayAccent: (autoPlayAccent: 'uk' | 'usa') => set({ autoPlayAccent }),
     
     setTranslateTiming: (timing: number) => set({ translateTiming: timing }),
     
@@ -45,6 +50,7 @@ export const settingsStore = create<SettingsState>()(persist(
     partialize: (state) => ({
       defaultWordBook: state.defaultWordBook,
       autoPlay: state.autoPlay,
+      autoPlayAccent: state.autoPlayAccent,
       translateTiming: state.translateTiming,
       theme: state.theme,
       collectShortcut: state.collectShortcut,

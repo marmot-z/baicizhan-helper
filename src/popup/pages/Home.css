@@ -177,10 +177,11 @@ body.dark-theme {
 /* 主内容区域样式 */
 .main-content {
   flex: 1;
+  min-height: 0;
   display: flex;
   flex-direction: column;
   padding: 10px;
-  overflow: hidden;
+  overflow-y: auto;
 }
 
 /* 搜索框样式 */

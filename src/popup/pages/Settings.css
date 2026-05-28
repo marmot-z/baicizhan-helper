@@ -1,8 +1,11 @@
 .settings-container {
+  height: 100%;
   padding: 20px;
   max-width: 400px;
   margin: 0 auto;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  overflow-y: auto;
+  box-sizing: border-box;
 }
 
 .settings-title {
@@ -97,4 +100,75 @@
 
 .switch-input:not(:checked) + .switch-slider {
   left: 2px;
+}
+
+.dual-switch-container {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  align-items: center;
+  width: 76px;
+  height: 24px;
+  border-radius: 12px;
+  overflow: hidden;
+  background-color: #ced4da;
+  cursor: pointer;
+}
+
+.dark-theme .dual-switch-container {
+  background-color: #495057;
+}
+
+.dual-switch-input {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  opacity: 0;
+  z-index: 3;
+}
+
+.dual-switch-option {
+  position: relative;
+  z-index: 2;
+  font-size: 12px;
+  line-height: 24px;
+  text-align: center;
+  color: #495057;
+  user-select: none;
+  transition: color 0.2s ease;
+}
+
+.dark-theme .dual-switch-option {
+  color: #ced4da;
+}
+
+.dual-switch-input:not(:checked) ~ .dual-switch-option-left,
+.dual-switch-input:checked ~ .dual-switch-option-right {
+  color: #ffffff;
+}
+
+.dual-switch-input:checked ~ .dual-switch-option-left,
+.dual-switch-input:not(:checked) ~ .dual-switch-option-right {
+  color: #495057;
+}
+
+.dark-theme .dual-switch-input:checked ~ .dual-switch-option-left,
+.dark-theme .dual-switch-input:not(:checked) ~ .dual-switch-option-right {
+  color: #ced4da;
+}
+
+.dual-switch-slider {
+  top: 2px;
+  left: 2px;
+  width: 36px;
+  height: 20px;
+  border-radius: 10px;
+  background-color: #007bff;
+  box-shadow: none;
+  z-index: 1;
+}
+
+.dual-switch-input:checked + .dual-switch-option + .dual-switch-option + .dual-switch-slider {
+  left: 38px;
 }

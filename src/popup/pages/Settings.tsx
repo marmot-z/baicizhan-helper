@@ -10,6 +10,7 @@ interface SettingsProps {}
 const Settings: React.FC<SettingsProps> = () => {
   const [defaultWordBook, setDefaultWordBook] = useState<number>(settingsStore.getState().defaultWordBook.bookId);
   const [autoPlay, setAutoPlay] = useState<boolean>(settingsStore.getState().autoPlay);
+  const [autoPlayAccent, setAutoPlayAccent] = useState<'uk' | 'usa'>(settingsStore.getState().autoPlayAccent);
   const [translateTiming, setTranslateTiming] = useState<number>(settingsStore.getState().translateTiming);
   const [theme, setTheme] = useState<'light' | 'dark'>(settingsStore.getState().theme);
   const [collectShortcut, setCollectShortcut] = useState<string>(settingsStore.getState().collectShortcut || '');
@@ -44,6 +45,12 @@ const Settings: React.FC<SettingsProps> = () => {
   const handleAutoPlayChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setAutoPlay(e.target.checked);
     settingsStore.getState().setAutoPlay(e.target.checked);
+  };
+
+  const handleAutoPlayAccentChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const accent = e.target.checked ? 'usa' : 'uk';
+    setAutoPlayAccent(accent);
+    settingsStore.getState().setAutoPlayAccent(accent);
   };
 
   const handleTranslateTimingChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -161,6 +168,22 @@ const Settings: React.FC<SettingsProps> = () => {
             />
             <div className="switch-slider" />
           </div>
+        </div>
+
+        <div className="setting-item">
+          <label className="setting-label">自动发音口音</label>
+          <label className="switch-container dual-switch-container">
+            <input
+              type="checkbox"
+              checked={autoPlayAccent === 'usa'}
+              onChange={handleAutoPlayAccentChange}
+              className="switch-input dual-switch-input"
+              aria-label="切换自动发音口音"
+            />
+            <span className="dual-switch-option dual-switch-option-left">英音</span>
+            <span className="dual-switch-option dual-switch-option-right">美音</span>
+            <div className="switch-slider dual-switch-slider" />
+          </label>
         </div>
 
         <div className="setting-item">
