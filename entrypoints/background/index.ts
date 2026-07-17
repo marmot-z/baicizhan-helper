@@ -5,6 +5,9 @@ import { TopicResourceV2 } from '../../src/api/types';
 import { useWordBookStorage } from '../../src/stores/wordBookStorage';
 import ankiConnectClient from '../../src/api/ankiConnectClient';
 import exportTask from '../../src/api/exportTask';
+import { ForbiddenError } from '../../src/api/errors';
+import { useAuthStore } from '../../src/stores/useAuthStore';
+import { classifySelectedText } from '../../src/utils/selectionText';
 
 export default defineBackground(() => {
   async function dispatch(request: any): Promise<any> {
@@ -13,6 +16,8 @@ export default defineBackground(() => {
         return searchWord(request);
       case 'getWordDetail':
         return getWordDetail(request.topicId);
+      case 'translateSentence':
+        return translateSentence(request.text);
       case 'openPopup':
         return openPopup();
       case 'collect':
@@ -44,6 +49,29 @@ export default defineBackground(() => {
     const wordDetail = await API.getWordDetail(topicId);
     wordDetail.collected = await isCollect(wordDetail.dict.word_basic_info.topic_id);
     return wordDetail;
+  }
+
+  async function translateSentence(text: string) {
+    const classification = classifySelectedText(text);
+    if (classification.kind !== 'english-sentence' && classification.kind !== 'chinese-sentence') {
+      throw new Error('不支持翻译所选内容');
+    }
+
+    await useAuthStore.persist.rehydrate();
+    const userInfo = await API.getUserInfo();
+    if (!userInfo.user.vip) {
+      throw new ForbiddenError('句子翻译仅会员可用');
+    }
+
+    const translation = await API.translateSentence({
+      sourceText: classification.text,
+      source: classification.from,
+      target: classification.to,
+    });
+
+    return {
+      translatedText: translation.targetText,
+    };
   }
 
   async function isCollect(topicId: number): Promise<boolean> {

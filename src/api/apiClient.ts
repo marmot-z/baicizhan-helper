@@ -32,6 +32,10 @@ apiClient.interceptors.request.use(
 apiClient.interceptors.response.use(
   (response: AxiosResponse) => {
     // 检查响应数据中的 code 字段
+    if (response.data?.code === 400) {
+      return Promise.reject(new Error(response.data?.message || '请求参数错误'));
+    }
+
     if (response.data?.code === 401) {
       return Promise.reject(new UnauthorizedError('Token expired'));
     }

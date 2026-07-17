@@ -167,6 +167,21 @@ export interface ApiResponse<T> {
   data: T;
 }
 
+export type TranslationLanguage = 'en' | 'zh';
+
+export interface TranslationRequest {
+  sourceText: string;
+  source: TranslationLanguage;
+  target: TranslationLanguage;
+}
+
+export interface TranslationResponse {
+  targetText: string;
+  source: TranslationLanguage;
+  target: TranslationLanguage;
+  requestId: string;
+}
+
 // 用户单词本项目
 export interface UserBookItem {
   user_book_id: number;

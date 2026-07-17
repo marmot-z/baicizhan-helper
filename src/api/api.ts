@@ -1,5 +1,5 @@
 import { ApiService } from './apiClient';
-import { SearchWordResultV2, TopicResourceV2, UserBookItem, UserBooksResponse, UserBookWordDetail, UserInfo, SendSmsResponse, LoginRequest } from './types';
+import { SearchWordResultV2, TopicResourceV2, UserBookItem, UserBooksResponse, UserBookWordDetail, UserInfo, SendSmsResponse, LoginRequest, TranslationRequest, TranslationResponse } from './types';
 
 export const API = {
   /**
@@ -59,6 +59,12 @@ export const API = {
   // 获取用户信息
   async getUserInfo(): Promise<UserInfo> {
     const response = await ApiService.get<UserInfo>('/userInfoWithVip');
+    return response.data;
+  },
+
+  // 调用后端云翻译接口；会员资格由 background 在请求前校验
+  async translateSentence(request: TranslationRequest): Promise<TranslationResponse> {
+    const response = await ApiService.post<TranslationResponse>('/translate', request);
     return response.data;
   },
 

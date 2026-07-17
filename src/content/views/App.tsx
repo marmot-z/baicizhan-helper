@@ -1,15 +1,21 @@
 import Logo from '../../assets/icon.png'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback, useRef } from 'react'
 import * as Popover from '@radix-ui/react-popover'
 import { TopicResourceV2 } from '../../api/types'
 import PopoverContent from '../../components/PopoverContent'
 import ErrorPopover from '../../components/ErrorPopover'
+import SentenceTranslationPopover from '../../components/SentenceTranslationPopover'
 import { UnauthorizedError, ForbiddenError } from '../../api/errors'
 import AnkiExport from '../../components/AnkiExport'
 import { WordData } from '../../components/AnkiExport'
-import { isEnglishWord } from '../../utils/index'
+import { classifySelectedText } from '../../utils/selectionText'
 import { settingsStore } from '../../stores/settingsStore'
 import './App.css'
+
+type PopoverResult =
+  | { kind: 'word'; data: TopicResourceV2 }
+  | { kind: 'translation'; translatedText: string }
+  | null
 
 function App() {
   const [showIcon, setShowIcon] = useState(false)
@@ -17,72 +23,104 @@ function App() {
   const [iconPosition, setIconPosition] = useState({ x: 0, y: 0 })
   const [selectionPosition, setSelectionPosition] = useState({ x: 0, y: 0 })
   const [selectionSize, setSelectionSize] = useState({ width: 0, height: 0 })
-  const [selectedWord, setSelectedWord] = useState('')
-  const [wordResult, setWordResult] = useState<TopicResourceV2 | null>(null)
+  const [selectedContent, setSelectedContent] = useState('')
+  const [popoverResult, setPopoverResult] = useState<PopoverResult>(null)
   const [operateError, setOperateError] = useState<Error | null>(null)
   const [isExportModalOpen, setIsExportModalOpen] = useState(false)
   const [exportWords, setExportWords] = useState<WordData[]>([])
-  const theme = settingsStore.getState().theme
+  const requestIdRef = useRef(0)
+  const theme = settingsStore((state) => state.theme)
 
-  // 查询单词信息
-  const handleSearchWord = async (word?: string) => {
-    const wordToSearch = word || selectedWord
-    if (!wordToSearch) return
-    if (settingsStore.getState().translateTiming === 2) return;
+  const handleSelectedContent = useCallback(async (content: string) => {
+    const classification = classifySelectedText(content)
+    if (classification.kind === 'unsupported' || settingsStore.getState().translateTiming === 3) {
+      return
+    }
 
-    setWordResult(null)
+    const requestId = ++requestIdRef.current
+    setPopoverResult(null)
+    setOperateError(null)
     setShowIcon(false)
 
     try {
-      // 通过background service worker调用API
-      const response = await chrome.runtime.sendMessage({
-        action: 'searchWord',
-        word: wordToSearch
-      })
+      const response = classification.kind === 'english-word'
+        ? await chrome.runtime.sendMessage({
+            action: 'searchWord',
+            word: classification.text,
+          })
+        : await chrome.runtime.sendMessage({
+            action: 'translateSentence',
+            text: classification.text,
+          })
+
+      if (requestId !== requestIdRef.current) {
+        return
+      }
 
       setShowPopover(true)
 
       if (response.success && response.data) {
-        setWordResult(response.data)        
-        setOperateError(null)
-      } else {      
-        if (response.errorType === UnauthorizedError.type) {
-          setOperateError(new UnauthorizedError(response?.message))
-        } else if (response.errorType === ForbiddenError.type) {
-          setOperateError(new ForbiddenError(response?.message))
+        if (classification.kind === 'english-word') {
+          setPopoverResult({ kind: 'word', data: response.data })
+        } else if (response.data.translatedText) {
+          setPopoverResult({
+            kind: 'translation',
+            translatedText: response.data.translatedText,
+          })
         } else {
-          setOperateError(new Error(response?.message || '查询单词失败'))
+          throw new Error('翻译失败，返回结果为空')
         }
-        setWordResult(null)
+      } else {
+        if (response.errorType === UnauthorizedError.type) {
+          setOperateError(new UnauthorizedError(response.error || '登录已过期'))
+        } else if (response.errorType === ForbiddenError.type) {
+          setOperateError(new ForbiddenError(response.error || '权限不足'))
+        } else {
+          setOperateError(new Error(response.error || '查询失败，请稍后重试'))
+        }
       }
     } catch (error) {
-      console.error('查询单词失败:', error)
-      setOperateError(error instanceof Error ? error : new Error('查询单词失败'))
+      if (requestId !== requestIdRef.current) {
+        return
+      }
+
+      console.error('查询失败:', error)
+      setPopoverResult(null)
+      setOperateError(error instanceof Error ? error : new Error('查询失败，请稍后重试'))
+      setShowPopover(true)
     }
-  }
+  }, [])
 
   // 处理鼠标松开事件
-  const handleMouseUp = (event: MouseEvent) => {
+  const handleMouseUp = useCallback((event: MouseEvent) => {
     const selection = window.getSelection()
-    if (selection && selection.toString().trim() && isEnglishWord(selection.toString().trim())) {
-      const selectedText = selection.toString().trim()
-      const range = selection.getRangeAt(0)
-      const rect = range.getBoundingClientRect()
+    const classification = classifySelectedText(selection?.toString() || '')
+    const translateTiming = settingsStore.getState().translateTiming
+    requestIdRef.current += 1
 
-      setIconPosition({ x: event.clientX, y: event.clientY })
-      setSelectionPosition({ x: rect.left, y: rect.top })
-      setSelectionSize({ width: rect.width, height: rect.height })
-      setSelectedWord(selectedText)
-
-      if (settingsStore.getState().translateTiming === 1) {
-        handleSearchWord(selectedText);
-      } else if (settingsStore.getState().translateTiming === 0) {
-        setShowIcon(true)
-      }
-    } else {
+    if (classification.kind === 'unsupported' || translateTiming === 3 || !selection?.rangeCount) {
       setShowIcon(false)
+      setShowPopover(false)
+      return
     }
-  }
+
+    const range = selection.getRangeAt(0)
+    const rect = range.getBoundingClientRect()
+
+    setIconPosition({ x: event.clientX, y: event.clientY })
+    setSelectionPosition({ x: rect.left, y: rect.top })
+    setSelectionSize({ width: rect.width, height: rect.height })
+    setSelectedContent(classification.text)
+    setShowPopover(false)
+    setPopoverResult(null)
+    setOperateError(null)
+
+    if (translateTiming === 1) {
+      void handleSelectedContent(classification.text)
+    } else if (translateTiming === 0) {
+      setShowIcon(true)
+    }
+  }, [handleSelectedContent])
 
   useEffect(() => {
     const validWebsites = ['http://localhost:5173', 'http://www.baicizhan-helper.cn'];
@@ -98,12 +136,12 @@ function App() {
       }
     });
 
-    document.addEventListener('mouseup', handleMouseUp);
+    document.addEventListener('mouseup', handleMouseUp)
 
     return () => {
       document.removeEventListener('mouseup', handleMouseUp)
     }
-  }, [])
+  }, [handleMouseUp])
 
   return (
     <>
@@ -117,7 +155,7 @@ function App() {
             zIndex: 10000,
             cursor: 'pointer'
           }}
-          onClick={() => handleSearchWord()}
+          onClick={() => handleSelectedContent(selectedContent)}
         >
           <img src={Logo} alt="Selection icon" className="bcz-helper-selection-icon-img" />
         </div>
@@ -137,13 +175,17 @@ function App() {
         </Popover.Trigger>
         <Popover.Portal>
           <Popover.Content className="bcz-helper-popover-content" sideOffset={5} >
-            {wordResult ? 
+            {popoverResult?.kind === 'word' ?
               (<div className={`bcz-helper-word-popover ${theme === 'dark' ? 'dark-theme' : ''}`}>
-                <PopoverContent wordResult={wordResult}/>
-              </div>) : 
-              <ErrorPopover error={operateError} />
+                <PopoverContent wordResult={popoverResult.data}/>
+              </div>) : popoverResult?.kind === 'translation' ?
+              (<SentenceTranslationPopover
+                translatedText={popoverResult.translatedText}
+                theme={theme}
+              />) :
+              (<ErrorPopover error={operateError} />)
             }
-            <Popover.Arrow className="bcz-helper-popover-arrow" />
+            <Popover.Arrow className={`bcz-helper-popover-arrow ${theme === 'dark' ? 'dark-theme' : ''}`} />
           </Popover.Content>
         </Popover.Portal>
       </Popover.Root>

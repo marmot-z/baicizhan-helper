@@ -99,3 +99,7 @@
 .bcz-helper-popover-arrow {
   fill: white;
 }
+
+.bcz-helper-popover-arrow.dark-theme {
+  fill: #1a1a1a;
+}

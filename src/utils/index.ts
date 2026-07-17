@@ -24,3 +24,4 @@ function isEnglishWord(text: string): boolean {
 }
 
 export { isEnglishWord, groupChineseMeanings }
+export * from './selectionText'
