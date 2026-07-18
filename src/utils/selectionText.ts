@@ -1,4 +1,5 @@
 export const MAX_SELECTED_TEXT_LENGTH = 300;
+export const MIN_CHINESE_TRANSLATION_CHARACTER_COUNT = 7;
 
 export type TranslationLanguage = 'en' | 'zh';
 
@@ -59,7 +60,7 @@ export function classifySelectedText(text: string): SelectedTextClassification {
 
   if (CHINESE_TEXT_PATTERN.test(normalizedText)) {
     const characters = normalizedText.match(CHINESE_CHARACTER_PATTERN) || [];
-    if (characters.length >= 2) {
+    if (characters.length >= MIN_CHINESE_TRANSLATION_CHARACTER_COUNT) {
       return {
         kind: 'chinese-sentence',
         text: normalizedText,
