@@ -35,7 +35,7 @@ export default function Layout() {
   }, [theme]);
 
   const handleWebSiteClick = () => {
-    window.open('http://www.baicizhan-helper.cn', '_blank');
+    window.open('https://www.baicizhan-helper.cn', '_blank');
   };
 
   const handleHomeClick = () => {
@@ -51,7 +51,7 @@ export default function Layout() {
   };
 
   const handleFeedbackClick = () => {
-    window.open('http://www.baicizhan-helper.cn/comments', '_blank');    
+    window.open('https://www.baicizhan-helper.cn/comments', '_blank');
   };
 
   return (

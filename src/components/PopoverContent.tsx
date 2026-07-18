@@ -91,7 +91,7 @@ const PopoverContent: React.FC<{wordResult: TopicResourceV2}> = ({ wordResult })
             <div className="bcz-helper-header-row">
                 <span className="bcz-helper-word">
                     {wordResult.dict.word_basic_info.word}
-                    <a href={`http://www.baicizhan-helper.cn/page/word-detail/${wordResult.dict.word_basic_info.topic_id}`} target="_blank">
+                    <a href={`https://www.baicizhan-helper.cn/page/word-detail/${wordResult.dict.word_basic_info.topic_id}`} target="_blank">
                         <FontAwesomeIcon 
                             icon={faLink} 
                             style={{fontSize: 'medium'}}

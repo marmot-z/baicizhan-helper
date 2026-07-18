@@ -12,7 +12,7 @@ const ErrorPopover: React.FC<{ error: Error | null }> = ({ error }) => {
       {error instanceof UnauthorizedError && (
         <p>未登录，去<a onClick={handleLoginClick} className="bcz-helper-login-link">登录</a></p>
       )}
-      {error instanceof ForbiddenError && <p>权限不足，请<a href="http://www.baicizhan-helper.cn/page/vip-center" target="_blank">开通会员</a></p>}
+      {error instanceof ForbiddenError && <p>权限不足，请<a href="https://www.baicizhan-helper.cn/page/vip-center" target="_blank">开通会员</a></p>}
       {error instanceof Error && <p>{error.message}</p>}
     </div>
   )

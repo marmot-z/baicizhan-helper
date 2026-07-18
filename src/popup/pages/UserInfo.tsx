@@ -84,7 +84,7 @@ const UserInfo: React.FC<UserInfoProps> = ({}) => {
               <span className="account-label session-expired-message">为了继续搜索、收藏和同步，请重新完成登录。</span>
             </div>
             <div className="migration-notice">
-              选项页面功能已迁移到<a href='http://www.baicizhan-helper.cn/page/dashboard' target='_blank'>百词斩助手网站</a>
+              选项页面功能已迁移到<a href='https://www.baicizhan-helper.cn/page/dashboard' target='_blank'>百词斩助手网站</a>
             </div>
             <button className="relogin-button" onClick={handleReLogin}>
               去登录
@@ -120,12 +120,12 @@ const UserInfo: React.FC<UserInfoProps> = ({}) => {
               <span className="account-label">当前账号类型：</span>
               <span className="account-value">{userInfo?.accountType}</span>
               {userInfo?.accountType === '普通用户' && (
-                <a href="http://www.baicizhan-helper.cn/page/vip-center" target="_blank"><span className="upgrade-label">去开通会员</span></a>
+                <a href="https://www.baicizhan-helper.cn/page/vip-center" target="_blank"><span className="upgrade-label">去开通会员</span></a>
               )}
               <span className="account-label">有效期至：{userInfo?.expiredTime ? new Date(userInfo.expiredTime).toISOString().split('T')[0] : '-'}</span>
             </div>
             <div className="migration-notice">
-              选项页面功能已迁移到<a href='http://www.baicizhan-helper.cn/page/dashboard' target='_blank'>百词斩助手网站</a>
+              选项页面功能已迁移到<a href='https://www.baicizhan-helper.cn/page/dashboard' target='_blank'>百词斩助手网站</a>
             </div>
 
             {/* 退出按钮 */}

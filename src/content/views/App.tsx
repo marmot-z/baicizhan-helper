@@ -123,7 +123,7 @@ function App() {
   }, [handleSelectedContent])
 
   useEffect(() => {
-    const validWebsites = ['http://localhost:5173', 'http://www.baicizhan-helper.cn'];
+    const validWebsites = ['http://localhost:5173', 'https://www.baicizhan-helper.cn'];
 
     window.addEventListener('message', (event) => {
       if (validWebsites.includes(event.origin) && event.data.type === 'EXPORT_TO_ANKI_WORDS') {

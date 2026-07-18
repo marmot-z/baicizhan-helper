@@ -199,8 +199,8 @@ const Settings: React.FC<SettingsProps> = () => {
         </div>
 
         <p>多键位时使用 + 分隔，如：ctrl + shift + c。支持 alt, ctrl, shift 以及其他字母数字键位</p>      
-        <p>导出anki功能请到 <a href="http://www.baicizhan-helper.cn/page/wordbook/0" target="_blank">网页端</a> 进行操作</p>
-        <p>单词本内容请到  <a href="http://www.baicizhan-helper.cn/page/dashboard" target="_blank">网页端</a> 查看</p>
+        <p>导出anki功能请到 <a href="https://www.baicizhan-helper.cn/page/wordbook/0" target="_blank">网页端</a> 进行操作</p>
+        <p>单词本内容请到  <a href="https://www.baicizhan-helper.cn/page/dashboard" target="_blank">网页端</a> 查看</p>
       </form>
 
       <>

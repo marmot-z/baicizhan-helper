@@ -48,7 +48,6 @@ export default defineConfig({
       'storage'
     ],
     host_permissions: [
-      'http://www.baicizhan-helper.cn/*',
       'https://www.baicizhan-helper.cn/*',
       "http://127.0.0.1:8765/*",
       "http://localhost:8765/*"
