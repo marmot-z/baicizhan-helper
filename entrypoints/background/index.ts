@@ -8,6 +8,7 @@ import exportTask from '../../src/api/exportTask';
 import { ForbiddenError } from '../../src/api/errors';
 import { useAuthStore } from '../../src/stores/useAuthStore';
 import { classifySelectedText } from '../../src/utils/selectionText';
+import { historyStorage, type HistoryRecordInput } from '../../src/stores/historyStorage';
 
 export default defineBackground(() => {
   async function dispatch(request: any): Promise<any> {
@@ -34,7 +35,17 @@ export default defineBackground(() => {
         return exportTask.getProgress();
       case 'stopExport':
         return exportTask.stop();
+      case 'recordHistory':
+        return historyStorage.record(request.entry as HistoryRecordInput);
+      case 'getHistory':
+        return historyStorage.getAll();
+      case 'deleteHistory':
+        return historyStorage.delete(request.id);
+      case 'clearHistory':
+        return historyStorage.clear();
     }
+
+    throw new Error(`Unsupported action: ${request.action}`);
   }
 
   async function searchWord(request: any): Promise<TopicResourceV2 | null> {

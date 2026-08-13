@@ -22,7 +22,9 @@ const PopoverContent: React.FC<{wordResult: TopicResourceV2}> = ({ wordResult })
     }
 
     useEffect(() => {
-        const audios: HTMLAudioElement[] = [];        
+        const audios: HTMLAudioElement[] = [];
+        let cancelled = false;
+        let releaseCurrentAudio: (() => void) | null = null;
 
         const playAudiosSequentially = async () => {
             const autoPlayAccent = settingsStore.getState().autoPlayAccent;
@@ -38,17 +40,34 @@ const PopoverContent: React.FC<{wordResult: TopicResourceV2}> = ({ wordResult })
             ].filter(Boolean);
 
             for (const audioUrl of audioUrls) {
+                if (cancelled) break;
+
                 try {
                     const audio = new Audio(CDN_HOST + audioUrl);
                     audios.push(audio);
-                    await new Promise((resolve, reject) => {
-                        audio.onended = resolve;
-                        audio.onerror = reject;
-                        audio.play().catch(reject);
-                    });                    
-                    await new Promise(resolve => setTimeout(resolve, 500)); 
+                    await new Promise<void>((resolve, reject) => {
+                        let settled = false;
+                        const settle = (callback: () => void) => {
+                            if (settled) return;
+                            settled = true;
+                            releaseCurrentAudio = null;
+                            audio.onended = null;
+                            audio.onerror = null;
+                            callback();
+                        };
+
+                        releaseCurrentAudio = () => settle(resolve);
+                        audio.onended = () => settle(resolve);
+                        audio.onerror = () => settle(() => reject(new Error('音频资源加载失败')));
+                        audio.play().catch((error) => settle(() => reject(error)));
+                    });
+
+                    if (cancelled) break;
+                    await new Promise(resolve => setTimeout(resolve, 500));
                 } catch (error) {
-                    console.error('音频播放失败:', error);
+                    if (!cancelled && (!(error instanceof DOMException) || error.name !== 'AbortError')) {
+                        console.warn('音频播放失败:', error);
+                    }
                 }
             }
         };
@@ -56,6 +75,8 @@ const PopoverContent: React.FC<{wordResult: TopicResourceV2}> = ({ wordResult })
         settingsStore.getState().autoPlay && playAudiosSequentially();        
 
         return () => {
+            cancelled = true;
+            releaseCurrentAudio?.();
             audios.forEach(audio => audio.pause());
         };
     }, [wordResult]);

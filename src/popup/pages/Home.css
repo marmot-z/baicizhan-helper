@@ -226,6 +226,11 @@ body.dark-theme {
   background-color: #acafb1;
 }
 
+.search-button:disabled {
+  cursor: wait;
+  opacity: 0.65;
+}
+
 /* 搜索结果样式 */
 .search-results {
   flex: 1;
@@ -239,8 +244,17 @@ body.dark-theme {
 }
 
 .word-item {
+  display: flex;
+  width: 100%;
+  flex-direction: column;
+  align-items: flex-start;
   padding: 10px;
+  border: 0;
   border-bottom: 1px solid #ecf0f1;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  text-align: left;
   transition: background-color 0.2s ease;
   cursor: pointer;
 }
@@ -260,10 +274,364 @@ body.dark-theme {
   margin-bottom: 4px;
 }
 
-.meaning {
+.meaning,
+.word-meaning {
   font-size: 14px;
   color: #7f8c8d;
   line-height: 1.4;
+}
+
+.home-result-area {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+  flex-direction: column;
+}
+
+.home-status-message {
+  margin-top: 12px;
+  padding: 16px;
+  color: #6c757d;
+  font-size: 14px;
+  text-align: center;
+}
+
+.home-status-message.error {
+  color: #dc3545;
+}
+
+.home-translation-result {
+  padding-top: 10px;
+}
+
+.history-recent-bar {
+  display: flex;
+  height: 32px;
+  flex-shrink: 0;
+  align-items: center;
+  gap: 6px;
+  overflow: hidden;
+}
+
+.history-recent-label {
+  flex-shrink: 0;
+  color: #7f8c8d;
+  font-size: 12px;
+}
+
+.history-recent-items {
+  display: flex;
+  min-width: 0;
+  flex: 1;
+  align-items: center;
+  gap: 5px;
+  overflow: hidden;
+}
+
+.history-recent-chip,
+.history-all-button,
+.history-back-button,
+.history-clear-button,
+.history-filter-button,
+.history-entry-button,
+.history-delete-button {
+  border: 0;
+  box-shadow: none;
+  font-family: inherit;
+  cursor: pointer;
+}
+
+.history-recent-chip {
+  min-width: 0;
+  max-width: 76px;
+  padding: 3px 7px;
+  overflow: hidden;
+  border-radius: 6px;
+  background-color: #f1f3f5;
+  color: #495057;
+  font-size: 12px;
+  line-height: 20px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.history-recent-chip:hover {
+  background-color: #e9ecef;
+  color: #007bff;
+}
+
+.history-all-button,
+.history-back-button {
+  flex-shrink: 0;
+  padding: 3px 2px;
+  background: transparent;
+  color: #007bff;
+  font-size: 12px;
+}
+
+.history-all-button:hover,
+.history-back-button:hover {
+  color: #0069d9;
+  text-decoration: underline;
+}
+
+.history-panel {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+  flex-direction: column;
+  border-top: 1px solid #e9ecef;
+}
+
+.history-panel-header {
+  display: grid;
+  flex-shrink: 0;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 2px 6px;
+}
+
+.history-panel-title {
+  color: #2c3e50;
+  font-size: 14px;
+  font-weight: 600;
+  text-align: center;
+}
+
+.history-clear-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 2px;
+  background: transparent;
+  color: #dc3545;
+  font-size: 12px;
+}
+
+.history-clear-button:disabled {
+  cursor: default;
+  opacity: 0.45;
+}
+
+.history-filters {
+  display: flex;
+  flex-shrink: 0;
+  gap: 4px;
+  padding: 0 2px 8px;
+}
+
+.history-filter-button {
+  padding: 4px 10px;
+  border-radius: 6px;
+  background-color: #f1f3f5;
+  color: #6c757d;
+  font-size: 12px;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.history-filter-button:hover {
+  background-color: #e9ecef;
+}
+
+.history-filter-button.active {
+  background-color: #007bff;
+  color: #ffffff;
+}
+
+.history-list {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+}
+
+.history-list-item {
+  position: relative;
+  display: flex;
+  align-items: stretch;
+  border-bottom: 1px solid #e9ecef;
+  transition: background-color 0.2s ease;
+}
+
+.history-list-item:hover {
+  background-color: #f8f9fa;
+}
+
+.history-entry-button {
+  min-width: 0;
+  flex: 1;
+  padding: 9px 28px 9px 4px;
+  background: transparent;
+  color: inherit;
+  text-align: left;
+}
+
+.history-entry-heading {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: 6px;
+}
+
+.history-entry-sources {
+  display: inline-flex;
+  flex-shrink: 0;
+  gap: 3px;
+}
+
+.history-source {
+  padding: 1px 4px;
+  border-radius: 4px;
+  font-size: 10px;
+  line-height: 16px;
+}
+
+.history-source-search {
+  background-color: #e7f1ff;
+  color: #0069d9;
+}
+
+.history-source-selection {
+  background-color: #e8f5e9;
+  color: #238636;
+}
+
+.history-entry-text {
+  min-width: 0;
+  flex: 1;
+  overflow: hidden;
+  color: #2c3e50;
+  font-size: 14px;
+  font-weight: 600;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.history-entry-time {
+  flex-shrink: 0;
+  color: #95a5a6;
+  font-size: 11px;
+}
+
+.history-entry-preview {
+  margin-top: 4px;
+  overflow: hidden;
+  color: #7f8c8d;
+  font-size: 12px;
+  line-height: 18px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.history-entry-domain {
+  color: #95a5a6;
+}
+
+.history-delete-button {
+  position: absolute;
+  top: 50%;
+  right: 4px;
+  display: flex;
+  width: 24px;
+  height: 24px;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border-radius: 4px;
+  background: transparent;
+  color: #adb5bd;
+  transform: translateY(-50%);
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.history-delete-button:hover {
+  background-color: #f8d7da;
+  color: #dc3545;
+}
+
+.history-empty {
+  padding: 36px 12px;
+  color: #95a5a6;
+  font-size: 13px;
+  text-align: center;
+}
+
+.history-list::-webkit-scrollbar {
+  width: 6px;
+}
+
+.history-list::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 3px;
+}
+
+.history-list::-webkit-scrollbar-thumb {
+  background: #bdc3c7;
+  border-radius: 3px;
+}
+
+.dark-theme .history-recent-label,
+.dark-theme .history-entry-preview,
+.dark-theme .history-entry-time,
+.dark-theme .history-entry-domain,
+.dark-theme .history-empty,
+.dark-theme .home-status-message {
+  color: #b0b0b0;
+}
+
+.dark-theme .history-recent-chip,
+.dark-theme .history-filter-button {
+  background-color: #2d2d2d;
+  color: #d0d0d0;
+}
+
+.dark-theme .history-recent-chip:hover,
+.dark-theme .history-filter-button:hover {
+  background-color: #3d3d3d;
+  color: #6db7ef;
+}
+
+.dark-theme .history-filter-button.active {
+  background-color: #1976d2;
+  color: #ffffff;
+}
+
+.dark-theme .history-panel,
+.dark-theme .history-list-item {
+  border-color: #3d3d3d;
+}
+
+.dark-theme .history-list-item:hover {
+  background-color: #2d2d2d;
+}
+
+.dark-theme .history-panel-title,
+.dark-theme .history-entry-text {
+  color: #e0e0e0;
+}
+
+.dark-theme .history-source-search {
+  background-color: #173c63;
+  color: #8bc4f0;
+}
+
+.dark-theme .history-source-selection {
+  background-color: #183e25;
+  color: #7bd88f;
+}
+
+.dark-theme .history-delete-button:hover {
+  background-color: #5a252a;
+  color: #ff8a94;
+}
+
+.dark-theme .history-list::-webkit-scrollbar-track {
+  background: #2d2d2d;
+}
+
+.dark-theme .history-list::-webkit-scrollbar-thumb {
+  background: #555555;
 }
 
 /* 滚动条样式 */

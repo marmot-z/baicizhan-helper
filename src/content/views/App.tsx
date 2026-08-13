@@ -10,6 +10,7 @@ import AnkiExport from '../../components/AnkiExport'
 import { WordData } from '../../components/AnkiExport'
 import { classifySelectedText } from '../../utils/selectionText'
 import { settingsStore } from '../../stores/settingsStore'
+import { buildWordHistoryPreview, type HistoryRecordInput } from '../../stores/historyStorage'
 import './App.css'
 
 type PopoverResult =
@@ -30,6 +31,26 @@ function App() {
   const [exportWords, setExportWords] = useState<WordData[]>([])
   const requestIdRef = useRef(0)
   const theme = settingsStore((state) => state.theme)
+
+  const recordSelectionHistory = useCallback((entry: Omit<HistoryRecordInput, 'source' | 'page'>) => {
+    void chrome.runtime.sendMessage({
+      action: 'recordHistory',
+      entry: {
+        ...entry,
+        source: 'selection',
+        page: {
+          title: document.title,
+          url: window.location.href,
+        },
+      },
+    }).then((response) => {
+      if (!response?.success) {
+        console.warn('保存划词历史失败:', response?.error);
+      }
+    }).catch((error) => {
+      console.warn('保存划词历史失败:', error);
+    });
+  }, [])
 
   const handleSelectedContent = useCallback(async (content: string) => {
     const classification = classifySelectedText(content)
@@ -62,10 +83,21 @@ function App() {
       if (response.success && response.data) {
         if (classification.kind === 'english-word') {
           setPopoverResult({ kind: 'word', data: response.data })
+          recordSelectionHistory({
+            text: classification.text,
+            resultKind: 'word',
+            preview: buildWordHistoryPreview(response.data.dict.chn_means),
+            topicId: response.data.dict.word_basic_info.topic_id,
+          })
         } else if (response.data.translatedText) {
           setPopoverResult({
             kind: 'translation',
             translatedText: response.data.translatedText,
+          })
+          recordSelectionHistory({
+            text: classification.text,
+            resultKind: 'translation',
+            preview: response.data.translatedText,
           })
         } else {
           throw new Error('翻译失败，返回结果为空')
@@ -89,7 +121,7 @@ function App() {
       setOperateError(error instanceof Error ? error : new Error('查询失败，请稍后重试'))
       setShowPopover(true)
     }
-  }, [])
+  }, [recordSelectionHistory])
 
   // 处理鼠标松开事件
   const handleMouseUp = useCallback((event: MouseEvent) => {

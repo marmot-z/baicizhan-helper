@@ -1,7 +1,7 @@
 {
   "name": "百词斩助手",
   "type": "module",
-  "version": "2.1.6",
+  "version": "2.1.7",
   "private": true,
   "description": "百词斩网页助手，支持取词翻译、收藏单词、背单词、同步anki等操作（可同步至百词斩APP中）",
   "scripts": {
@@ -9,6 +9,7 @@
     "dev:firefox": "wxt -b firefox",
     "build": "wxt build",
     "build:firefox": "wxt build -b firefox",
+    "test": "vitest run",
     "zip": "wxt zip",
     "zip:firefox": "wxt zip -b firefox",
     "postinstall": "wxt prepare"
@@ -34,6 +35,7 @@
     "@types/react-dom": "^19.1.6",
     "@wxt-dev/module-react": "^1.1.1",
     "typescript": "~5.8.3",
+    "vitest": "^2.1.9",
     "wxt": "^0.19.15"
   }
 }

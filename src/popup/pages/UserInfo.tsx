@@ -51,13 +51,26 @@ const UserInfo: React.FC<UserInfoProps> = ({}) => {
     fetchUserInfo();
   }, []);
 
-  const handleLogout = () => {
+  const clearHistory = async () => {
+    try {
+      const response = await chrome.runtime.sendMessage({ action: 'clearHistory' });
+      if (!response?.success) {
+        console.warn('清空历史记录失败:', response?.error);
+      }
+    } catch (error) {
+      console.warn('清空历史记录失败:', error);
+    }
+  };
+
+  const handleLogout = async () => {
+    await clearHistory();
     useAuthStore.getState().logout();
     useWordBookStorage.getState().clearCache();
     navigate('/');
   };
 
-  const handleReLogin = () => {
+  const handleReLogin = async () => {
+    await clearHistory();
     useAuthStore.getState().logout();
     useWordBookStorage.getState().clearCache();
     navigate('/login', { replace: true });
