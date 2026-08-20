@@ -85,6 +85,8 @@ export default defineBackground(() => {
         return searchWord(request);
       case 'getWordDetail':
         return getWordDetail(request.topicId);
+      case 'getHighlightWords':
+        return useWordBookStorage.getState().getAllHighlightWords();
       case 'translateSentence':
         return translateSentence(request.text);
       case 'openPopup':

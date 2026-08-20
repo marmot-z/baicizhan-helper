@@ -207,6 +207,12 @@ export interface UserBookWordDetail {
   audio_uk: string;
 }
 
+export interface HighlightWord {
+  topicId: number;
+  word: string;
+  mean: string;
+}
+
 export interface UserInfo {
   user:UserVipInfo;
   userInfo:UserBindInfo[];

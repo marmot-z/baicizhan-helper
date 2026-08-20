@@ -15,6 +15,9 @@ const Settings: React.FC<SettingsProps> = () => {
   const [translateTiming, setTranslateTiming] = useState<number>(settingsStore.getState().translateTiming);
   const [theme, setTheme] = useState<'light' | 'dark'>(settingsStore.getState().theme);
   const [collectShortcut, setCollectShortcut] = useState<string>(settingsStore.getState().collectShortcut || '');
+  const [pageHighlightEnabled, setPageHighlightEnabled] = useState<boolean>(
+    settingsStore.getState().pageHighlightEnabled,
+  );
   const [lookupShortcut, setLookupShortcut] = useState<string>('读取中...');
   const [wordBooks, setWordBooks] = useState<UserBookItem[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
@@ -74,6 +77,11 @@ const Settings: React.FC<SettingsProps> = () => {
     const newTheme = e.target.value as 'light' | 'dark';
     setTheme(newTheme);
     settingsStore.getState().setTheme(newTheme);
+  };
+
+  const handlePageHighlightChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setPageHighlightEnabled(e.target.checked);
+    settingsStore.getState().setPageHighlightEnabled(e.target.checked);
   };
 
   const validateShortcut = (input: string) => {
@@ -180,6 +188,22 @@ const Settings: React.FC<SettingsProps> = () => {
             <div className="switch-slider" />
           </div>
         </div>
+
+        <div className="setting-item">
+          <label className="setting-label">网页高亮收藏单词</label>
+          <div className="switch-container">
+            <input
+              type="checkbox"
+              checked={pageHighlightEnabled}
+              onChange={handlePageHighlightChange}
+              className="switch-input"
+              aria-label="启用网页收藏单词高亮"
+            />
+            <div className="switch-slider" />
+          </div>
+        </div>
+
+        <p>开启后使用蓝色下划线标记所有单词本中的收藏单词，鼠标悬停可查看释义</p>
 
         <div className="setting-item">
           <label className="setting-label">自动发音口音</label>
