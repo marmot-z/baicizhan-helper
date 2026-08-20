@@ -56,22 +56,44 @@
 }
 
 .bcz-helper-selection-icon {
-  background-color: white;
-  border-radius: 50%;
-  box-shadow:
-    0 4px 6px -1px rgb(0 0 0 / 0.1),
-    0 2px 4px -2px rgb(0 0 0 / 0.1);
-  width: 2rem;
-  height: 2rem;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  animation: bcz-helper-fadeIn 0.2s ease-in-out;
+  all: initial;
+  position: fixed !important;
+  display: block !important;
+  width: 24px !important;
+  height: 24px !important;
+  min-width: 24px !important;
+  min-height: 24px !important;
+  max-width: 24px !important;
+  max-height: 24px !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  border: 0 !important;
+  border-radius: 4px !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  box-sizing: border-box !important;
+  line-height: 0 !important;
+  cursor: pointer !important;
+  animation: bcz-helper-fadeIn 0.2s ease-in-out !important;
 }
 
 .bcz-helper-selection-icon-img {
-  width: 1.2rem;
-  height: 1.2rem;
+  all: initial !important;
+  display: block !important;
+  width: 24px !important;
+  height: 24px !important;
+  min-width: 24px !important;
+  min-height: 24px !important;
+  max-width: none !important;
+  max-height: none !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  border: 0 !important;
+  border-radius: 4px !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  box-sizing: border-box !important;
+  object-fit: contain !important;
 }
 
 @keyframes bcz-helper-fadeIn {

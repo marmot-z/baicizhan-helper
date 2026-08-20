@@ -61,7 +61,7 @@ export default defineBackground(() => {
     void browser.contextMenus.removeAll().then(() => {
       browser.contextMenus.create({
         id: LOOKUP_SELECTION_CONTEXT_MENU,
-        title: '使用百词斩助手查询“%s”',
+        title: '百词斩助手查询',
         contexts: ['selection'],
       });
     }).catch((error) => console.warn('注册划词查询右键菜单失败:', error));
