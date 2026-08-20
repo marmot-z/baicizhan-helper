@@ -59,6 +59,22 @@
   border-color: #495057;
 }
 
+.setting-shortcut-value {
+  padding: 4px 8px;
+  border: 1px solid #ced4da;
+  border-radius: 4px;
+  color: #495057;
+  background-color: #f8f9fa;
+  font-size: 13px;
+  white-space: nowrap;
+}
+
+.dark-theme .setting-shortcut-value {
+  color: #e0e0e0;
+  background-color: #212529;
+  border-color: #495057;
+}
+
 .switch-container {
   position: relative;
 }

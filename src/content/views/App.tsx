@@ -18,6 +18,34 @@ type PopoverResult =
   | { kind: 'translation'; translatedText: string }
   | null
 
+interface SelectionContext {
+  text: string
+  rect: Pick<DOMRect, 'left' | 'top' | 'width' | 'height'> | null
+}
+
+function getCurrentSelectionContext(): SelectionContext {
+  const selection = window.getSelection()
+  const selectedText = selection?.toString() || ''
+  if (selectedText.trim() && selection?.rangeCount) {
+    const rect = selection.getRangeAt(0).getBoundingClientRect()
+    return { text: selectedText, rect }
+  }
+
+  const activeElement = document.activeElement
+  if (activeElement instanceof HTMLInputElement || activeElement instanceof HTMLTextAreaElement) {
+    const start = activeElement.selectionStart
+    const end = activeElement.selectionEnd
+    if (start !== null && end !== null && end > start) {
+      return {
+        text: activeElement.value.slice(start, end),
+        rect: activeElement.getBoundingClientRect(),
+      }
+    }
+  }
+
+  return { text: '', rect: null }
+}
+
 function App() {
   const [showIcon, setShowIcon] = useState(false)
   const [showPopover, setShowPopover] = useState(false)
@@ -52,10 +80,11 @@ function App() {
     });
   }, [])
 
-  const handleSelectedContent = useCallback(async (content: string) => {
+  const handleSelectedContent = useCallback(async (content: string, explicit = false): Promise<boolean> => {
     const classification = classifySelectedText(content)
-    if (classification.kind === 'unsupported' || settingsStore.getState().translateTiming === 3) {
-      return
+    if (classification.kind === 'unsupported'
+      || (!explicit && settingsStore.getState().translateTiming === 3)) {
+      return false
     }
 
     const requestId = ++requestIdRef.current
@@ -75,7 +104,7 @@ function App() {
           })
 
       if (requestId !== requestIdRef.current) {
-        return
+        return true
       }
 
       setShowPopover(true)
@@ -113,7 +142,7 @@ function App() {
       }
     } catch (error) {
       if (requestId !== requestIdRef.current) {
-        return
+        return true
       }
 
       console.error('查询失败:', error)
@@ -121,7 +150,38 @@ function App() {
       setOperateError(error instanceof Error ? error : new Error('查询失败，请稍后重试'))
       setShowPopover(true)
     }
+
+    return true
   }, [recordSelectionHistory])
+
+  const handleExternalLookup = useCallback(async (providedText?: string): Promise<boolean> => {
+    const currentSelection = getCurrentSelectionContext()
+    const content = (providedText?.trim() || currentSelection.text).trim()
+    const classification = classifySelectedText(content)
+    if (classification.kind === 'unsupported') {
+      return false
+    }
+
+    const currentSelectionText = currentSelection.text.trim().replace(/\s+/g, ' ')
+    const selectionMatches = currentSelectionText === classification.text
+    const rect = selectionMatches ? currentSelection.rect : null
+
+    setSelectionPosition({
+      x: rect?.left ?? window.innerWidth / 2,
+      y: rect?.top ?? window.innerHeight / 3,
+    })
+    setSelectionSize({
+      width: rect?.width ?? 1,
+      height: rect?.height ?? 1,
+    })
+    setSelectedContent(classification.text)
+    setShowIcon(false)
+    setShowPopover(false)
+    setPopoverResult(null)
+    setOperateError(null)
+
+    return handleSelectedContent(classification.text, true)
+  }, [handleSelectedContent])
 
   // 处理鼠标松开事件
   const handleMouseUp = useCallback((event: MouseEvent) => {
@@ -174,6 +234,29 @@ function App() {
       document.removeEventListener('mouseup', handleMouseUp)
     }
   }, [handleMouseUp])
+
+  useEffect(() => {
+    const handleRuntimeMessage = (
+      message: { action?: string; text?: string },
+      _sender: chrome.runtime.MessageSender,
+      sendResponse: (response: { handled: boolean }) => void,
+    ) => {
+      if (message?.action !== 'lookupSelection') {
+        return false
+      }
+
+      void handleExternalLookup(message.text)
+        .then((handled) => sendResponse({ handled }))
+        .catch((error) => {
+          console.error('快捷查询失败:', error)
+          sendResponse({ handled: false })
+        })
+      return true
+    }
+
+    chrome.runtime.onMessage.addListener(handleRuntimeMessage)
+    return () => chrome.runtime.onMessage.removeListener(handleRuntimeMessage)
+  }, [handleExternalLookup])
 
   return (
     <>

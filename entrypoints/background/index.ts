@@ -10,7 +10,75 @@ import { useAuthStore } from '../../src/stores/useAuthStore';
 import { classifySelectedText } from '../../src/utils/selectionText';
 import { historyStorage, type HistoryRecordInput } from '../../src/stores/historyStorage';
 
+const LOOKUP_SELECTION_COMMAND = 'lookup-selection';
+const LOOKUP_SELECTION_CONTEXT_MENU = 'lookup-selection-context-menu';
+
 export default defineBackground(() => {
+  async function openPopup(): Promise<boolean> {
+    await browser.action.openPopup();
+    return true;
+  }
+
+  async function openPopupSafely(): Promise<void> {
+    try {
+      await openPopup();
+    } catch (error) {
+      console.warn('无法自动打开插件弹窗:', error);
+    }
+  }
+
+  async function triggerSelectionLookup(tabId?: number, text?: string): Promise<void> {
+    let targetTabId = tabId;
+    if (!targetTabId) {
+      const [activeTab] = await browser.tabs.query({ active: true, lastFocusedWindow: true });
+      targetTabId = activeTab?.id;
+    }
+
+    if (!targetTabId) {
+      await openPopupSafely();
+      return;
+    }
+
+    try {
+      const response = await browser.tabs.sendMessage<
+        { action: 'lookupSelection'; text?: string },
+        { handled?: boolean }
+      >(targetTabId, {
+        action: 'lookupSelection',
+        text,
+      });
+
+      if (!response?.handled) {
+        await openPopupSafely();
+      }
+    } catch (error) {
+      console.warn('当前页面无法执行划词查询，改为打开插件弹窗:', error);
+      await openPopupSafely();
+    }
+  }
+
+  browser.runtime.onInstalled.addListener(() => {
+    void browser.contextMenus.removeAll().then(() => {
+      browser.contextMenus.create({
+        id: LOOKUP_SELECTION_CONTEXT_MENU,
+        title: '使用百词斩助手查询“%s”',
+        contexts: ['selection'],
+      });
+    }).catch((error) => console.warn('注册划词查询右键菜单失败:', error));
+  });
+
+  browser.commands.onCommand.addListener((command, tab) => {
+    if (command === LOOKUP_SELECTION_COMMAND) {
+      void triggerSelectionLookup(tab?.id);
+    }
+  });
+
+  browser.contextMenus.onClicked.addListener((info, tab) => {
+    if (info.menuItemId === LOOKUP_SELECTION_CONTEXT_MENU) {
+      void triggerSelectionLookup(tab?.id, info.selectionText);
+    }
+  });
+
   async function dispatch(request: any): Promise<any> {
     switch (request.action) {
       case 'searchWord':
@@ -88,11 +156,6 @@ export default defineBackground(() => {
   async function isCollect(topicId: number): Promise<boolean> {
     const wordIds = await useWordBookStorage.getState().getAllWordIds();
     return wordIds.includes(topicId);
-  }
-
-  async function openPopup(): Promise<boolean> {
-    await browser.action.openPopup();
-    return true;
   }
 
   async function collectWord(request: any): Promise<boolean> {

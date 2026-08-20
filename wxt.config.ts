@@ -45,8 +45,14 @@ export default defineConfig({
       },
     },
     permissions: [
-      'storage'
+      'storage',
+      'contextMenus'
     ],
+    commands: {
+      'lookup-selection': {
+        description: '查询当前页面选中的文本',
+      },
+    },
     host_permissions: [
       'https://www.baicizhan-helper.cn/*',
       "http://127.0.0.1:8765/*",

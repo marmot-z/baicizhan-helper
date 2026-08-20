@@ -4,6 +4,7 @@ import { API } from '../../api/api';
 import { UserBookItem } from '../../api/types';
 import { settingsStore } from '../../stores/settingsStore';
 import Tips from '../../components/Tips';
+import { browser } from 'wxt/browser';
 
 interface SettingsProps {}
 
@@ -14,6 +15,7 @@ const Settings: React.FC<SettingsProps> = () => {
   const [translateTiming, setTranslateTiming] = useState<number>(settingsStore.getState().translateTiming);
   const [theme, setTheme] = useState<'light' | 'dark'>(settingsStore.getState().theme);
   const [collectShortcut, setCollectShortcut] = useState<string>(settingsStore.getState().collectShortcut || '');
+  const [lookupShortcut, setLookupShortcut] = useState<string>('读取中...');
   const [wordBooks, setWordBooks] = useState<UserBookItem[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [errorMessage, setErrorMessage] = useState<string>('');
@@ -32,6 +34,15 @@ const Settings: React.FC<SettingsProps> = () => {
     };
 
     fetchWordBooks();
+  }, []);
+
+  useEffect(() => {
+    void browser.commands.getAll()
+      .then((commands) => {
+        const lookupCommand = commands.find(command => command.name === 'lookup-selection');
+        setLookupShortcut(lookupCommand?.shortcut || '未设置');
+      })
+      .catch(() => setLookupShortcut('读取失败'));
   }, []);
 
   const handleWordBookChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -185,6 +196,13 @@ const Settings: React.FC<SettingsProps> = () => {
             <div className="switch-slider dual-switch-slider" />
           </label>
         </div>
+
+        <div className="setting-item">
+          <label className="setting-label">划词查询快捷键</label>
+          <span className="setting-shortcut-value">{lookupShortcut}</span>
+        </div>
+
+        <p>未设置时不启用快捷键查询，可在浏览器的扩展快捷键管理页面中绑定</p>
 
         <div className="setting-item">
           <label className="setting-label">收藏快捷键</label>
