@@ -9,14 +9,12 @@ interface SettingsState {
   translateTiming: number;
   theme: 'light' | 'dark';
   collectShortcut: string;
-  pageHighlightEnabled: boolean;
   setDefaultWordBook: (book: {bookId: number, bookName: string}) => void;
   setAutoPlay: (autoPlay: boolean) => void;
   setAutoPlayAccent: (accent: 'uk' | 'usa') => void;
   setTranslateTiming: (timing: number) => void;
   setTheme: (theme: 'light' | 'dark') => void;
   setCollectShortcut: (shortcut: string) => void;
-  setPageHighlightEnabled: (enabled: boolean) => void;
 }
 
 chrome.storage.onChanged.addListener((changes, namespace) => {
@@ -33,7 +31,6 @@ export const settingsStore = create<SettingsState>()(persist(
     translateTiming: 0,
     theme: 'light',
     collectShortcut: '',
-    pageHighlightEnabled: false,
     
     setDefaultWordBook: (book: {bookId: number, bookName: string}) => set({ defaultWordBook: book }),
     
@@ -46,8 +43,6 @@ export const settingsStore = create<SettingsState>()(persist(
     setTheme: (theme: 'light' | 'dark') => set({ theme }),
     
     setCollectShortcut: (shortcut: string) => set({ collectShortcut: shortcut }),
-
-    setPageHighlightEnabled: (pageHighlightEnabled: boolean) => set({ pageHighlightEnabled }),
   }),
   {
     name: 'setting-storage',
@@ -59,7 +54,6 @@ export const settingsStore = create<SettingsState>()(persist(
       translateTiming: state.translateTiming,
       theme: state.theme,
       collectShortcut: state.collectShortcut,
-      pageHighlightEnabled: state.pageHighlightEnabled,
     })
   }
 ));

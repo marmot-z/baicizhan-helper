@@ -1,12 +1,10 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { API } from '../api';
-import type { HighlightWord, UserBookWordDetail } from '../api/types';
 import { chromeStorage } from '../utils/chromeStorage';
 
 interface WordBookData {
   wordsMap: Record<number, number[]>;
-  highlightWords?: HighlightWord[];
   timestamp: number;
 }
 
@@ -19,14 +17,8 @@ interface WordBookStore {
   // 获取所有单词本中的单词ID列表
   getAllWordIds: () => Promise<number[]>;
 
-  // 获取所有单词本中用于网页高亮的单词
-  getAllHighlightWords: () => Promise<HighlightWord[]>;
-
   // 清除缓存
   clearCache: () => void;
-
-  // 仅使高亮词表失效，下一次页面加载时重新获取
-  invalidateHighlightWords: () => void;
 
   appendTopicId: (bookId: number, topicId: number) => boolean;
 
@@ -41,26 +33,6 @@ chrome.storage.onChanged.addListener((changes, namespace) => {
 
 const CACHE_DURATION = 12 * 60 * 60 * 1000; // 12小时
 let initializePromise: Promise<void> | null = null;
-
-function buildHighlightWords(wordsByBook: UserBookWordDetail[][]): HighlightWord[] {
-  const latestWords = new Map<string, UserBookWordDetail>();
-
-  wordsByBook.flat().forEach((word) => {
-    const normalizedWord = word.word?.trim().toLowerCase();
-    if (!normalizedWord) return;
-
-    const current = latestWords.get(normalizedWord);
-    if (!current || word.created_at > current.created_at) {
-      latestWords.set(normalizedWord, word);
-    }
-  });
-
-  return Array.from(latestWords.values()).map((word) => ({
-    topicId: word.topic_id,
-    word: word.word.trim(),
-    mean: word.mean?.trim() || '',
-  }));
-}
 
 export const useWordBookStorage = create<WordBookStore>()(persist(
   (set, get) => ({
@@ -82,23 +54,20 @@ export const useWordBookStorage = create<WordBookStore>()(persist(
 
             // 2. 获取每个单词本的单词列表
             const wordsMap: Record<number, number[]> = {};
-            const wordsByBook = await Promise.all(
+            await Promise.all(
               books.map(async (book) => {
                 try {
                   const words = await API.getBookWords(book.user_book_id);
                   wordsMap[book.user_book_id] = words.map(word => word.topic_id);
-                  return words;
                 } catch (error) {
                   console.error(`Failed to load words for book ${book.user_book_id}:`, error);
                   wordsMap[book.user_book_id] = [];
-                  return [];
                 }
               })
             );
 
             const newData: WordBookData = {
               wordsMap,
-              highlightWords: buildHighlightWords(wordsByBook),
               timestamp: Date.now()
             };
 
@@ -146,41 +115,8 @@ export const useWordBookStorage = create<WordBookStore>()(persist(
       return Array.from(allWordIds);
     },
 
-    getAllHighlightWords: async () => {
-      const { initialize, clearCache } = get();
-      let { data } = get();
-
-      if (!data || !Array.isArray(data.highlightWords)) {
-        clearCache();
-        await initialize();
-        data = get().data;
-      }
-
-      if (!data) return [];
-
-      if (Date.now() - data.timestamp > CACHE_DURATION) {
-        clearCache();
-        await initialize();
-        data = get().data;
-      }
-
-      return data?.highlightWords || [];
-    },
-
     clearCache: () => {
       set({ data: null });
-    },
-
-    invalidateHighlightWords: () => {
-      const { data } = get();
-      if (!data) return;
-
-      set({
-        data: {
-          ...data,
-          highlightWords: undefined,
-        },
-      });
     },
 
     appendTopicId(bookId, topicId) {
@@ -188,14 +124,10 @@ export const useWordBookStorage = create<WordBookStore>()(persist(
       if (!data) return false;
 
       const words = data.wordsMap[bookId];
-      if (!words) {
-        set({ data: { ...data, highlightWords: undefined } });
-        return false;
-      }
-      if (words.includes(topicId)) return false;
+      if (!words || words.includes(topicId)) return false;
 
       words.push(topicId);
-      set({ data: { ...data, highlightWords: undefined } });
+      set({ data: { ...data } });
       return true;
     },
 
@@ -211,7 +143,7 @@ export const useWordBookStorage = create<WordBookStore>()(persist(
         }
       }
       
-      set({ data: { ...data, highlightWords: undefined } });
+      set({ data: { ...data } });
 
       return true;
     },

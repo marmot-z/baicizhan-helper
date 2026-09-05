@@ -11,8 +11,6 @@ import { WordData } from '../../components/AnkiExport'
 import { classifySelectedText } from '../../utils/selectionText'
 import { settingsStore } from '../../stores/settingsStore'
 import { buildWordHistoryPreview, type HistoryRecordInput } from '../../stores/historyStorage'
-import { PageHighlighter, type HighlightHoverInfo } from '../highlight/pageHighlighter'
-import PageHighlightTooltip from './PageHighlightTooltip'
 import './App.css'
 
 type PopoverResult =
@@ -59,10 +57,10 @@ function App() {
   const [operateError, setOperateError] = useState<Error | null>(null)
   const [isExportModalOpen, setIsExportModalOpen] = useState(false)
   const [exportWords, setExportWords] = useState<WordData[]>([])
-  const [highlightHoverInfo, setHighlightHoverInfo] = useState<HighlightHoverInfo | null>(null)
   const requestIdRef = useRef(0)
+  const selectionIconRef = useRef<HTMLDivElement>(null)
+  const popoverContentRef = useRef<HTMLDivElement>(null)
   const theme = settingsStore((state) => state.theme)
-  const pageHighlightEnabled = settingsStore((state) => state.pageHighlightEnabled)
 
   const recordSelectionHistory = useCallback((entry: Omit<HistoryRecordInput, 'source' | 'page'>) => {
     void chrome.runtime.sendMessage({
@@ -189,6 +187,14 @@ function App() {
 
   // 处理鼠标松开事件
   const handleMouseUp = useCallback((event: MouseEvent) => {
+    const target = event.target
+    if (target instanceof Node && (
+      selectionIconRef.current?.contains(target)
+      || popoverContentRef.current?.contains(target)
+    )) {
+      return
+    }
+
     const selection = window.getSelection()
     const classification = classifySelectedText(selection?.toString() || '')
     const translateTiming = settingsStore.getState().translateTiming
@@ -262,37 +268,11 @@ function App() {
     return () => chrome.runtime.onMessage.removeListener(handleRuntimeMessage)
   }, [handleExternalLookup])
 
-  useEffect(() => {
-    if (!pageHighlightEnabled) {
-      setHighlightHoverInfo(null)
-      return
-    }
-
-    let disposed = false
-    let highlighter: PageHighlighter | null = null
-
-    void chrome.runtime.sendMessage({ action: 'getHighlightWords' })
-      .then((response) => {
-        if (disposed || !response?.success || !Array.isArray(response.data)) return
-
-        highlighter = new PageHighlighter(response.data, setHighlightHoverInfo)
-        highlighter.start()
-      })
-      .catch((error) => {
-        console.warn('获取网页高亮词表失败:', error)
-      })
-
-    return () => {
-      disposed = true
-      highlighter?.stop()
-      setHighlightHoverInfo(null)
-    }
-  }, [pageHighlightEnabled])
-
   return (
     <>
       {showIcon && (
         <div
+          ref={selectionIconRef}
           className="bcz-helper-selection-icon"
           style={{
             position: 'fixed',
@@ -320,7 +300,7 @@ function App() {
           </div>
         </Popover.Trigger>
         <Popover.Portal>
-          <Popover.Content className="bcz-helper-popover-content" sideOffset={5} >
+          <Popover.Content ref={popoverContentRef} className="bcz-helper-popover-content" sideOffset={5} >
             {popoverResult?.kind === 'word' ?
               (<div className={`bcz-helper-word-popover ${theme === 'dark' ? 'dark-theme' : ''}`}>
                 <PopoverContent wordResult={popoverResult.data}/>
@@ -340,9 +320,6 @@ function App() {
        words={exportWords}
        onClose={() => setIsExportModalOpen(false)} 
       />
-      {highlightHoverInfo && (
-        <PageHighlightTooltip info={highlightHoverInfo} theme={theme} />
-      )}
       <div id="baicizhan-helper-extension-injection" style={{display: 'none'}}></div>
     </>
   )
