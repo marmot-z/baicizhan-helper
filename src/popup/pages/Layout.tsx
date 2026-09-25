@@ -51,7 +51,7 @@ export default function Layout() {
   };
 
   const handleFeedbackClick = () => {
-    window.open('https://www.baicizhan-helper.cn/comments', '_blank');
+    window.open('https://www.baicizhan-helper.cn/page/feedback', '_blank');
   };
 
   return (
